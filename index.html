@@ -24,6 +24,13 @@
       --error: #b00020;
       --verde: #2e7d32;
       --verde-navidad: #1f4d2b;
+
+      /* Un color por pueblo */
+      --color-baena: #6a1b9a;       /* morado */
+      --color-luque: #00838f;       /* turquesa */
+      --color-zuheros: #bf360c;     /* naranja */
+      --color-dona-mencia: #ad1457; /* fucsia */
+      --color-sin-tienda: #8a8a8a;  /* gris */
     }
 
     * { box-sizing: border-box; }
@@ -425,6 +432,36 @@
     li.encargo.estado-cancelado .encargo-cabecera strong { text-decoration: line-through; }
 
     li.encargo.resaltado { outline: 3px solid #ffd54f; }
+
+    /* ---------- Pueblo de cada encargo ---------- */
+    li.encargo.tienda-baena { --color-tienda: var(--color-baena); }
+    li.encargo.tienda-luque { --color-tienda: var(--color-luque); }
+    li.encargo.tienda-zuheros { --color-tienda: var(--color-zuheros); }
+    li.encargo.tienda-dona-mencia { --color-tienda: var(--color-dona-mencia); }
+    li.encargo.tienda-sin-tienda { --color-tienda: var(--color-sin-tienda); }
+
+    li.encargo { border-left: 8px solid var(--color-tienda, var(--borde)); }
+
+    .pueblo {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      background: var(--color-tienda);
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    li.encargo.tienda-sin-tienda .pueblo {
+      background: #ffffff;
+      color: var(--gris);
+      border: 2px dashed var(--color-sin-tienda);
+      text-transform: none;
+      letter-spacing: 0;
+    }
 
     .aviso.exito { color: var(--verde); }
 
@@ -1050,7 +1087,13 @@
         '<li><strong>' + textoCantidad(p) + '</strong> · ' + escaparHtml(p.producto) + '</li>'
       ).join('');
       const telefono = e.telefono ? escaparHtml(e.telefono) : '—';
-      const tienda = e.tienda ? escaparHtml(e.tienda) : '—';
+      // Clase de color del pueblo: "Doña Mencía" -> "dona-mencia"
+      const claseTienda = TIENDAS.includes(e.tienda)
+        ? 'tienda-' + normalizar(e.tienda).replace(/\s+/g, '-')
+        : 'tienda-sin-tienda';
+      const pueblo = TIENDAS.includes(e.tienda)
+        ? '📍 ' + escaparHtml(e.tienda)
+        : '📍 Sin tienda' + (e.tienda ? ' (' + escaparHtml(e.tienda) + ')' : '');
       const senal = e.senalPagada
         ? '<span class="senal-si">Sí</span>'
         : '<span class="senal-no">No</span>';
@@ -1068,7 +1111,7 @@
       ).join('');
 
       return `
-        <li class="encargo estado-${estadoActual.toLowerCase()}" data-id="${id}">
+        <li class="encargo estado-${estadoActual.toLowerCase()} ${claseTienda}" data-id="${id}">
           <div class="fila-acciones">
             <label class="fila-seleccion">
               <input type="checkbox" class="seleccion" data-id="${id}" ${seleccionados.has(e.id) ? 'checked' : ''}>
@@ -1076,12 +1119,13 @@
             </label>
             <button type="button" class="boton-secundario boton-editar" data-id="${id}">✏️ Editar</button>
           </div>
+          <span class="pueblo">${pueblo}</span>
           <div class="encargo-cabecera">
             <strong>${nombre}</strong>
             <span class="fecha">${fecha}</span>
           </div>
           <ul class="productos-encargo">${productos}</ul>
-          <p class="encargo-detalle">Tienda: ${tienda} · Tel: ${telefono}</p>
+          <p class="encargo-detalle">Tel: ${telefono}</p>
           <p class="encargo-detalle">Señal pagada: ${senal}</p>
           ${etiquetas.length ? '<div class="etiquetas">' + etiquetas.join('') + '</div>' : ''}
           <div class="estados" role="group" aria-label="Estado del encargo">${botonesEstado}</div>
