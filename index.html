@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Encargos de Navidad</title>
 
   <!-- Instalable en el móvil -->
@@ -14,16 +14,22 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <style>
     :root {
-      --rojo: #9f1d1d;
+      --rojo: #a61e1e;
       --rojo-oscuro: #7a1414;
-      --fondo: #f5f1ea;
+      --rojo-claro: #fdecea;
+      --fondo: #f4efe7;
       --tarjeta: #ffffff;
-      --texto: #222222;
-      --gris: #666666;
-      --borde: #d9d2c7;
+      --texto: #1f1f1f;
+      --gris: #6b6b6b;
+      --gris-claro: #eee8df;
+      --borde: #e0d8cc;
       --error: #b00020;
       --verde: #2e7d32;
       --verde-navidad: #1f4d2b;
+      --dorado: #ffd54f;
+      --sombra: 0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.06);
+      --radio: 14px;
+      --alto-pestanas: 68px;
 
       /* Un color por pueblo */
       --color-baena: #6a1b9a;       /* morado */
@@ -35,46 +41,231 @@
 
     * { box-sizing: border-box; }
 
+    html { -webkit-tap-highlight-color: transparent; }
+
     body {
       margin: 0;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       background: var(--fondo);
       color: var(--texto);
       line-height: 1.4;
+      padding-bottom: calc(var(--alto-pestanas) + env(safe-area-inset-bottom) + 16px);
     }
 
-    header {
+    [hidden] { display: none !important; }
+
+    /* Visible solo para lectores de pantalla */
+    .solo-lectores {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    /* ---------- Cabecera ---------- */
+    .app-header {
       position: relative;
       overflow: hidden;
-      background: var(--rojo);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: calc(14px + env(safe-area-inset-top)) 16px 14px;
+      background: linear-gradient(135deg, var(--rojo-oscuro), var(--rojo) 60%, #c62828);
       color: #ffffff;
-      padding: 16px;
-      text-align: center;
     }
 
-    header h1 { position: relative; z-index: 1; margin: 0; font-size: 1.5rem; }
-    header p { position: relative; z-index: 1; margin: 4px 0 0; font-size: 0.95rem; opacity: 0.9; }
+    .titulo-app {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
 
+    .logo {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    .app-header h1 {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .app-header p {
+      margin: 2px 0 0;
+      font-size: 0.8rem;
+      opacity: 0.85;
+    }
+
+    .cuenta-chip {
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    .cuenta-chip strong {
+      display: block;
+      font-size: 1rem;
+      color: var(--dorado);
+    }
+
+    .copo {
+      position: absolute;
+      top: -10px;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 12px;
+      animation: caer linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes caer {
+      to { transform: translateY(120px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .copo { display: none; }
+      * { animation: none !important; transition: none !important; }
+    }
+
+    /* ---------- Páginas ---------- */
     main {
       max-width: 640px;
       margin: 0 auto;
       padding: 16px;
     }
 
+    .titulo-pagina {
+      font-size: 1.35rem;
+      margin: 4px 0 12px;
+      color: var(--texto);
+    }
+
     .tarjeta {
       background: var(--tarjeta);
-      border: 1px solid var(--borde);
-      border-radius: 10px;
+      border-radius: var(--radio);
+      box-shadow: var(--sombra);
       padding: 16px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     h2 {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       margin: 0 0 12px;
       color: var(--rojo-oscuro);
     }
 
+    /* ---------- Pestañas (abajo) ---------- */
+    .pestanas {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: end;
+      height: calc(var(--alto-pestanas) + env(safe-area-inset-bottom));
+      padding-bottom: env(safe-area-inset-bottom);
+      background: #ffffff;
+      border-top: 1px solid var(--borde);
+      box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .pestana {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      height: var(--alto-pestanas);
+      width: 100%;
+      padding: 6px 0;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      color: var(--gris);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .pestana:hover { background: transparent; }
+
+    .pestana .icono {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 30px;
+      border-radius: 999px;
+      font-size: 1.3rem;
+      transition: background 0.2s;
+    }
+
+    .pestana[aria-selected="true"] { color: var(--rojo); }
+    .pestana[aria-selected="true"] .icono { background: var(--rojo-claro); }
+
+    /* Pestaña central destacada: Nuevo */
+    .pestana-central .icono {
+      width: 58px;
+      height: 58px;
+      margin-top: -26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2e6b3c, var(--verde-navidad));
+      color: #ffffff;
+      font-size: 1.6rem;
+      box-shadow: 0 4px 12px rgba(31, 77, 43, 0.4);
+      border: 4px solid #ffffff;
+    }
+
+    .pestana-central[aria-selected="true"] .icono {
+      background: linear-gradient(135deg, #c62828, var(--rojo-oscuro));
+      box-shadow: 0 4px 12px rgba(166, 30, 30, 0.4);
+    }
+
+    .insignia {
+      position: absolute;
+      top: 4px;
+      left: calc(50% + 10px);
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: var(--error);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      line-height: 20px;
+      text-align: center;
+    }
+
+    .insignia.punto {
+      min-width: 12px;
+      width: 12px;
+      height: 12px;
+      padding: 0;
+      top: 8px;
+      left: calc(50% + 14px);
+      background: #f9a825;
+    }
+
+    /* ---------- Formularios ---------- */
     .campo { margin-bottom: 14px; }
 
     .etiqueta {
@@ -87,14 +278,16 @@
     input[type="tel"],
     input[type="number"],
     input[type="date"],
+    input[type="search"],
     select {
       width: 100%;
       font-size: 16px; /* evita el zoom automático en iPhone */
-      padding: 10px;
+      padding: 10px 12px;
       border: 1px solid var(--borde);
-      border-radius: 6px;
+      border-radius: 10px;
       background: #ffffff;
       color: var(--texto);
+      font-family: inherit;
     }
 
     input:focus, select:focus {
@@ -112,6 +305,8 @@
       font-size: 0.875rem;
       margin: 4px 0 0;
     }
+
+    .error:empty { display: none; }
 
     .casilla {
       display: flex;
@@ -134,9 +329,10 @@
       width: 100%;
       font-size: 1.05rem;
       font-weight: 600;
+      font-family: inherit;
       padding: 12px;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       background: var(--rojo);
       color: #ffffff;
       cursor: pointer;
@@ -150,7 +346,7 @@
       border: 1px solid var(--borde);
     }
 
-    .boton-secundario:hover { background: #f3efe8; }
+    .boton-secundario:hover { background: var(--gris-claro); }
 
     .aviso {
       margin-top: 10px;
@@ -159,8 +355,11 @@
     }
 
     .aviso:empty { display: none; }
+    .aviso.exito { color: var(--verde); }
 
-    /* ---------- Líneas de producto del formulario ---------- */
+    #btn-cancelar-edicion { margin-top: 8px; }
+
+    /* Líneas de producto del formulario */
     .linea-producto {
       display: grid;
       grid-template-columns: 1fr 76px 64px 40px;
@@ -178,296 +377,12 @@
       background: #ffffff;
       color: var(--gris);
       border: 1px solid var(--borde);
-    }
-
-    .boton-anadir {
-      font-size: 0.95rem;
-      padding: 8px;
-    }
-
-    /* ---------- Lista ---------- */
-    .vacio { color: var(--gris); margin: 0; }
-
-    ul.lista { list-style: none; padding: 0; margin: 0; }
-
-    li.encargo {
-      border: 1px solid var(--borde);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-      background: #ffffff;
-    }
-
-    .encargo-cabecera {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 6px;
-    }
-
-    .encargo-cabecera strong { font-size: 1.05rem; }
-
-    .sin-dato { color: var(--gris); font-style: italic; }
-
-    .fecha {
-      font-weight: 700;
-      color: var(--rojo-oscuro);
-      white-space: nowrap;
-    }
-
-    .encargo-detalle { font-size: 0.95rem; margin: 2px 0; }
-
-    ul.productos-encargo {
-      margin: 4px 0 6px;
-      padding-left: 20px;
-      font-size: 0.95rem;
-    }
-
-    ul.productos-encargo li { margin: 2px 0; }
-
-    .etiquetas {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
-
-    .etiqueta-estado,
-    .etiqueta-falta,
-    .etiqueta-voz {
-      display: inline-block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 12px;
-    }
-
-    .etiqueta-estado { background: #fff3cd; color: #7a5a00; }
-    .etiqueta-falta { background: #fdecea; color: var(--error); }
-    .etiqueta-voz { background: #e8f1ea; color: var(--verde-navidad); }
-
-    .senal-si { color: var(--verde); font-weight: 600; }
-    .senal-no { color: var(--gris); }
-
-    .barra {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .barra button {
-      width: auto;
-      font-size: 0.95rem;
-      padding: 8px 14px;
-    }
-
-    .barra button:disabled {
-      background: #bdb6ab;
-      cursor: not-allowed;
-    }
-
-    .confirmacion-borrado {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--error);
-    }
-
-    .fila-seleccion {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
-      color: var(--gris);
-      margin-bottom: 6px;
-      cursor: pointer;
-    }
-
-    .fila-seleccion input { width: 20px; height: 20px; }
-
-    /* ---------- Nieve en la cabecera ---------- */
-    .copo {
-      position: absolute;
-      top: -10px;
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 12px;
-      animation: caer linear infinite;
-      pointer-events: none;
-    }
-
-    @keyframes caer {
-      to { transform: translateY(140px); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .copo { display: none; }
-    }
-
-    /* ---------- Modo Navidad ---------- */
-    .navidad {
-      background: linear-gradient(135deg, var(--verde-navidad), #2e6b3c);
-      color: #ffffff;
       border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 20px;
     }
 
-    .navidad h2 { color: #ffffff; margin-bottom: 4px; }
+    .boton-anadir { font-size: 0.95rem; padding: 8px; }
 
-    .cuenta-atras {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin: 0 0 12px;
-    }
-
-    .cuenta-atras .dias { font-size: 2rem; color: #ffd54f; }
-
-    .cifras {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .cifra {
-      background: rgba(255, 255, 255, 0.12);
-      border-radius: 8px;
-      padding: 10px;
-    }
-
-    .cifra .valor { display: block; font-size: 1.4rem; font-weight: 700; }
-    .cifra .texto { font-size: 0.85rem; opacity: 0.9; }
-
-    .top-productos { font-size: 0.95rem; margin: 0; }
-
-    /* ---------- Dictado por voz ---------- */
-    .dictado {
-      border: 2px dashed var(--borde);
-      border-radius: 10px;
-      padding: 12px;
-      text-align: center;
-    }
-
-    .boton-voz { background: var(--verde-navidad); }
-    .boton-voz:hover { background: #163a20; }
-
-    .boton-voz.escuchando {
-      background: var(--error);
-      animation: latido 1s ease-in-out infinite;
-    }
-
-    @keyframes latido {
-      50% { opacity: 0.7; }
-    }
-
-    .dictado-ejemplo {
-      font-size: 0.85rem;
-      color: var(--gris);
-      margin: 8px 0 0;
-    }
-
-    .dictado-resultado {
-      font-size: 0.95rem;
-      margin: 10px 0 0;
-      text-align: left;
-    }
-
-    .dictado-resultado:empty { display: none; }
-    .dictado-resultado ul { margin: 4px 0; padding-left: 20px; }
-
-    .dictado-resultado .boton-deshacer,
-    .dictado-resultado .boton-completar {
-      width: auto;
-      margin-top: 8px;
-      font-size: 0.95rem;
-      padding: 8px 14px;
-    }
-
-    /* ---------- Acciones y estados de cada encargo ---------- */
-    .fila-acciones {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .fila-acciones .fila-seleccion { margin-bottom: 0; }
-
-    .boton-editar {
-      width: auto;
-      font-size: 0.9rem;
-      padding: 6px 12px;
-    }
-
-    .estados {
-      display: flex;
-      gap: 4px;
-      margin-top: 10px;
-    }
-
-    .estados button {
-      flex: 1;
-      width: auto;
-      font-size: 0.8rem;
-      padding: 8px 2px;
-      background: #ffffff;
-      color: var(--gris);
-      border: 1px solid var(--borde);
-      border-radius: 6px;
-    }
-
-    .estados button:hover { background: #f3efe8; }
-    .estados button.activo { color: #ffffff; border-color: transparent; }
-    .estados button.activo.e-pendiente { background: #f9a825; color: #222222; }
-    .estados button.activo.e-preparado { background: #1565c0; }
-    .estados button.activo.e-recogido { background: var(--verde); }
-    .estados button.activo.e-cancelado { background: #757575; }
-
-    li.encargo.estado-recogido,
-    li.encargo.estado-cancelado { opacity: 0.6; }
-    li.encargo.estado-cancelado .encargo-cabecera strong { text-decoration: line-through; }
-
-    li.encargo.resaltado { outline: 3px solid #ffd54f; }
-
-    /* ---------- Pueblo de cada encargo ---------- */
-    li.encargo.tienda-baena { --color-tienda: var(--color-baena); }
-    li.encargo.tienda-luque { --color-tienda: var(--color-luque); }
-    li.encargo.tienda-zuheros { --color-tienda: var(--color-zuheros); }
-    li.encargo.tienda-dona-mencia { --color-tienda: var(--color-dona-mencia); }
-    li.encargo.tienda-sin-tienda { --color-tienda: var(--color-sin-tienda); }
-
-    li.encargo { border-left: 8px solid var(--color-tienda, var(--borde)); }
-
-    .pueblo {
-      display: inline-block;
-      margin-bottom: 8px;
-      padding: 5px 14px;
-      border-radius: 20px;
-      background: var(--color-tienda);
-      color: #ffffff;
-      font-size: 1rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    li.encargo.tienda-sin-tienda .pueblo {
-      background: #ffffff;
-      color: var(--gris);
-      border: 2px dashed var(--color-sin-tienda);
-      text-transform: none;
-      letter-spacing: 0;
-    }
-
-    .aviso.exito { color: var(--verde); }
-
-    #btn-cancelar-edicion { margin-top: 8px; }
-
-    /* ---------- Formulario desplegable ---------- */
+    /* Formulario plegable */
     details.desplegable { padding: 0; }
 
     details.desplegable > summary {
@@ -476,7 +391,7 @@
       align-items: center;
       gap: 8px;
       padding: 14px 16px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--rojo-oscuro);
       cursor: pointer;
@@ -495,31 +410,551 @@
 
     .contenido-desplegable { padding: 0 16px 16px; }
 
-    /* ---------- Copia de seguridad ---------- */
-    .botones-copia {
-      display: grid;
-      gap: 8px;
+    /* ---------- Dictado ---------- */
+    .dictado { text-align: center; padding: 8px 0 4px; }
+
+    .boton-voz {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #3d8a4f, var(--verde-navidad));
+      font-size: 3rem;
+      box-shadow: 0 8px 24px rgba(31, 77, 43, 0.35);
+      transition: transform 0.15s;
     }
 
-    .resultado-copia {
+    .boton-voz:hover { background: radial-gradient(circle at 30% 30%, #3d8a4f, #163a20); }
+    .boton-voz:active { transform: scale(0.96); }
+
+    .boton-voz.escuchando {
+      background: radial-gradient(circle at 30% 30%, #e53935, var(--rojo-oscuro));
+      animation: latido 1.2s ease-in-out infinite;
+    }
+
+    .boton-voz:disabled {
+      background: #bdb6ab;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    @keyframes latido {
+      0% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.55); }
+      70% { box-shadow: 0 0 0 22px rgba(229, 57, 53, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0); }
+    }
+
+    .estado-voz {
+      margin: 12px 0 0;
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .dictado-ejemplo {
+      font-size: 0.85rem;
+      color: var(--gris);
+      margin: 6px 0 0;
+    }
+
+    .dictado-resultado {
       font-size: 0.95rem;
-      margin: 10px 0 0;
+      margin: 14px 0 0;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--fondo);
+      text-align: left;
     }
 
+    .dictado-resultado:empty { display: none; }
+    .dictado-resultado ul { margin: 4px 0; padding-left: 20px; }
+
+    .dictado-resultado .boton-deshacer,
+    .dictado-resultado .boton-completar {
+      width: auto;
+      margin-top: 8px;
+      font-size: 0.95rem;
+      padding: 8px 14px;
+    }
+
+    /* ---------- Buscador y filtros ---------- */
+    .buscador {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .buscador input {
+      padding-left: 38px;
+      border-radius: 999px;
+      box-shadow: var(--sombra);
+      border-color: transparent;
+    }
+
+    .buscador::before {
+      content: '🔍';
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+
+    .fila-chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 2px 2px 6px;
+      margin: 0 -2px;
+      scrollbar-width: none;
+    }
+
+    .fila-chips::-webkit-scrollbar { display: none; }
+
+    .etiqueta-chips {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--gris);
+      margin: 0 0 2px;
+    }
+
+    .chip {
+      flex-shrink: 0;
+      width: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--borde);
+      background: #ffffff;
+      color: var(--texto);
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .chip:hover { background: var(--gris-claro); }
+
+    .chip .cuenta {
+      min-width: 20px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: var(--gris-claro);
+      color: var(--gris);
+      font-size: 0.75rem;
+      line-height: 18px;
+      text-align: center;
+    }
+
+    .chip.activo {
+      background: var(--texto);
+      border-color: var(--texto);
+      color: #ffffff;
+    }
+
+    .chip.activo .cuenta { background: rgba(255, 255, 255, 0.25); color: #ffffff; }
+
+    .chip.chip-alerta:not(.activo) { color: var(--error); border-color: #f3b7b7; }
+    .chip.chip-alerta .cuenta { background: var(--error); color: #ffffff; }
+
+    .chip[data-filtro="pueblo"] .punto-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-tienda, var(--gris));
+    }
+
+    .chip[data-filtro="pueblo"].activo {
+      background: var(--color-tienda, var(--texto));
+      border-color: var(--color-tienda, var(--texto));
+    }
+
+    .chip[data-filtro="pueblo"].activo .punto-color { background: #ffffff; }
+
+    .resumen-filtros {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0 12px;
+      font-size: 0.85rem;
+      color: var(--gris);
+    }
+
+    .boton-enlace {
+      width: auto;
+      padding: 4px 0;
+      background: none;
+      color: var(--rojo);
+      font-size: 0.85rem;
+      text-decoration: underline;
+    }
+
+    .boton-enlace:hover { background: none; color: var(--rojo-oscuro); }
+
+    /* ---------- Lista agrupada por día ---------- */
+    .vacio {
+      text-align: center;
+      color: var(--gris);
+      padding: 28px 12px;
+    }
+
+    .vacio .grande { font-size: 2.4rem; display: block; margin-bottom: 6px; }
+
+    ul.lista, ul.lista-dia { list-style: none; padding: 0; margin: 0; }
+
+    .grupo-dia { margin-bottom: 8px; }
+
+    .cabecera-dia {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0 -16px 10px;
+      padding: 8px 16px;
+      background: var(--fondo);
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--texto);
+    }
+
+    .cabecera-dia .cuenta-dia {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--gris);
+      text-transform: none;
+    }
+
+    .cabecera-dia.hoy { color: var(--rojo); }
+
+    .cabecera-dia.atrasados {
+      color: #ffffff;
+      background: var(--error);
+      border-radius: 0;
+    }
+
+    .cabecera-dia.atrasados .cuenta-dia { color: #ffffff; }
+
+    /* ---------- Tarjeta de encargo ---------- */
+    li.encargo {
+      background: #ffffff;
+      border-radius: var(--radio);
+      box-shadow: var(--sombra);
+      border-left: 8px solid var(--color-tienda, var(--borde));
+      padding: 12px 14px 12px 12px;
+      margin-bottom: 12px;
+      transition: opacity 0.2s;
+    }
+
+    li.encargo.tienda-baena { --color-tienda: var(--color-baena); }
+    li.encargo.tienda-luque { --color-tienda: var(--color-luque); }
+    li.encargo.tienda-zuheros { --color-tienda: var(--color-zuheros); }
+    li.encargo.tienda-dona-mencia { --color-tienda: var(--color-dona-mencia); }
+    li.encargo.tienda-sin-tienda { --color-tienda: var(--color-sin-tienda); }
+
+    .chip.tienda-baena { --color-tienda: var(--color-baena); }
+    .chip.tienda-luque { --color-tienda: var(--color-luque); }
+    .chip.tienda-zuheros { --color-tienda: var(--color-zuheros); }
+    .chip.tienda-dona-mencia { --color-tienda: var(--color-dona-mencia); }
+    .chip.tienda-sin-tienda { --color-tienda: var(--color-sin-tienda); }
+
+    .fila-acciones {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .fila-seleccion {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .fila-seleccion input { width: 22px; height: 22px; margin: 0; }
+
+    .pueblo {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: var(--color-tienda);
+      color: #ffffff;
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    li.encargo.tienda-sin-tienda .pueblo {
+      background: #ffffff;
+      color: var(--gris);
+      border: 2px dashed var(--color-sin-tienda);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .boton-editar {
+      width: auto;
+      margin-left: auto;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+
+    .encargo-cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .encargo-cabecera strong { font-size: 1.15rem; }
+
+    .sin-dato { color: var(--gris); font-style: italic; }
+
+    .fecha {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--rojo-oscuro);
+      white-space: nowrap;
+    }
+
+    ul.productos-encargo {
+      margin: 6px 0 8px;
+      padding: 8px 10px;
+      list-style: none;
+      background: var(--fondo);
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+
+    ul.productos-encargo li { margin: 2px 0; }
+    ul.productos-encargo li::before { content: '🐟 '; }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      font-size: 0.88rem;
+      color: var(--gris);
+      margin: 0 0 4px;
+    }
+
+    .meta a { color: inherit; }
+    .senal-si { color: var(--verde); font-weight: 700; }
+    .senal-no { color: var(--gris); }
+
+    .etiquetas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .etiqueta-falta,
+    .etiqueta-voz,
+    .etiqueta-atrasado {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+
+    .etiqueta-falta { background: var(--rojo-claro); color: var(--error); }
+    .etiqueta-voz { background: #e8f1ea; color: var(--verde-navidad); }
+    .etiqueta-atrasado { background: var(--error); color: #ffffff; }
+
+    li.encargo.atrasado { box-shadow: 0 0 0 2px var(--error), var(--sombra); }
+
+    .estados {
+      display: flex;
+      gap: 4px;
+      margin-top: 10px;
+      padding: 3px;
+      background: var(--fondo);
+      border-radius: 10px;
+    }
+
+    .estados button {
+      flex: 1;
+      width: auto;
+      font-size: 0.78rem;
+      padding: 8px 2px;
+      background: transparent;
+      color: var(--gris);
+      border: none;
+      border-radius: 8px;
+    }
+
+    .estados button:hover { background: rgba(0, 0, 0, 0.05); }
+    .estados button.activo { color: #ffffff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); }
+    .estados button.activo.e-pendiente { background: #f9a825; color: #222222; }
+    .estados button.activo.e-preparado { background: #1565c0; }
+    .estados button.activo.e-recogido { background: var(--verde); }
+    .estados button.activo.e-cancelado { background: #757575; }
+
+    li.encargo.estado-recogido,
+    li.encargo.estado-cancelado { opacity: 0.6; }
+    li.encargo.estado-cancelado .encargo-cabecera strong { text-decoration: line-through; }
+
+    li.encargo.resaltado { box-shadow: 0 0 0 3px var(--dorado), var(--sombra); }
+
+    /* ---------- Barra de selección (abajo, sobre las pestañas) ---------- */
+    .barra {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: calc(var(--alto-pestanas) + env(safe-area-inset-bottom) + 10px);
+      z-index: 15;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 616px;
+      margin: 0 auto;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: var(--texto);
+      color: #ffffff;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .barra .texto-barra { flex: 1; font-size: 0.95rem; }
+
+    .barra button {
+      width: auto;
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+
+    .barra .boton-claro {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+
+    .barra .boton-claro:hover { background: rgba(255, 255, 255, 0.25); }
+
+    #confirmacion { display: flex; align-items: center; gap: 8px; flex: 1; }
+    #confirmacion[hidden] { display: none !important; }
+    .confirmacion-borrado { flex: 1; font-weight: 700; }
+
+    /* ---------- Aviso flotante ---------- */
+    .toast {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: calc(var(--alto-pestanas) + env(safe-area-inset-bottom) + 12px);
+      z-index: 30;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #323232;
+      color: #ffffff;
+      font-size: 0.92rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* ---------- Resumen / Modo Navidad ---------- */
+    .navidad {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--verde-navidad), #2e6b3c);
+      color: #ffffff;
+      border-radius: var(--radio);
+      box-shadow: var(--sombra);
+      padding: 18px 16px;
+      margin-bottom: 16px;
+    }
+
+    .navidad h2 { color: #ffffff; margin-bottom: 4px; }
+
+    .cuenta-atras {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: 0 0 14px;
+    }
+
+    .cuenta-atras .dias { font-size: 2.4rem; color: var(--dorado); }
+
+    .cifras {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .cifra {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .cifra .valor { display: block; font-size: 1.5rem; font-weight: 800; }
+    .cifra .texto { font-size: 0.82rem; opacity: 0.9; }
+    .cifra.alerta { background: rgba(229, 57, 53, 0.85); }
+
+    .top-productos { font-size: 0.95rem; margin: 0; }
+
+    .por-pueblo { display: grid; gap: 10px; }
+
+    .fila-pueblo {
+      display: grid;
+      grid-template-columns: 100px 1fr 32px;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .barra-pueblo {
+      height: 14px;
+      border-radius: 999px;
+      background: var(--gris-claro);
+      overflow: hidden;
+    }
+
+    .barra-pueblo span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--color-tienda);
+      transition: width 0.3s;
+    }
+
+    .fila-pueblo .numero { text-align: right; font-weight: 800; }
+
+    .fila-pueblo.tienda-baena { --color-tienda: var(--color-baena); }
+    .fila-pueblo.tienda-luque { --color-tienda: var(--color-luque); }
+    .fila-pueblo.tienda-zuheros { --color-tienda: var(--color-zuheros); }
+    .fila-pueblo.tienda-dona-mencia { --color-tienda: var(--color-dona-mencia); }
+    .fila-pueblo.tienda-sin-tienda { --color-tienda: var(--color-sin-tienda); }
+
+    /* ---------- Copia de seguridad ---------- */
+    .botones-copia { display: grid; gap: 8px; }
+
+    .resultado-copia { font-size: 0.95rem; margin: 10px 0 0; }
     .resultado-copia:empty { display: none; }
 
     .recordatorio-copia {
       display: block;
-      margin-top: 10px;
+      margin-top: 12px;
       padding: 8px 10px;
-      border-radius: 8px;
-      background: #ffd54f;
+      border-radius: 10px;
+      background: var(--dorado);
       color: #3b2f00;
-      font-weight: 600;
+      font-weight: 700;
       text-decoration: none;
     }
-
-    .recordatorio-copia[hidden] { display: none; }
 
     @media (min-width: 480px) {
       .fila-doble {
@@ -532,120 +967,186 @@
 </head>
 <body>
 
-  <header id="cabecera">
-    <h1>Encargos de Navidad</h1>
-    <p>Pescadería · Baena · Luque · Zuheros · Doña Mencía</p>
+  <header class="app-header" id="cabecera">
+    <div class="titulo-app">
+      <span class="logo" aria-hidden="true">🎄</span>
+      <div>
+        <h1>Encargos de Navidad</h1>
+        <p>Pescadería · 4 tiendas</p>
+      </div>
+    </div>
+    <div class="cuenta-chip" id="cuenta-chip"></div>
   </header>
 
   <main>
 
-    <section class="navidad" aria-labelledby="titulo-navidad">
-      <h2 id="titulo-navidad">🎄 Modo Navidad</h2>
-      <p class="cuenta-atras" id="cuenta-atras"></p>
-      <div class="cifras">
-        <div class="cifra"><span class="valor" id="n-encargos">0</span><span class="texto">encargos</span></div>
-        <div class="cifra"><span class="valor" id="n-kg">0</span><span class="texto">kg encargados</span></div>
-        <div class="cifra"><span class="valor" id="n-hoy">0</span><span class="texto">por recoger hoy</span></div>
-        <div class="cifra"><span class="valor" id="n-senal">0</span><span class="texto">con señal pagada</span></div>
+    <!-- ==================== PESTAÑA: ENCARGOS ==================== -->
+    <section class="pagina" id="pagina-encargos" role="tabpanel" aria-labelledby="tab-encargos">
+      <h2 class="solo-lectores" id="titulo-lista">Encargos <span id="contador" hidden>0</span></h2>
+
+      <div class="buscador">
+        <input type="search" id="buscar" placeholder="Buscar nombre, teléfono o producto" aria-label="Buscar encargos" autocomplete="off">
       </div>
-      <p class="top-productos" id="top-productos"></p>
-      <a class="recordatorio-copia" id="recordatorio-copia" href="#copia" hidden></a>
-    </section>
 
-    <section class="tarjeta" aria-labelledby="titulo-dictado">
-      <h2 id="titulo-dictado">Dictar encargo</h2>
-      <div class="dictado">
-        <button type="button" class="boton-voz" id="btn-voz">🎤 Dictar encargo</button>
-        <p class="dictado-ejemplo">Di los datos en el orden que quieras y toca otra vez el botón al terminar. Ejemplo: «Tres kilos de boquerones gordos y cinco de bacaladilla para Juan Pérez este jueves en Luque, señal pagada»</p>
-        <div class="dictado-resultado" id="dictado-resultado" aria-live="polite"></div>
+      <div class="etiqueta-chips">Cuándo</div>
+      <div class="fila-chips" id="filtros-cuando" role="group" aria-label="Filtrar por fecha"></div>
+      <div class="etiqueta-chips">Pueblo</div>
+      <div class="fila-chips" id="filtros-pueblo" role="group" aria-label="Filtrar por pueblo"></div>
+      <div class="etiqueta-chips">Estado</div>
+      <div class="fila-chips" id="filtros-estado" role="group" aria-label="Filtrar por estado"></div>
+
+      <div class="resumen-filtros">
+        <span id="texto-resultados"></span>
+        <button type="button" class="boton-enlace" id="btn-quitar-filtros" hidden>Quitar filtros</button>
       </div>
-    </section>
 
-    <details class="tarjeta desplegable" id="seccion-form">
-      <summary><span id="titulo-form">✍️ Nuevo encargo a mano</span></summary>
-      <div class="contenido-desplegable">
-      <p class="ayuda" id="ayuda-form">Los campos marcados con * son obligatorios.</p>
-
-      <form id="formulario" novalidate>
-
-        <div class="campo">
-          <label class="etiqueta" for="nombre">Nombre del cliente *</label>
-          <input type="text" id="nombre" name="nombre" autocomplete="off">
-          <p class="error" id="error-nombre" aria-live="polite"></p>
-        </div>
-
-        <div class="campo">
-          <label class="etiqueta" for="telefono">Teléfono</label>
-          <input type="tel" id="telefono" name="telefono" autocomplete="off">
-        </div>
-
-        <div class="campo">
-          <label class="etiqueta" for="tienda">Tienda *</label>
-          <select id="tienda" name="tienda">
-            <option value="">— Sin indicar —</option>
-            <option value="Baena" selected>Baena</option>
-            <option value="Luque">Luque</option>
-            <option value="Zuheros">Zuheros</option>
-            <option value="Doña Mencía">Doña Mencía</option>
-          </select>
-          <p class="error" id="error-tienda" aria-live="polite"></p>
-        </div>
-
-        <div class="campo">
-          <span class="etiqueta" id="etiqueta-productos">Productos *</span>
-          <div id="lineas-productos" aria-labelledby="etiqueta-productos"></div>
-          <button type="button" class="boton-secundario boton-anadir" id="btn-anadir-producto">+ Añadir otro producto</button>
-          <p class="error" id="error-productos" aria-live="polite"></p>
-        </div>
-
-        <div class="campo">
-          <label class="etiqueta" for="fecha">Fecha de recogida *</label>
-          <input type="date" id="fecha" name="fecha">
-          <p class="error" id="error-fecha" aria-live="polite"></p>
-        </div>
-
-        <div class="campo">
-          <label class="casilla" for="senal">
-            <input type="checkbox" id="senal" name="senal">
-            Señal pagada
-          </label>
-        </div>
-
-        <button type="submit" id="btn-guardar">Guardar encargo</button>
-        <button type="button" id="btn-cancelar-edicion" class="boton-secundario" hidden>Cancelar edición</button>
-        <p class="aviso" id="aviso" role="status"></p>
-      </form>
-      </div>
-    </details>
-
-    <section aria-labelledby="titulo-lista">
-      <h2 id="titulo-lista">Encargos (<span id="contador">0</span>)</h2>
-      <p class="vacio" id="vacio">Todavía no hay encargos guardados.</p>
-      <div class="barra" id="barra">
-        <button type="button" id="btn-borrar" disabled>Borrar seleccionados (0)</button>
-        <span id="confirmacion" hidden>
-          <span class="confirmacion-borrado">¿Borrar los seleccionados?</span>
-          <button type="button" id="btn-confirmar-borrar">Sí, borrar</button>
-          <button type="button" id="btn-cancelar-borrar" class="boton-secundario">Cancelar</button>
-        </span>
-      </div>
+      <div class="vacio" id="vacio" hidden></div>
       <ul class="lista" id="lista"></ul>
     </section>
 
-    <section class="tarjeta" id="copia" aria-labelledby="titulo-copia">
-      <h2 id="titulo-copia">💾 Copia de seguridad</h2>
-      <p class="ayuda" id="estado-copia"></p>
-      <div class="botones-copia">
-        <button type="button" id="btn-enviar-copia" hidden>📤 Enviar copia (WhatsApp, correo, Drive…)</button>
-        <button type="button" id="btn-descargar-copia" class="boton-secundario">⬇️ Descargar archivo de copia</button>
-        <button type="button" id="btn-restaurar-copia" class="boton-secundario">⬆️ Restaurar desde una copia</button>
-        <input type="file" id="archivo-copia" accept=".json,application/json,text/plain" hidden>
-      </div>
-      <p class="resultado-copia" id="resultado-copia" role="status"></p>
+    <!-- ==================== PESTAÑA: NUEVO ==================== -->
+    <section class="pagina" id="pagina-nuevo" role="tabpanel" aria-labelledby="tab-nuevo" hidden>
+      <h2 class="titulo-pagina">Nuevo encargo</h2>
+
+      <section class="tarjeta" aria-labelledby="titulo-dictado">
+        <h2 id="titulo-dictado">🎤 Dictar encargo</h2>
+        <div class="dictado">
+          <button type="button" class="boton-voz" id="btn-voz" aria-label="Empezar a dictar">🎤</button>
+          <p class="estado-voz" id="estado-voz">Toca para dictar</p>
+          <p class="dictado-ejemplo">Di los datos en el orden que quieras y vuelve a tocar al terminar. Ejemplo: «Tres kilos de boquerones gordos y cinco de bacaladilla para Juan Pérez este jueves en Luque, señal pagada»</p>
+          <div class="dictado-resultado" id="dictado-resultado" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <details class="tarjeta desplegable" id="seccion-form">
+        <summary><span id="titulo-form">✍️ Nuevo encargo a mano</span></summary>
+        <div class="contenido-desplegable">
+        <p class="ayuda" id="ayuda-form">Los campos marcados con * son obligatorios.</p>
+
+        <form id="formulario" novalidate>
+
+          <div class="campo">
+            <label class="etiqueta" for="nombre">Nombre del cliente *</label>
+            <input type="text" id="nombre" name="nombre" autocomplete="off">
+            <p class="error" id="error-nombre" aria-live="polite"></p>
+          </div>
+
+          <div class="campo">
+            <label class="etiqueta" for="telefono">Teléfono</label>
+            <input type="tel" id="telefono" name="telefono" autocomplete="off">
+          </div>
+
+          <div class="campo">
+            <label class="etiqueta" for="tienda">Tienda *</label>
+            <select id="tienda" name="tienda">
+              <option value="">— Sin indicar —</option>
+              <option value="Baena" selected>Baena</option>
+              <option value="Luque">Luque</option>
+              <option value="Zuheros">Zuheros</option>
+              <option value="Doña Mencía">Doña Mencía</option>
+            </select>
+            <p class="error" id="error-tienda" aria-live="polite"></p>
+          </div>
+
+          <div class="campo">
+            <span class="etiqueta" id="etiqueta-productos">Productos *</span>
+            <div id="lineas-productos" aria-labelledby="etiqueta-productos"></div>
+            <button type="button" class="boton-secundario boton-anadir" id="btn-anadir-producto">+ Añadir otro producto</button>
+            <p class="error" id="error-productos" aria-live="polite"></p>
+          </div>
+
+          <div class="campo">
+            <label class="etiqueta" for="fecha">Fecha de recogida *</label>
+            <input type="date" id="fecha" name="fecha">
+            <p class="error" id="error-fecha" aria-live="polite"></p>
+          </div>
+
+          <div class="campo">
+            <label class="casilla" for="senal">
+              <input type="checkbox" id="senal" name="senal">
+              Señal pagada
+            </label>
+          </div>
+
+          <button type="submit" id="btn-guardar">Guardar encargo</button>
+          <button type="button" id="btn-cancelar-edicion" class="boton-secundario" hidden>Cancelar edición</button>
+          <p class="aviso" id="aviso" role="status"></p>
+        </form>
+        </div>
+      </details>
+    </section>
+
+    <!-- ==================== PESTAÑA: RESUMEN ==================== -->
+    <section class="pagina" id="pagina-resumen" role="tabpanel" aria-labelledby="tab-resumen" hidden>
+      <h2 class="titulo-pagina">Resumen</h2>
+
+      <section class="navidad" aria-labelledby="titulo-navidad">
+        <h2 id="titulo-navidad">🎄 Modo Navidad</h2>
+        <p class="cuenta-atras" id="cuenta-atras"></p>
+        <div class="cifras">
+          <div class="cifra"><span class="valor" id="n-encargos">0</span><span class="texto">encargos esta temporada</span></div>
+          <div class="cifra"><span class="valor" id="n-kg">0</span><span class="texto">kg encargados</span></div>
+          <div class="cifra"><span class="valor" id="n-hoy">0</span><span class="texto">por recoger hoy</span></div>
+          <div class="cifra" id="cifra-atrasados"><span class="valor" id="n-atrasados">0</span><span class="texto">atrasados</span></div>
+          <div class="cifra"><span class="valor" id="n-preparados">0</span><span class="texto">preparados</span></div>
+          <div class="cifra"><span class="valor" id="n-senal">0</span><span class="texto">con señal pagada</span></div>
+        </div>
+        <p class="top-productos" id="top-productos"></p>
+        <a class="recordatorio-copia" id="recordatorio-copia" href="#copia" hidden></a>
+      </section>
+
+      <section class="tarjeta" aria-labelledby="titulo-pueblos">
+        <h2 id="titulo-pueblos">📍 Encargos por pueblo</h2>
+        <div class="por-pueblo" id="por-pueblo"></div>
+        <p class="ayuda" style="margin: 10px 0 0;">Encargos activos: pendientes y preparados.</p>
+      </section>
+
+      <section class="tarjeta" id="copia" aria-labelledby="titulo-copia">
+        <h2 id="titulo-copia">💾 Copia de seguridad</h2>
+        <p class="ayuda" id="estado-copia"></p>
+        <div class="botones-copia">
+          <button type="button" id="btn-enviar-copia" hidden>📤 Enviar copia (WhatsApp, correo, Drive…)</button>
+          <button type="button" id="btn-descargar-copia" class="boton-secundario">⬇️ Descargar archivo de copia</button>
+          <button type="button" id="btn-restaurar-copia" class="boton-secundario">⬆️ Restaurar desde una copia</button>
+          <input type="file" id="archivo-copia" accept=".json,application/json,text/plain" hidden>
+        </div>
+        <p class="resultado-copia" id="resultado-copia" role="status"></p>
+      </section>
     </section>
 
   </main>
 
+  <!-- Barra que aparece al seleccionar encargos -->
+  <div class="barra" id="barra" hidden>
+    <span class="texto-barra" id="texto-barra"></span>
+    <button type="button" class="boton-claro" id="btn-quitar-seleccion">Quitar</button>
+    <button type="button" id="btn-borrar">🗑 Borrar</button>
+    <span id="confirmacion" hidden>
+      <span class="confirmacion-borrado" id="texto-confirmacion"></span>
+      <button type="button" id="btn-confirmar-borrar">Sí, borrar</button>
+      <button type="button" id="btn-cancelar-borrar" class="boton-claro">No</button>
+    </span>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <!-- Pestañas -->
+  <nav class="pestanas" role="tablist" aria-label="Secciones">
+    <button type="button" class="pestana" role="tab" id="tab-encargos" data-pagina="encargos" aria-controls="pagina-encargos" aria-selected="true">
+      <span class="icono" aria-hidden="true">📋</span>
+      <span>Encargos</span>
+      <span class="insignia" id="insignia-encargos" hidden></span>
+    </button>
+    <button type="button" class="pestana pestana-central" role="tab" id="tab-nuevo" data-pagina="nuevo" aria-controls="pagina-nuevo" aria-selected="false">
+      <span class="icono" aria-hidden="true">🎤</span>
+      <span>Nuevo</span>
+    </button>
+    <button type="button" class="pestana" role="tab" id="tab-resumen" data-pagina="resumen" aria-controls="pagina-resumen" aria-selected="false">
+      <span class="icono" aria-hidden="true">🎄</span>
+      <span>Resumen</span>
+      <span class="insignia punto" id="insignia-resumen" hidden></span>
+    </button>
+  </nav>
   <script>
     // =====================================================
     // CONFIGURACIÓN Y ELEMENTOS
@@ -934,6 +1435,7 @@
       btnGuardar.textContent = 'Guardar cambios';
       btnCancelarEdicion.hidden = false;
       mostrarAviso('');
+      mostrarPestana('nuevo'); // el formulario está en la pestaña Nuevo
       const seccionForm = document.getElementById('seccion-form');
       seccionForm.open = true; // abre el desplegable para editar
       seccionForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -952,15 +1454,18 @@
     btnCancelarEdicion.addEventListener('click', () => {
       salirEdicion();
       mostrarAviso('');
+      mostrarPestana('encargos');
     });
 
-    // Marca un momento en amarillo una tarjeta de la lista y la enseña
+    // Marca un momento en amarillo una tarjeta de la lista y la enseña.
+    // Devuelve false si con los filtros actuales no se ve.
     function resaltarEncargo(id) {
       const tarjeta = lista.querySelector('li.encargo[data-id="' + CSS.escape(id) + '"]');
-      if (!tarjeta) return;
+      if (!tarjeta) return false;
       tarjeta.classList.add('resaltado');
       tarjeta.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setTimeout(() => tarjeta.classList.remove('resaltado'), 2500);
+      return true;
     }
 
     formulario.addEventListener('submit', (evento) => {
@@ -1034,9 +1539,11 @@
         }
         const id = idEditando;
         salirEdicion();
+        mostrarPestana('encargos');
         pintarLista();
-        mostrarAviso('✅ Cambios guardados.', true);
-        resaltarEncargo(id);
+        mostrarToast(resaltarEncargo(id)
+          ? '✅ Cambios guardados.'
+          : '✅ Cambios guardados. Con los filtros actuales ese encargo no se ve.');
         return;
       }
 
@@ -1066,8 +1573,178 @@
     });
 
     // =====================================================
-    // LISTA DE ENCARGOS
+    // PESTAÑAS
     // =====================================================
+    const PAGINAS = ['encargos', 'nuevo', 'resumen'];
+
+    function mostrarPestana(nombre) {
+      if (!PAGINAS.includes(nombre)) return;
+      PAGINAS.forEach((p) => {
+        document.getElementById('pagina-' + p).hidden = p !== nombre;
+        document.getElementById('tab-' + p).setAttribute('aria-selected', String(p === nombre));
+      });
+      window.scrollTo(0, 0);
+    }
+
+    document.querySelectorAll('.pestana').forEach((tab) => {
+      tab.addEventListener('click', () => mostrarPestana(tab.dataset.pagina));
+    });
+
+    // ---------- Aviso flotante (abajo, unos segundos) ----------
+    let temporizadorToast = null;
+
+    function mostrarToast(texto) {
+      const toast = document.getElementById('toast');
+      toast.textContent = texto;
+      toast.hidden = false;
+      clearTimeout(temporizadorToast);
+      temporizadorToast = setTimeout(() => { toast.hidden = true; }, 3500);
+    }
+
+    // =====================================================
+    // LISTA DE ENCARGOS: FILTROS Y GRUPOS POR DÍA
+    // =====================================================
+    // Por defecto se ven los activos (pendientes y preparados)
+    const FILTROS_INICIALES = { cuando: 'todos', pueblo: 'todos', estado: 'activos', texto: '' };
+    const filtros = Object.assign({}, FILTROS_INICIALES);
+
+    const OPCIONES_CUANDO = [
+      { valor: 'todos', texto: 'Todos' },
+      { valor: 'hoy', texto: 'Hoy' },
+      { valor: 'manana', texto: 'Mañana' },
+      { valor: 'atrasados', texto: '⏰ Atrasados', alerta: true },
+      { valor: 'sinfecha', texto: 'Sin fecha' }
+    ];
+
+    const OPCIONES_ESTADO = [
+      { valor: 'activos', texto: 'Activos' },
+      { valor: 'Pendiente', texto: 'Pendientes' },
+      { valor: 'Preparado', texto: 'Preparados' },
+      { valor: 'Recogido', texto: 'Recogidos' },
+      { valor: 'Cancelado', texto: 'Cancelados' },
+      { valor: 'todos', texto: 'Todos' }
+    ];
+
+    // "Doña Mencía" -> "tienda-dona-mencia" (para el color del pueblo)
+    function claseDeTienda(tienda) {
+      return TIENDAS.includes(tienda)
+        ? 'tienda-' + normalizar(tienda).replace(/\s+/g, '-')
+        : 'tienda-sin-tienda';
+    }
+
+    function fechasClave() {
+      const hoy = hoyAMedianoche();
+      return { hoy: aIso(hoy), manana: aIso(sumarDias(hoy, 1)) };
+    }
+
+    // Atrasado: la fecha ya pasó y no se ha recogido ni cancelado
+    function esAtrasado(e, hoyTexto) {
+      return !!e.fechaRecogida && e.fechaRecogida < hoyTexto &&
+        (e.estado === 'Pendiente' || e.estado === 'Preparado');
+    }
+
+    // "2026-12-24" -> "jueves 24/12" (con el año si no es el actual)
+    function formatearFechaDia(fechaIso) {
+      const [anio, mes, dia] = fechaIso.split('-').map(Number);
+      const diaSemana = DIAS_SEMANA_TEXTO[new Date(anio, mes - 1, dia).getDay()];
+      const base = diaSemana + ' ' + String(dia).padStart(2, '0') + '/' + String(mes).padStart(2, '0');
+      return anio === new Date().getFullYear() ? base : base + '/' + anio;
+    }
+
+    function textoBusqueda(e) {
+      return normalizar([e.nombre, e.telefono, e.tienda].concat(e.productos.map((p) => p.producto)).join(' '));
+    }
+
+    // ¿Cumple el encargo los filtros? "omitir" ignora una dimensión (sirve para contar)
+    function cumpleFiltros(e, f, fechas, omitir) {
+      if (omitir !== 'cuando') {
+        if (f.cuando === 'hoy' && e.fechaRecogida !== fechas.hoy) return false;
+        if (f.cuando === 'manana' && e.fechaRecogida !== fechas.manana) return false;
+        if (f.cuando === 'atrasados' && !esAtrasado(e, fechas.hoy)) return false;
+        if (f.cuando === 'sinfecha' && e.fechaRecogida) return false;
+      }
+      if (omitir !== 'pueblo' && f.pueblo !== 'todos') {
+        const pueblo = TIENDAS.includes(e.tienda) ? e.tienda : 'sin';
+        if (pueblo !== f.pueblo) return false;
+      }
+      if (omitir !== 'estado') {
+        if (f.estado === 'activos' && e.estado !== 'Pendiente' && e.estado !== 'Preparado') return false;
+        if (ESTADOS.includes(f.estado) && e.estado !== f.estado) return false;
+      }
+      if (f.texto.trim()) {
+        const palabrasBuscadas = normalizar(f.texto).split(/\s+/).filter(Boolean);
+        const texto = textoBusqueda(e);
+        const coincideTexto = palabrasBuscadas.every((p) => texto.includes(p));
+        const digitos = f.texto.replace(/\D/g, '');
+        const coincideTelefono = digitos.length >= 3 && e.telefono.replace(/\D/g, '').includes(digitos);
+        if (!coincideTexto && !coincideTelefono) return false;
+      }
+      return true;
+    }
+
+    // Cuántos encargos saldrían al pulsar ese filtro
+    function contarCon(dimension, valor, fechas) {
+      const f = Object.assign({}, filtros, { [dimension]: valor });
+      return encargos.filter((e) => cumpleFiltros(e, f, fechas)).length;
+    }
+
+    function htmlChip(dimension, opcion, fechas, claseExtra) {
+      const n = contarCon(dimension, opcion.valor, fechas);
+      const activo = filtros[dimension] === opcion.valor;
+      const clases = ['chip', activo ? 'activo' : '', opcion.alerta && n > 0 ? 'chip-alerta' : '', claseExtra || '']
+        .filter(Boolean).join(' ');
+      return '<button type="button" class="' + clases + '" data-filtro="' + dimension + '" data-valor="' +
+        escaparHtml(opcion.valor) + '" aria-pressed="' + activo + '">' +
+        (opcion.punto ? '<span class="punto-color"></span>' : '') +
+        escaparHtml(opcion.texto) + ' <span class="cuenta">' + n + '</span></button>';
+    }
+
+    function pintarFila(idFila, html) {
+      const fila = document.getElementById(idFila);
+      const desplazamiento = fila.scrollLeft;
+      fila.innerHTML = html;
+      fila.scrollLeft = desplazamiento;
+    }
+
+    function pintarFiltros(fechas) {
+      pintarFila('filtros-cuando', OPCIONES_CUANDO.map((o) => htmlChip('cuando', o, fechas)).join(''));
+
+      const opcionesPueblo = [{ valor: 'todos', texto: 'Todos' }]
+        .concat(TIENDAS.map((t) => ({ valor: t, texto: t, punto: true })));
+      if (encargos.some((e) => !TIENDAS.includes(e.tienda)) || filtros.pueblo === 'sin') {
+        opcionesPueblo.push({ valor: 'sin', texto: 'Sin pueblo', punto: true });
+      }
+      pintarFila('filtros-pueblo', opcionesPueblo.map((o) =>
+        htmlChip('pueblo', o, fechas, o.valor === 'todos' ? '' : claseDeTienda(o.valor === 'sin' ? '' : o.valor))
+      ).join(''));
+
+      pintarFila('filtros-estado', OPCIONES_ESTADO.map((o) => htmlChip('estado', o, fechas)).join(''));
+    }
+
+    ['filtros-cuando', 'filtros-pueblo', 'filtros-estado'].forEach((idFila) => {
+      document.getElementById(idFila).addEventListener('click', (evento) => {
+        const chip = evento.target.closest('.chip');
+        if (!chip) return;
+        filtros[chip.dataset.filtro] = chip.dataset.valor;
+        seleccionados.clear(); // evita borrar encargos que ya no se ven
+        pintarLista();
+      });
+    });
+
+    const buscar = document.getElementById('buscar');
+    buscar.addEventListener('input', () => {
+      filtros.texto = buscar.value;
+      seleccionados.clear();
+      pintarLista();
+    });
+
+    document.getElementById('btn-quitar-filtros').addEventListener('click', () => {
+      Object.assign(filtros, FILTROS_INICIALES);
+      buscar.value = '';
+      seleccionados.clear();
+      pintarLista();
+    });
+
     // Ordena por fecha de recogida; los que no tienen fecha van al final
     function ordenarPorRecogida(lista) {
       return [...lista].sort((a, b) =>
@@ -1076,32 +1753,58 @@
       );
     }
 
-    function pintarEncargo(e) {
+    // Grupos: primero los atrasados, luego un grupo por día y al final los que no tienen fecha
+    function agruparPorDia(visibles, fechas) {
+      const grupos = [];
+      const atrasados = visibles.filter((e) => esAtrasado(e, fechas.hoy));
+      if (atrasados.length) grupos.push({ titulo: '⏰ Atrasados', clase: 'atrasados', encargos: atrasados });
+
+      const porFecha = new Map();
+      const sinFecha = [];
+      visibles.forEach((e) => {
+        if (esAtrasado(e, fechas.hoy)) return;
+        if (!e.fechaRecogida) {
+          sinFecha.push(e);
+          return;
+        }
+        if (!porFecha.has(e.fechaRecogida)) porFecha.set(e.fechaRecogida, []);
+        porFecha.get(e.fechaRecogida).push(e);
+      });
+
+      [...porFecha.keys()].sort().forEach((f) => {
+        let titulo = formatearFechaDia(f);
+        if (f === fechas.hoy) titulo = 'Hoy · ' + titulo;
+        else if (f === fechas.manana) titulo = 'Mañana · ' + titulo;
+        grupos.push({ titulo, clase: f === fechas.hoy ? 'hoy' : '', encargos: porFecha.get(f) });
+      });
+
+      if (sinFecha.length) grupos.push({ titulo: 'Sin fecha', clase: '', encargos: sinFecha });
+      return grupos;
+    }
+
+    function pintarEncargo(e, fechas) {
       const nombre = e.nombre
         ? escaparHtml(e.nombre)
         : '<span class="sin-dato">Cliente sin nombre</span>';
-      const fecha = e.fechaRecogida
-        ? formatearFecha(e.fechaRecogida)
-        : '<span class="sin-dato">Sin fecha</span>';
       const productos = e.productos.map((p) =>
         '<li><strong>' + textoCantidad(p) + '</strong> · ' + escaparHtml(p.producto) + '</li>'
       ).join('');
-      const telefono = e.telefono ? escaparHtml(e.telefono) : '—';
-      // Clase de color del pueblo: "Doña Mencía" -> "dona-mencia"
-      const claseTienda = TIENDAS.includes(e.tienda)
-        ? 'tienda-' + normalizar(e.tienda).replace(/\s+/g, '-')
-        : 'tienda-sin-tienda';
       const pueblo = TIENDAS.includes(e.tienda)
         ? '📍 ' + escaparHtml(e.tienda)
         : '📍 Sin tienda' + (e.tienda ? ' (' + escaparHtml(e.tienda) + ')' : '');
+      const telefono = e.telefono
+        ? '<a href="tel:' + escaparHtml(e.telefono.replace(/[^\d+]/g, '')) + '">📞 ' + escaparHtml(e.telefono) + '</a>'
+        : '<span>📞 —</span>';
       const senal = e.senalPagada
-        ? '<span class="senal-si">Sí</span>'
-        : '<span class="senal-no">No</span>';
+        ? '<span class="senal-si">💶 Señal pagada</span>'
+        : '<span class="senal-no">💶 Sin señal</span>';
+      const atrasado = esAtrasado(e, fechas.hoy);
       const faltan = datosQueFaltan(e);
       const id = escaparHtml(e.id);
       const estadoActual = ESTADOS.includes(e.estado) ? e.estado : 'Pendiente';
 
       const etiquetas = [];
+      if (atrasado) etiquetas.push('<span class="etiqueta-atrasado">⏰ Atrasado: era el ' + formatearFechaDia(e.fechaRecogida) + '</span>');
       if (faltan.length) etiquetas.push('<span class="etiqueta-falta">⚠️ Falta: ' + faltan.join(', ') + '</span>');
       if (e.origen === 'voz') etiquetas.push('<span class="etiqueta-voz">🎤 Dictado</span>');
 
@@ -1111,22 +1814,19 @@
       ).join('');
 
       return `
-        <li class="encargo estado-${estadoActual.toLowerCase()} ${claseTienda}" data-id="${id}">
+        <li class="encargo estado-${estadoActual.toLowerCase()} ${claseDeTienda(e.tienda)}${atrasado ? ' atrasado' : ''}" data-id="${id}">
           <div class="fila-acciones">
-            <label class="fila-seleccion">
-              <input type="checkbox" class="seleccion" data-id="${id}" ${seleccionados.has(e.id) ? 'checked' : ''}>
-              Seleccionar para borrar
+            <label class="fila-seleccion" title="Seleccionar para borrar">
+              <input type="checkbox" class="seleccion" data-id="${id}" aria-label="Seleccionar para borrar" ${seleccionados.has(e.id) ? 'checked' : ''}>
             </label>
+            <span class="pueblo">${pueblo}</span>
             <button type="button" class="boton-secundario boton-editar" data-id="${id}">✏️ Editar</button>
           </div>
-          <span class="pueblo">${pueblo}</span>
           <div class="encargo-cabecera">
             <strong>${nombre}</strong>
-            <span class="fecha">${fecha}</span>
           </div>
           <ul class="productos-encargo">${productos}</ul>
-          <p class="encargo-detalle">Tel: ${telefono}</p>
-          <p class="encargo-detalle">Señal pagada: ${senal}</p>
+          <p class="meta">${telefono}${senal}</p>
           ${etiquetas.length ? '<div class="etiquetas">' + etiquetas.join('') + '</div>' : ''}
           <div class="estados" role="group" aria-label="Estado del encargo">${botonesEstado}</div>
         </li>
@@ -1134,9 +1834,43 @@
     }
 
     function pintarLista() {
-      lista.innerHTML = ordenarPorRecogida(encargos).map(pintarEncargo).join('');
+      const fechas = fechasClave();
+      pintarFiltros(fechas);
+
+      const visibles = ordenarPorRecogida(encargos.filter((e) => cumpleFiltros(e, filtros, fechas)));
+      const grupos = agruparPorDia(visibles, fechas);
+
+      lista.innerHTML = grupos.map((g) =>
+        '<li class="grupo-dia"><h3 class="cabecera-dia ' + g.clase + '">' + escaparHtml(capitalizar(g.titulo)) +
+        ' <span class="cuenta-dia">' + g.encargos.length + (g.encargos.length === 1 ? ' encargo' : ' encargos') + '</span></h3>' +
+        '<ul class="lista-dia">' + g.encargos.map((e) => pintarEncargo(e, fechas)).join('') + '</ul></li>'
+      ).join('');
+
       contador.textContent = encargos.length;
-      vacio.hidden = encargos.length > 0;
+
+      const filtrosCambiados = Object.keys(FILTROS_INICIALES).some((k) => filtros[k] !== FILTROS_INICIALES[k]);
+      document.getElementById('btn-quitar-filtros').hidden = !filtrosCambiados;
+      document.getElementById('texto-resultados').textContent = encargos.length
+        ? 'Mostrando ' + visibles.length + ' de ' + encargos.length + (encargos.length === 1 ? ' encargo' : ' encargos')
+        : '';
+
+      if (!encargos.length) {
+        vacio.innerHTML = '<span class="grande">🎄</span>Todavía no hay encargos.<br>Toca <strong>🎤 Nuevo</strong> para dictar el primero.';
+        vacio.hidden = false;
+      } else if (!visibles.length) {
+        vacio.innerHTML = '<span class="grande">🔍</span>No hay encargos con estos filtros.' +
+          (filtros.estado === 'activos' ? '<br>Los recogidos y cancelados están en el filtro «Estado».' : '');
+        vacio.hidden = false;
+      } else {
+        vacio.hidden = true;
+      }
+
+      // Número rojo en la pestaña Encargos si hay atrasados
+      const nAtrasados = encargos.filter((e) => esAtrasado(e, fechas.hoy)).length;
+      const insignia = document.getElementById('insignia-encargos');
+      insignia.textContent = nAtrasados;
+      insignia.hidden = nAtrasados === 0;
+
       actualizarBarra();
       actualizarNavidad();
       actualizarEstadoCopia();
@@ -1151,10 +1885,15 @@
       e.fechaModificacion = new Date().toISOString();
       if (!guardarEncargos()) {
         Object.assign(e, anterior);
-        mostrarAviso('No se pudo cambiar el estado. Inténtalo de nuevo.');
+        mostrarToast('No se pudo cambiar el estado. Inténtalo de nuevo.');
         return;
       }
       pintarLista();
+      // Si con los filtros actuales ya no se ve, se dice dónde está
+      if (!lista.querySelector('li.encargo[data-id="' + CSS.escape(id) + '"]')) {
+        const filtro = OPCIONES_ESTADO.find((o) => o.valor === estado).texto;
+        mostrarToast((e.nombre || 'Encargo') + ': ' + estado.toLowerCase() + '. Lo verás en Estado → ' + filtro + '.');
+      }
     }
 
     lista.addEventListener('click', (evento) => {
@@ -1168,25 +1907,41 @@
     });
 
     // ---------- Selección y borrado ----------
+    const barra = document.getElementById('barra');
+    const PARTES_BARRA = ['texto-barra', 'btn-quitar-seleccion', 'btn-borrar'];
+
     function actualizarBarra() {
       const n = seleccionados.size;
-      btnBorrar.textContent = 'Borrar seleccionados (' + n + ')';
-      btnBorrar.disabled = n === 0;
-      if (n === 0) confirmacion.hidden = true;
+      barra.hidden = n === 0;
+      document.getElementById('texto-barra').textContent = n + (n === 1 ? ' seleccionado' : ' seleccionados');
+      if (n === 0) cerrarConfirmacion();
+    }
+
+    function abrirConfirmacion() {
+      const n = seleccionados.size;
+      document.getElementById('texto-confirmacion').textContent = '¿Borrar ' + n + (n === 1 ? ' encargo?' : ' encargos?');
+      PARTES_BARRA.forEach((id) => { document.getElementById(id).hidden = true; });
+      confirmacion.hidden = false;
+    }
+
+    function cerrarConfirmacion() {
+      confirmacion.hidden = true;
+      PARTES_BARRA.forEach((id) => { document.getElementById(id).hidden = false; });
     }
 
     function borrarSeleccionados() {
+      const n = seleccionados.size;
       const anterior = encargos;
       encargos = encargos.filter((e) => !seleccionados.has(e.id));
       if (!guardarEncargos()) {
         encargos = anterior;
-        aviso.textContent = 'No se pudo actualizar la lista. Inténtalo de nuevo.';
+        mostrarToast('No se pudo borrar. Inténtalo de nuevo.');
         return;
       }
       if (idEditando && seleccionados.has(idEditando)) salirEdicion();
       seleccionados.clear();
-      confirmacion.hidden = true;
       pintarLista();
+      mostrarToast('🗑 ' + (n === 1 ? 'Borrado 1 encargo.' : 'Borrados ' + n + ' encargos.'));
     }
 
     lista.addEventListener('change', (evento) => {
@@ -1197,14 +1952,19 @@
       actualizarBarra();
     });
 
-    btnBorrar.addEventListener('click', () => { confirmacion.hidden = false; });
+    btnBorrar.addEventListener('click', abrirConfirmacion);
     document.getElementById('btn-confirmar-borrar').addEventListener('click', borrarSeleccionados);
-    document.getElementById('btn-cancelar-borrar').addEventListener('click', () => { confirmacion.hidden = true; });
+    document.getElementById('btn-cancelar-borrar').addEventListener('click', cerrarConfirmacion);
+    document.getElementById('btn-quitar-seleccion').addEventListener('click', () => {
+      seleccionados.clear();
+      pintarLista();
+    });
 
     // =====================================================
-    // MODO NAVIDAD
+    // RESUMEN: MODO NAVIDAD
     // =====================================================
-    function textoCuentaAtras(hoy) {
+    // Próxima fecha señalada: Nochebuena, Nochevieja o Reyes
+    function proximaFechaSenalada(hoy) {
       const anio = hoy.getFullYear();
       const candidatas = [];
       [anio, anio + 1].forEach((a) => {
@@ -1214,11 +1974,20 @@
       });
       candidatas.sort((x, y) => x.fecha - y.fecha);
       const proxima = candidatas.find((c) => c.fecha >= hoy);
-      const dias = Math.round((proxima.fecha - hoy) / 86400000);
+      return { nombre: proxima.nombre, dias: Math.round((proxima.fecha - hoy) / 86400000) };
+    }
 
-      if (dias === 0) return '¡Hoy es ' + proxima.nombre + '! 🎅';
-      if (dias === 1) return 'Falta <span class="dias">1</span> día para ' + proxima.nombre;
-      return 'Faltan <span class="dias">' + dias + '</span> días para ' + proxima.nombre;
+    function textoCuentaAtras(hoy) {
+      const { nombre, dias } = proximaFechaSenalada(hoy);
+      if (dias === 0) return '¡Hoy es ' + nombre + '! 🎅';
+      if (dias === 1) return 'Falta <span class="dias">1</span> día para ' + nombre;
+      return 'Faltan <span class="dias">' + dias + '</span> días para ' + nombre;
+    }
+
+    function textoChipCuentaAtras(hoy) {
+      const { nombre, dias } = proximaFechaSenalada(hoy);
+      if (dias === 0) return '<strong>¡Hoy!</strong>' + nombre + ' 🎅';
+      return '<strong>' + dias + (dias === 1 ? ' día' : ' días') + '</strong>' + nombre;
     }
 
     function actualizarNavidad() {
@@ -1226,13 +1995,14 @@
       const hoyTexto = aIso(hoy);
 
       document.getElementById('cuenta-atras').innerHTML = textoCuentaAtras(hoy);
+      document.getElementById('cuenta-chip').innerHTML = textoChipCuentaAtras(hoy);
 
       // Los cancelados no cuentan
-      const activos = encargos.filter((e) => e.estado !== 'Cancelado');
+      const temporada = encargos.filter((e) => e.estado !== 'Cancelado');
 
       let totalKg = 0;
       const porProducto = new Map();
-      activos.forEach((e) => {
+      temporada.forEach((e) => {
         e.productos.forEach((p) => {
           totalKg += Number(p.kg) || 0;
           const clave = p.producto.trim().toLowerCase();
@@ -1243,12 +2013,18 @@
         });
       });
 
-      document.getElementById('n-encargos').textContent = activos.length;
+      const nAtrasados = encargos.filter((e) => esAtrasado(e, hoyTexto)).length;
+
+      document.getElementById('n-encargos').textContent = temporada.length;
       document.getElementById('n-kg').textContent = formatearNumero(Math.round(totalKg * 100) / 100);
       document.getElementById('n-hoy').textContent =
-        activos.filter((e) => e.fechaRecogida === hoyTexto && e.estado !== 'Recogido').length;
+        temporada.filter((e) => e.fechaRecogida === hoyTexto && e.estado !== 'Recogido').length;
+      document.getElementById('n-atrasados').textContent = nAtrasados;
+      document.getElementById('cifra-atrasados').classList.toggle('alerta', nAtrasados > 0);
+      document.getElementById('n-preparados').textContent =
+        encargos.filter((e) => e.estado === 'Preparado').length;
       document.getElementById('n-senal').textContent =
-        activos.filter((e) => e.senalPagada).length;
+        temporada.filter((e) => e.senalPagada).length;
 
       const top = [...porProducto.values()]
         .sort((a, b) => b.kg - a.kg || b.unidades - a.unidades)
@@ -1259,6 +2035,23 @@
           p.nombre + ' (' + (p.kg ? formatearNumero(p.kg) + ' kg' : formatearNumero(p.unidades) + ' ud') + ')'
         ).join(' · ')
         : 'Todavía no hay encargos esta temporada.';
+
+      // Encargos activos por pueblo, con barras de su color
+      const activos = encargos.filter((e) => e.estado === 'Pendiente' || e.estado === 'Preparado');
+      const filas = TIENDAS.map((t) => ({
+        nombre: t,
+        clase: claseDeTienda(t),
+        n: activos.filter((e) => e.tienda === t).length
+      }));
+      const sinPueblo = activos.filter((e) => !TIENDAS.includes(e.tienda)).length;
+      if (sinPueblo) filas.push({ nombre: 'Sin pueblo', clase: 'tienda-sin-tienda', n: sinPueblo });
+      const maximo = Math.max(1, ...filas.map((f) => f.n));
+
+      document.getElementById('por-pueblo').innerHTML = filas.map((f) =>
+        '<div class="fila-pueblo ' + f.clase + '"><span>' + escaparHtml(f.nombre) + '</span>' +
+        '<div class="barra-pueblo"><span style="width:' + Math.round((f.n / maximo) * 100) + '%"></span></div>' +
+        '<span class="numero">' + f.n + '</span></div>'
+      ).join('');
     }
 
     // Copos de nieve en la cabecera
@@ -1891,11 +2684,12 @@
 
     (function prepararMicrofono() {
       const btnVoz = document.getElementById('btn-voz');
+      const estadoVoz = document.getElementById('estado-voz');
       const Reconocimiento = window.SpeechRecognition || window.webkitSpeechRecognition;
 
       if (!Reconocimiento) {
         btnVoz.disabled = true;
-        btnVoz.textContent = '🎤 Dictado no disponible aquí';
+        estadoVoz.textContent = 'Dictado no disponible en este navegador';
         resultadoDictado.textContent = 'Este navegador no permite dictar. Usa el formulario y el micrófono del teclado.';
         return;
       }
@@ -1906,7 +2700,9 @@
       function botonNormal() {
         escuchando = false;
         btnVoz.classList.remove('escuchando');
-        btnVoz.textContent = '🎤 Dictar encargo';
+        btnVoz.textContent = '🎤';
+        btnVoz.setAttribute('aria-label', 'Empezar a dictar');
+        estadoVoz.textContent = 'Toca para dictar';
       }
 
       btnVoz.addEventListener('click', () => {
@@ -1927,7 +2723,9 @@
         reconocedor.onstart = () => {
           escuchando = true;
           btnVoz.classList.add('escuchando');
-          btnVoz.textContent = '⏹ Escuchando… toca al terminar';
+          btnVoz.textContent = '⏹';
+          btnVoz.setAttribute('aria-label', 'Terminar de dictar');
+          estadoVoz.textContent = 'Escuchando… toca para terminar';
           resultadoDictado.textContent = 'Habla ahora. Puedes decir los datos en cualquier orden.';
         };
 
@@ -2025,6 +2823,9 @@
       } else {
         recordatorio.hidden = true;
       }
+
+      // Punto amarillo en la pestaña Resumen si hay encargos sin copia
+      document.getElementById('insignia-resumen').hidden = pendientes === 0;
     }
 
     function contenidoCopia() {
