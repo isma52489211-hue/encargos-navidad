@@ -1368,7 +1368,7 @@
     // DATOS: array de encargos en localStorage
     // =====================================================
     // Un encargo:
-    // { id, nombre, telefono, tienda, productos: [{ producto, kg, unidades }],
+    // { id, nombre, telefono, tienda, productos: [{ producto, kg, unidades, cajas }],
     //   fechaRecogida, senalPagada, estado, fechaCreacion, origen }
 
     // Convierte encargos antiguos (un solo producto) al formato con varios productos
@@ -1460,6 +1460,7 @@
     function textoCantidad(item) {
       if (item.kg) return formatearNumero(item.kg) + ' kg';
       if (item.unidades) return formatearNumero(item.unidades) + ' ud';
+      if (item.cajas) return formatearNumero(item.cajas) + (item.cajas === 1 ? ' caja' : ' cajas');
       return 'cantidad sin indicar';
     }
 
@@ -1487,6 +1488,7 @@
         <select class="lp-unidad" aria-label="Unidad">
           <option value="kg">kg</option>
           <option value="ud">ud</option>
+          <option value="caja">caja</option>
         </select>
         <button type="button" class="lp-quitar" aria-label="Quitar producto">✕</button>
       `;
@@ -1549,7 +1551,8 @@
           productos.push({
             producto,
             kg: cantidadValida && unidad === 'kg' ? cantidad : null,
-            unidades: cantidadValida && unidad === 'ud' ? cantidad : null
+            unidades: cantidadValida && unidad === 'ud' ? cantidad : null,
+            cajas: cantidadValida && unidad === 'caja' ? cantidad : null
           });
         }
       });
@@ -1596,6 +1599,9 @@
       } else if (p.unidades) {
         linea.querySelector('.lp-cantidad').value = p.unidades;
         linea.querySelector('.lp-unidad').value = 'ud';
+      } else if (p.cajas) {
+        linea.querySelector('.lp-cantidad').value = p.cajas;
+        linea.querySelector('.lp-unidad').value = 'caja';
       }
     }
 
@@ -2197,6 +2203,7 @@
       return e.productos.map((p) => {
         if (p.kg) return formatearNumero(p.kg) + ' kg de ' + p.producto.toLowerCase();
         if (p.unidades) return formatearNumero(p.unidades) + ' ' + p.producto.toLowerCase();
+        if (p.cajas) return formatearNumero(p.cajas) + (p.cajas === 1 ? ' caja de ' : ' cajas de ') + p.producto.toLowerCase();
         return p.producto.toLowerCase();
       }).join(', ');
     }
@@ -2326,7 +2333,7 @@
     function resumenUltimoEncargo(c) {
       const u = ultimoEncargo(c);
       const productos = u.productos.map((p) =>
-        (p.kg || p.unidades ? textoCantidad(p) + ' ' : '') + p.producto).join(', ');
+        (p.kg || p.unidades || p.cajas ? textoCantidad(p) + ' ' : '') + p.producto).join(', ');
       return productos + (u.fechaRecogida ? ' (' + formatearFechaDia(u.fechaRecogida) + ')' : '');
     }
 
@@ -2611,7 +2618,8 @@
         e.productos.forEach((p) => {
           totalKg += Number(p.kg) || 0;
           const clave = p.producto.trim().toLowerCase();
-          const actual = porProducto.get(clave) || { nombre: p.producto.trim(), kg: 0, unidades: 0 };
+          const actual = porProducto.get(clave) || { nombre: p.producto.trim(), kg: 0, unidades: 0, cajas: 0 };
+          actual.cajas += Number(p.cajas) || 0;
           actual.kg += Number(p.kg) || 0;
           actual.unidades += Number(p.unidades) || 0;
           porProducto.set(clave, actual);
@@ -2632,12 +2640,12 @@
         temporada.filter((e) => e.senalPagada).length;
 
       const top = [...porProducto.values()]
-        .sort((a, b) => b.kg - a.kg || b.unidades - a.unidades)
+        .sort((a, b) => b.kg - a.kg || b.cajas - a.cajas || b.unidades - a.unidades)
         .slice(0, 3);
 
       document.getElementById('top-productos').textContent = top.length
         ? '🐟 Lo más pedido: ' + top.map((p) =>
-          p.nombre + ' (' + (p.kg ? formatearNumero(p.kg) + ' kg' : formatearNumero(p.unidades) + ' ud') + ')'
+          p.nombre + ' (' + (p.kg ? formatearNumero(p.kg) + ' kg' : p.cajas ? formatearNumero(p.cajas) + ' cajas' : formatearNumero(p.unidades) + ' ud') + ')'
         ).join(' · ')
         : 'Todavía no hay encargos esta temporada.';
 
@@ -2717,13 +2725,13 @@
     const DIAS_SEMANA = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
 
     // Palabras que terminan la descripción de un producto
-    const CORTE_PRODUCTO = new Set(['y', 'e', 'para', 'cliente', 'clienta', 'en', 'con', 'el', 'la',
+    const CORTE_PRODUCTO = new Set(['caja', 'cajas', 'y', 'e', 'para', 'cliente', 'clienta', 'en', 'con', 'el', 'la',
       'los', 'las', 'telefono', 'movil', 'numero', 'senal', 'que', 'a', 'al', 'nombre', 'se', 'llama',
       'tambien', 'ademas', 'mas', 'otro', 'otra', 'otros', 'otras', 'por', 'tienda', 'recoger',
       'recoge', 'ha', 'sin', 'senor', 'senora', 'don', 'dona', 'kilos', 'kilo', 'gramos']);
 
     // Palabras que nunca forman parte del nombre del cliente
-    const RELLENO = new Set(['para', 'de', 'del', 'el', 'la', 'los', 'las', 'y', 'e', 'en', 'con',
+    const RELLENO = new Set(['caja', 'cajas', 'para', 'de', 'del', 'el', 'la', 'los', 'las', 'y', 'e', 'en', 'con',
       'a', 'al', 'cliente', 'clienta', 'nombre', 'se', 'llama', 'encargo', 'pedido', 'pedir', 'pide',
       'quiere', 'quiero', 'necesita', 'necesito', 'apunta', 'apuntame', 'apuntalo', 'anota',
       'anotame', 'pon', 'ponme', 'ponle', 'ponlo', 'guarda', 'guardalo', 'hola', 'vale', 'oye',
@@ -2786,7 +2794,10 @@
       const num = Object.keys(NUMEROS).filter((n) => n !== 'media' && n !== 'medio').join('|');
       const cientos = Object.keys(CIENTOS).join('|');
       const extra = (m) => (m === 'medio' ? 0.5 : m === 'cuarto' ? 0.25 : 0);
+      // El tercer dato de cada regla es el tipo de cantidad (si no se pone, kilos)
       const reglas = [
+        [new RegExp('(\\d+(?:[.,]\\d+)?|' + num + '|media)\\s+cajas?\\b', 'g'), (m) => aNumero(m[1]), 'cajas'],
+        [/\bcaja\b/g, () => 1, 'cajas'],
         [/\bcuarto\s+y\s+mitad\b/g, () => 0.375],
         [/(\d+(?:[.,]\d+)?)\s*(?:kilos?|kilogramos?|kgs?)\b(?:\s+y\s+(medio|cuarto))?/g,
           (m) => aNumero(m[1]) + extra(m[2])],
@@ -2807,14 +2818,20 @@
       const encontradas = [];
       const solapa = (ini, fin) => encontradas.some((c) => ini < c.fin && fin > c.inicio);
 
-      for (const [regla, calcular] of reglas) {
+      for (const [regla, calcular, tipo] of reglas) {
         let m;
         while ((m = regla.exec(t))) {
           const inicio = m.index;
           const fin = m.index + m[0].length;
-          const kg = calcular(m);
-          if (kg > 0 && !solapa(inicio, fin)) {
-            encontradas.push({ kg: Math.round(kg * 1000) / 1000, inicio, fin });
+          const valor = calcular(m);
+          if (valor > 0 && !solapa(inicio, fin)) {
+            const redondeado = Math.round(valor * 1000) / 1000;
+            encontradas.push({
+              kg: tipo === 'cajas' ? null : redondeado,
+              cajas: tipo === 'cajas' ? redondeado : null,
+              inicio,
+              fin
+            });
           }
         }
       }
@@ -2930,7 +2947,7 @@
 
     // ---------- Descripción del producto ----------
     // Lee palabras hacia delante: "boquerones gordos", "merluza de pincho"...
-    function leerDescripcion(t, desde, hasta, maxPalabras) {
+    function leerDescripcion(t, desde, hasta, maxPalabras, original) {
       const lista = palabras(t).filter((p) => p.inicio >= desde && p.inicio < hasta);
       const tomadas = [];
       let finAnterior = desde;
@@ -2951,6 +2968,9 @@
         }
 
         if (CORTE_PRODUCTO.has(p.texto)) break;
+        const anterior = tomadas[tomadas.length - 1];
+        if (original && anterior && anterior.texto !== 'de' && anterior.texto !== 'del' &&
+            /^[A-ZÁÉÍÓÚÑ]/.test(original.charAt(p.inicio))) break;
         tomadas.push(p);
         finAnterior = p.fin;
         if (/[.,;:]$/.test(p.bruto)) break;
@@ -3000,7 +3020,7 @@
         const de = /^\s+(?:de|del)\s+/.exec(trabajo.slice(desde));
         if (de) desde += de[0].length;
 
-        let tramo = leerDescripcion(trabajo, desde, siguiente, 5);
+        let tramo = leerDescripcion(trabajo, desde, siguiente, 5, original);
         let inicioTapar = c.inicio;
         let finTapar = tramo ? tramo.fin : c.fin;
 
@@ -3014,7 +3034,8 @@
           posicion: c.inicio,
           producto: tramo ? textoProducto(original, tramo.inicio, tramo.fin) : null,
           kg: c.kg,
-          unidades: null
+          unidades: null,
+          cajas: c.cajas
         });
         trabajo = tapar(trabajo, inicioTapar, finTapar);
       });
@@ -3064,14 +3085,15 @@
           inicioTapar = pegadas[n - 1].inicio;
         }
 
-        const detras = leerDescripcion(trabajo, e.fin, t.length, 3);
+        const detras = leerDescripcion(trabajo, e.fin, t.length, 3, original);
         const fin = detras && detras.inicio - e.fin <= 1 ? detras.fin : e.fin;
 
         productos.push({
           posicion: inicioTapar,
           producto: textoProducto(original, e.inicio, fin),
           kg: null,
-          unidades
+          unidades,
+          cajas: null
         });
         trabajo = tapar(trabajo, inicioTapar, fin);
       });
@@ -3080,7 +3102,7 @@
       return {
         productos: productos
           .filter((p) => p.producto)
-          .map((p) => ({ producto: p.producto, kg: p.kg, unidades: p.unidades })),
+          .map((p) => ({ producto: p.producto, kg: p.kg, unidades: p.unidades, cajas: p.cajas })),
         trabajo
       };
     }
@@ -3564,7 +3586,7 @@
       const productos = Array.isArray(e.productos)
         ? e.productos
           .filter((p) => p && typeof p.producto === 'string' && p.producto.trim())
-          .map((p) => ({ producto: p.producto.trim(), kg: numero(p.kg), unidades: numero(p.unidades) }))
+          .map((p) => ({ producto: p.producto.trim(), kg: numero(p.kg), unidades: numero(p.unidades), cajas: numero(p.cajas) }))
         : [];
       if (!productos.length) return null;
       return {
