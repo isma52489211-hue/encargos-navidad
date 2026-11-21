@@ -718,6 +718,26 @@
 
     .encargo-cabecera strong { font-size: 1.15rem; }
 
+    .fecha-encargo {
+      margin: 0 0 4px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--rojo-oscuro);
+    }
+
+    .etiqueta-entregado,
+    .etiqueta-cancelado {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      color: #ffffff;
+    }
+
+    .etiqueta-entregado { background: var(--verde); }
+    .etiqueta-cancelado { background: #757575; }
+
     .sin-dato { color: var(--gris); font-style: italic; }
 
     .fecha {
@@ -1847,7 +1867,7 @@
       { valor: 'activos', texto: 'Activos' },
       { valor: 'Pendiente', texto: 'Pendientes' },
       { valor: 'Preparado', texto: 'Preparados' },
-      { valor: 'Recogido', texto: 'Recogidos' },
+      { valor: 'Recogido', texto: 'Entregados' },
       { valor: 'Cancelado', texto: 'Cancelados' },
       { valor: 'todos', texto: 'Todos' }
     ];
@@ -1945,7 +1965,10 @@
         htmlChip('pueblo', o, fechas, o.valor === 'todos' ? '' : claseDeTienda(o.valor === 'sin' ? '' : o.valor))
       ).join(''));
 
-      pintarFila('filtros-estado', OPCIONES_ESTADO.map((o) => htmlChip('estado', o, fechas)).join(''));
+      const hayCancelados = encargos.some((e) => e.estado === 'Cancelado') || filtros.estado === 'Cancelado';
+      pintarFila('filtros-estado', OPCIONES_ESTADO
+        .filter((o) => o.valor !== 'Cancelado' || hayCancelados)
+        .map((o) => htmlChip('estado', o, fechas)).join(''));
     }
 
     ['filtros-cuando', 'filtros-pueblo', 'filtros-estado'].forEach((idFila) => {
@@ -2033,6 +2056,8 @@
       const etiquetas = [];
       if (atrasado) etiquetas.push('<span class="etiqueta-atrasado">⏰ Atrasado: era el ' + formatearFechaDia(e.fechaRecogida) + '</span>');
       if (faltan.length) etiquetas.push('<span class="etiqueta-falta">⚠️ Falta: ' + faltan.join(', ') + '</span>');
+      if (estadoActual === 'Recogido') etiquetas.unshift('<span class="etiqueta-entregado">🤝 Entregado</span>');
+      if (estadoActual === 'Cancelado') etiquetas.unshift('<span class="etiqueta-cancelado">❌ Cancelado</span>');
       if (e.origen === 'voz') etiquetas.push('<span class="etiqueta-voz">🎤 Dictado</span>');
       const vecesCliente = encargosPorCliente.get(e.id) || 1;
       if (vecesCliente > 1) etiquetas.push('<span class="etiqueta-habitual">⭐ Habitual (' + vecesCliente + ' encargos)</span>');
@@ -2046,7 +2071,8 @@
       }
       acciones.push('<button type="button" class="boton-secundario boton-repetir" data-id="' + id + '">🔁 Repetir</button>');
 
-      const botonesEstado = ESTADOS.map((s) =>
+      // En la tarjeta solo Pendiente y Preparado. «Entregado» se marca en el Mostrador.
+      const botonesEstado = ['Pendiente', 'Preparado'].map((s) =>
         '<button type="button" class="e-' + s.toLowerCase() + (s === estadoActual ? ' activo' : '') +
         '" data-id="' + id + '" data-estado="' + s + '" aria-pressed="' + (s === estadoActual) + '">' + s + '</button>'
       ).join('');
@@ -2063,6 +2089,7 @@
           <div class="encargo-cabecera">
             <strong>${nombre}</strong>
           </div>
+          <p class="fecha-encargo${e.fechaRecogida ? '' : ' sin-dato'}">📅 ${e.fechaRecogida ? capitalizar(formatearFecha(e.fechaRecogida)) : 'Sin fecha'}</p>
           <ul class="productos-encargo">${productos}</ul>
           <p class="meta">${telefono}${senal}</p>
           ${etiquetas.length ? '<div class="etiquetas">' + etiquetas.join('') + '</div>' : ''}
