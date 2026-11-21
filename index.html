@@ -23,6 +23,7 @@
       --borde: #d9d2c7;
       --error: #b00020;
       --verde: #2e7d32;
+      --verde-navidad: #1f4d2b;
     }
 
     * { box-sizing: border-box; }
@@ -36,14 +37,16 @@
     }
 
     header {
+      position: relative;
+      overflow: hidden;
       background: var(--rojo);
       color: #ffffff;
       padding: 16px;
       text-align: center;
     }
 
-    header h1 { margin: 0; font-size: 1.5rem; }
-    header p { margin: 4px 0 0; font-size: 0.95rem; opacity: 0.9; }
+    header h1 { position: relative; z-index: 1; margin: 0; font-size: 1.5rem; }
+    header p { position: relative; z-index: 1; margin: 4px 0 0; font-size: 0.95rem; opacity: 0.9; }
 
     main {
       max-width: 640px;
@@ -67,7 +70,7 @@
 
     .campo { margin-bottom: 14px; }
 
-    label.etiqueta {
+    .etiqueta {
       display: block;
       font-weight: 600;
       margin-bottom: 4px;
@@ -101,7 +104,6 @@
       color: var(--error);
       font-size: 0.875rem;
       margin: 4px 0 0;
-      min-height: 0;
     }
 
     .casilla {
@@ -113,10 +115,7 @@
       cursor: pointer;
     }
 
-    .casilla input {
-      width: 22px;
-      height: 22px;
-    }
+    .casilla input { width: 22px; height: 22px; }
 
     .ayuda {
       font-size: 0.85rem;
@@ -138,22 +137,51 @@
 
     button:hover { background: var(--rojo-oscuro); }
 
+    .boton-secundario {
+      background: #ffffff;
+      color: var(--texto);
+      border: 1px solid var(--borde);
+    }
+
+    .boton-secundario:hover { background: #f3efe8; }
+
     .aviso {
       margin-top: 10px;
       font-size: 0.95rem;
       color: var(--error);
     }
 
-    .vacio {
-      color: var(--gris);
-      margin: 0;
+    .aviso:empty { display: none; }
+
+    /* ---------- Líneas de producto del formulario ---------- */
+    .linea-producto {
+      display: grid;
+      grid-template-columns: 1fr 76px 64px 40px;
+      gap: 6px;
+      margin-bottom: 8px;
     }
 
-    ul.lista {
-      list-style: none;
+    .linea-producto input,
+    .linea-producto select { padding: 10px 6px; }
+
+    .linea-producto .lp-quitar {
+      width: 40px;
       padding: 0;
-      margin: 0;
+      font-size: 1rem;
+      background: #ffffff;
+      color: var(--gris);
+      border: 1px solid var(--borde);
     }
+
+    .boton-anadir {
+      font-size: 0.95rem;
+      padding: 8px;
+    }
+
+    /* ---------- Lista ---------- */
+    .vacio { color: var(--gris); margin: 0; }
+
+    ul.lista { list-style: none; padding: 0; margin: 0; }
 
     li.encargo {
       border: 1px solid var(--borde);
@@ -174,27 +202,44 @@
 
     .encargo-cabecera strong { font-size: 1.05rem; }
 
+    .sin-dato { color: var(--gris); font-style: italic; }
+
     .fecha {
       font-weight: 700;
       color: var(--rojo-oscuro);
       white-space: nowrap;
     }
 
-    .encargo-detalle {
+    .encargo-detalle { font-size: 0.95rem; margin: 2px 0; }
+
+    ul.productos-encargo {
+      margin: 4px 0 6px;
+      padding-left: 20px;
       font-size: 0.95rem;
-      margin: 2px 0;
     }
 
-    .etiqueta-estado {
+    ul.productos-encargo li { margin: 2px 0; }
+
+    .etiquetas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .etiqueta-estado,
+    .etiqueta-falta,
+    .etiqueta-voz {
       display: inline-block;
       font-size: 0.8rem;
       font-weight: 600;
       padding: 2px 8px;
       border-radius: 12px;
-      background: #fff3cd;
-      color: #7a5a00;
-      margin-top: 6px;
     }
+
+    .etiqueta-estado { background: #fff3cd; color: #7a5a00; }
+    .etiqueta-falta { background: #fdecea; color: var(--error); }
+    .etiqueta-voz { background: #e8f1ea; color: var(--verde-navidad); }
 
     .senal-si { color: var(--verde); font-weight: 600; }
     .senal-no { color: var(--gris); }
@@ -218,12 +263,6 @@
       cursor: not-allowed;
     }
 
-    .boton-secundario {
-      background: #ffffff !important;
-      color: var(--texto) !important;
-      border: 1px solid var(--borde);
-    }
-
     .confirmacion-borrado {
       font-size: 0.95rem;
       font-weight: 600;
@@ -240,15 +279,9 @@
       cursor: pointer;
     }
 
-    .fila-seleccion input {
-      width: 20px;
-      height: 20px;
-    }
+    .fila-seleccion input { width: 20px; height: 20px; }
 
     /* ---------- Nieve en la cabecera ---------- */
-    header { position: relative; overflow: hidden; }
-    header h1, header p { position: relative; z-index: 1; }
-
     .copo {
       position: absolute;
       top: -10px;
@@ -268,7 +301,7 @@
 
     /* ---------- Modo Navidad ---------- */
     .navidad {
-      background: linear-gradient(135deg, #1f4d2b, #2e6b3c);
+      background: linear-gradient(135deg, var(--verde-navidad), #2e6b3c);
       color: #ffffff;
       border-radius: 10px;
       padding: 16px;
@@ -283,10 +316,7 @@
       margin: 0 0 12px;
     }
 
-    .cuenta-atras .dias {
-      font-size: 2rem;
-      color: #ffd54f;
-    }
+    .cuenta-atras .dias { font-size: 2rem; color: #ffd54f; }
 
     .cifras {
       display: grid;
@@ -301,12 +331,7 @@
       padding: 10px;
     }
 
-    .cifra .valor {
-      display: block;
-      font-size: 1.4rem;
-      font-weight: 700;
-    }
-
+    .cifra .valor { display: block; font-size: 1.4rem; font-weight: 700; }
     .cifra .texto { font-size: 0.85rem; opacity: 0.9; }
 
     .top-productos { font-size: 0.95rem; margin: 0; }
@@ -316,14 +341,10 @@
       border: 2px dashed var(--borde);
       border-radius: 10px;
       padding: 12px;
-      margin-bottom: 16px;
       text-align: center;
     }
 
-    .boton-voz {
-      background: #1f4d2b;
-    }
-
+    .boton-voz { background: var(--verde-navidad); }
     .boton-voz:hover { background: #163a20; }
 
     .boton-voz.escuchando {
@@ -348,10 +369,13 @@
     }
 
     .dictado-resultado:empty { display: none; }
+    .dictado-resultado ul { margin: 4px 0; padding-left: 20px; }
 
-    .rellenado {
-      background: #eaf6ec !important;
-      border-color: var(--verde) !important;
+    .dictado-resultado .boton-deshacer {
+      width: auto;
+      margin-top: 8px;
+      font-size: 0.95rem;
+      padding: 8px 14px;
     }
 
     @media (min-width: 480px) {
@@ -384,15 +408,17 @@
       <p class="top-productos" id="top-productos"></p>
     </section>
 
-    <section class="tarjeta" aria-labelledby="titulo-form">
-      <h2 id="titulo-form">Nuevo encargo</h2>
-
-      <div class="dictado" id="dictado">
+    <section class="tarjeta" aria-labelledby="titulo-dictado">
+      <h2 id="titulo-dictado">Dictar encargo</h2>
+      <div class="dictado">
         <button type="button" class="boton-voz" id="btn-voz">🎤 Dictar encargo</button>
-        <p class="dictado-ejemplo">Ejemplo: «Ana García, dos kilos de merluza para Nochebuena en Luque, señal pagada»</p>
-        <p class="dictado-resultado" id="dictado-resultado" aria-live="polite"></p>
+        <p class="dictado-ejemplo">Di los datos en el orden que quieras y toca otra vez el botón al terminar. Ejemplo: «Tres kilos de boquerones gordos y cinco de bacaladilla para Juan Pérez este jueves en Luque, señal pagada»</p>
+        <div class="dictado-resultado" id="dictado-resultado" aria-live="polite"></div>
       </div>
+    </section>
 
+    <section class="tarjeta" aria-labelledby="titulo-form">
+      <h2 id="titulo-form">Nuevo encargo a mano</h2>
       <p class="ayuda">Los campos marcados con * son obligatorios.</p>
 
       <form id="formulario" novalidate>
@@ -419,23 +445,16 @@
         </div>
 
         <div class="campo">
-          <label class="etiqueta" for="producto">Producto *</label>
-          <input type="text" id="producto" name="producto" autocomplete="off">
-          <p class="error" id="error-producto" aria-live="polite"></p>
+          <span class="etiqueta" id="etiqueta-productos">Productos *</span>
+          <div id="lineas-productos" aria-labelledby="etiqueta-productos"></div>
+          <button type="button" class="boton-secundario boton-anadir" id="btn-anadir-producto">+ Añadir otro producto</button>
+          <p class="error" id="error-productos" aria-live="polite"></p>
         </div>
 
-        <div class="fila-doble">
-          <div class="campo">
-            <label class="etiqueta" for="kg">Cantidad (kg) *</label>
-            <input type="number" id="kg" name="kg" step="any" min="0" inputmode="decimal">
-            <p class="error" id="error-kg" aria-live="polite"></p>
-          </div>
-
-          <div class="campo">
-            <label class="etiqueta" for="fecha">Fecha de recogida *</label>
-            <input type="date" id="fecha" name="fecha">
-            <p class="error" id="error-fecha" aria-live="polite"></p>
-          </div>
+        <div class="campo">
+          <label class="etiqueta" for="fecha">Fecha de recogida *</label>
+          <input type="date" id="fecha" name="fecha">
+          <p class="error" id="error-fecha" aria-live="polite"></p>
         </div>
 
         <div class="campo">
@@ -467,46 +486,60 @@
   </main>
 
   <script>
-    // ---------- Configuración ----------
+    // =====================================================
+    // CONFIGURACIÓN Y ELEMENTOS
+    // =====================================================
     const CLAVE_STORAGE = 'encargosNavidad.v1';
 
-    // ---------- Referencias a elementos ----------
     const formulario = document.getElementById('formulario');
     const lista = document.getElementById('lista');
     const vacio = document.getElementById('vacio');
     const contador = document.getElementById('contador');
     const aviso = document.getElementById('aviso');
+    const lineasProductos = document.getElementById('lineas-productos');
+    const errorProductos = document.getElementById('error-productos');
     const btnBorrar = document.getElementById('btn-borrar');
     const confirmacion = document.getElementById('confirmacion');
-    const btnConfirmarBorrar = document.getElementById('btn-confirmar-borrar');
-    const btnCancelarBorrar = document.getElementById('btn-cancelar-borrar');
+    const resultadoDictado = document.getElementById('dictado-resultado');
 
     const campos = {
       nombre: document.getElementById('nombre'),
       telefono: document.getElementById('telefono'),
       tienda: document.getElementById('tienda'),
-      producto: document.getElementById('producto'),
-      kg: document.getElementById('kg'),
       fecha: document.getElementById('fecha'),
       senal: document.getElementById('senal')
     };
 
-    // Campos que tienen mensaje de error propio (los demás no se validan)
-    const CAMPOS_VALIDADOS = ['nombre', 'producto', 'kg', 'fecha'];
+    // Campos con mensaje de error propio
+    const CAMPOS_VALIDADOS = ['nombre', 'fecha'];
 
-    // ---------- Estado: array de encargos ----------
-    let encargos = cargarEncargos();
+    const DIAS_SEMANA_TEXTO = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 
-    // Ids de los encargos marcados para borrar (solo en memoria, no se guardan)
-    const seleccionados = new Set();
+    // =====================================================
+    // DATOS: array de encargos en localStorage
+    // =====================================================
+    // Un encargo:
+    // { id, nombre, telefono, tienda, productos: [{ producto, kg, unidades }],
+    //   fechaRecogida, senalPagada, estado, fechaCreacion, origen }
 
-    // ---------- Almacenamiento (localStorage) ----------
+    // Convierte encargos antiguos (un solo producto) al formato con varios productos
+    function migrarEncargo(e) {
+      if (!Array.isArray(e.productos)) {
+        e.productos = e.producto
+          ? [{ producto: e.producto, kg: typeof e.kg === 'number' ? e.kg : null, unidades: null }]
+          : [];
+        delete e.producto;
+        delete e.kg;
+      }
+      return e;
+    }
+
     function cargarEncargos() {
       try {
         const texto = localStorage.getItem(CLAVE_STORAGE);
         if (!texto) return [];
         const datos = JSON.parse(texto);
-        return Array.isArray(datos) ? datos : [];
+        return Array.isArray(datos) ? datos.map(migrarEncargo) : [];
       } catch (error) {
         console.error('No se pudieron leer los encargos guardados:', error);
         return [];
@@ -523,7 +556,15 @@
       }
     }
 
-    // ---------- Utilidades ----------
+    let encargos = cargarEncargos();
+    guardarEncargos(); // guarda ya convertidos los encargos antiguos
+
+    // Ids marcados para borrar (solo en memoria)
+    const seleccionados = new Set();
+
+    // =====================================================
+    // UTILIDADES
+    // =====================================================
     function generarId() {
       if (window.crypto && typeof window.crypto.randomUUID === 'function') {
         return window.crypto.randomUUID();
@@ -540,113 +581,262 @@
         .replace(/'/g, '&#39;');
     }
 
-    // Convierte "2026-12-22" en "22/12/2026" sin pasar por Date (evita desfases de zona horaria)
-    function formatearFecha(fechaIso) {
-      const [anio, mes, dia] = fechaIso.split('-');
-      return dia + '/' + mes + '/' + anio;
+    function aIso(fecha) {
+      const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+      const dia = String(fecha.getDate()).padStart(2, '0');
+      return fecha.getFullYear() + '-' + mes + '-' + dia;
     }
 
-    // ---------- Validación ----------
+    function hoyAMedianoche() {
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      return hoy;
+    }
+
+    function sumarDias(fecha, n) {
+      return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + n);
+    }
+
+    // "2026-12-24" -> "jueves 24/12/2026" (sin pasar por zonas horarias)
+    function formatearFecha(fechaIso) {
+      const [anio, mes, dia] = fechaIso.split('-').map(Number);
+      const diaSemana = DIAS_SEMANA_TEXTO[new Date(anio, mes - 1, dia).getDay()];
+      return diaSemana + ' ' + String(dia).padStart(2, '0') + '/' + String(mes).padStart(2, '0') + '/' + anio;
+    }
+
+    function formatearNumero(n) {
+      return n.toLocaleString('es-ES', { maximumFractionDigits: 3 });
+    }
+
+    function textoCantidad(item) {
+      if (item.kg) return formatearNumero(item.kg) + ' kg';
+      if (item.unidades) return formatearNumero(item.unidades) + ' ud';
+      return 'cantidad sin indicar';
+    }
+
+    function capitalizar(texto) {
+      return texto.charAt(0).toUpperCase() + texto.slice(1);
+    }
+
+    function datosQueFaltan(e) {
+      const faltan = [];
+      if (!e.nombre) faltan.push('nombre');
+      if (!e.fechaRecogida) faltan.push('fecha');
+      if (!e.tienda) faltan.push('tienda');
+      return faltan;
+    }
+
+    // =====================================================
+    // FORMULARIO MANUAL
+    // =====================================================
+    function crearLineaProducto() {
+      const linea = document.createElement('div');
+      linea.className = 'linea-producto';
+      linea.innerHTML = `
+        <input type="text" class="lp-producto" placeholder="Producto" aria-label="Producto" autocomplete="off">
+        <input type="number" class="lp-cantidad" placeholder="Cant." aria-label="Cantidad" step="any" min="0" inputmode="decimal">
+        <select class="lp-unidad" aria-label="Unidad">
+          <option value="kg">kg</option>
+          <option value="ud">ud</option>
+        </select>
+        <button type="button" class="lp-quitar" aria-label="Quitar producto">✕</button>
+      `;
+      lineasProductos.appendChild(linea);
+      return linea;
+    }
+
+    function reiniciarLineas() {
+      lineasProductos.innerHTML = '';
+      crearLineaProducto();
+    }
+
+    lineasProductos.addEventListener('click', (evento) => {
+      if (!evento.target.classList.contains('lp-quitar')) return;
+      const linea = evento.target.closest('.linea-producto');
+      if (lineasProductos.children.length > 1) {
+        linea.remove();
+      } else {
+        linea.querySelectorAll('input').forEach((i) => { i.value = ''; i.removeAttribute('aria-invalid'); });
+      }
+    });
+
+    lineasProductos.addEventListener('input', (evento) => {
+      evento.target.removeAttribute('aria-invalid');
+      errorProductos.textContent = '';
+    });
+
+    document.getElementById('btn-anadir-producto').addEventListener('click', () => {
+      crearLineaProducto().querySelector('.lp-producto').focus();
+    });
+
+    // Lee las líneas de producto. Las líneas vacías se ignoran.
+    function leerLineasProductos() {
+      const productos = [];
+      let hayErrores = false;
+
+      lineasProductos.querySelectorAll('.linea-producto').forEach((linea) => {
+        const inputProducto = linea.querySelector('.lp-producto');
+        const inputCantidad = linea.querySelector('.lp-cantidad');
+        const unidad = linea.querySelector('.lp-unidad').value;
+        const producto = inputProducto.value.trim();
+        const textoCantidadLinea = inputCantidad.value.trim();
+
+        if (!producto && !textoCantidadLinea) return;
+
+        const cantidad = parseFloat(textoCantidadLinea);
+        if (!producto) {
+          inputProducto.setAttribute('aria-invalid', 'true');
+          hayErrores = true;
+        }
+        if (isNaN(cantidad) || cantidad <= 0) {
+          inputCantidad.setAttribute('aria-invalid', 'true');
+          hayErrores = true;
+        }
+        if (producto && cantidad > 0) {
+          productos.push({
+            producto,
+            kg: unidad === 'kg' ? cantidad : null,
+            unidades: unidad === 'ud' ? cantidad : null
+          });
+        }
+      });
+
+      return { productos, hayErrores };
+    }
+
     function mostrarError(campo, mensaje) {
-      const input = campos[campo];
-      const p = document.getElementById('error-' + campo);
-      p.textContent = mensaje;
-      input.setAttribute('aria-invalid', 'true');
+      document.getElementById('error-' + campo).textContent = mensaje;
+      campos[campo].setAttribute('aria-invalid', 'true');
     }
 
     function limpiarError(campo) {
-      const input = campos[campo];
-      const p = document.getElementById('error-' + campo);
-      p.textContent = '';
-      input.removeAttribute('aria-invalid');
-    }
-
-    function validarFormulario() {
-      const errores = {};
-
-      if (campos.nombre.value.trim() === '') {
-        errores.nombre = 'Escribe el nombre del cliente.';
-      }
-
-      if (campos.producto.value.trim() === '') {
-        errores.producto = 'Escribe el producto.';
-      }
-
-      const kg = parseFloat(campos.kg.value);
-      if (campos.kg.value.trim() === '' || isNaN(kg)) {
-        errores.kg = 'Escribe la cantidad en kg.';
-      } else if (kg <= 0) {
-        errores.kg = 'La cantidad debe ser mayor que 0.';
-      }
-
-      if (campos.fecha.value === '') {
-        errores.fecha = 'Elige la fecha de recogida.';
-      }
-
-      return errores;
-    }
-
-    // ---------- Crear y guardar encargo ----------
-    function crearEncargo() {
-      return {
-        id: generarId(),
-        nombre: campos.nombre.value.trim(),
-        telefono: campos.telefono.value.trim(),
-        tienda: campos.tienda.value,
-        producto: campos.producto.value.trim(),
-        kg: parseFloat(campos.kg.value),
-        fechaRecogida: campos.fecha.value,
-        senalPagada: campos.senal.checked,
-        estado: 'Pendiente',
-        fechaCreacion: new Date().toISOString()
-      };
+      document.getElementById('error-' + campo).textContent = '';
+      campos[campo].removeAttribute('aria-invalid');
     }
 
     function limpiarFormulario() {
       formulario.reset();
       CAMPOS_VALIDADOS.forEach(limpiarError);
-      quitarMarcasDictado();
-      document.getElementById('dictado-resultado').textContent = '';
+      errorProductos.textContent = '';
+      reiniciarLineas();
     }
 
-    // ---------- Lista ----------
+    formulario.addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      aviso.textContent = '';
+      CAMPOS_VALIDADOS.forEach(limpiarError);
+      errorProductos.textContent = '';
+
+      let primerError = null;
+
+      if (campos.nombre.value.trim() === '') {
+        mostrarError('nombre', 'Escribe el nombre del cliente.');
+        primerError = primerError || campos.nombre;
+      }
+
+      const { productos, hayErrores } = leerLineasProductos();
+      if (hayErrores) {
+        errorProductos.textContent = 'Cada producto necesita nombre y una cantidad mayor que 0.';
+        primerError = primerError || lineasProductos.querySelector('[aria-invalid="true"]');
+      } else if (productos.length === 0) {
+        errorProductos.textContent = 'Añade al menos un producto con su cantidad.';
+        const primero = lineasProductos.querySelector('.lp-producto');
+        primero.setAttribute('aria-invalid', 'true');
+        primerError = primerError || primero;
+      }
+
+      if (campos.fecha.value === '') {
+        mostrarError('fecha', 'Elige la fecha de recogida.');
+        primerError = primerError || campos.fecha;
+      }
+
+      if (primerError) {
+        primerError.focus();
+        return;
+      }
+
+      const encargo = {
+        id: generarId(),
+        nombre: campos.nombre.value.trim(),
+        telefono: campos.telefono.value.trim(),
+        tienda: campos.tienda.value,
+        productos,
+        fechaRecogida: campos.fecha.value,
+        senalPagada: campos.senal.checked,
+        estado: 'Pendiente',
+        fechaCreacion: new Date().toISOString(),
+        origen: 'manual'
+      };
+
+      encargos.push(encargo);
+      if (!guardarEncargos()) {
+        encargos.pop();
+        aviso.textContent = 'No se pudo guardar el encargo. Revisa el espacio o los permisos del navegador.';
+        return;
+      }
+
+      limpiarFormulario();
+      pintarLista();
+      campos.nombre.focus();
+    });
+
+    CAMPOS_VALIDADOS.forEach((nombre) => {
+      campos[nombre].addEventListener('input', () => limpiarError(nombre));
+      campos[nombre].addEventListener('change', () => limpiarError(nombre));
+    });
+
+    // =====================================================
+    // LISTA DE ENCARGOS
+    // =====================================================
+    // Ordena por fecha de recogida; los que no tienen fecha van al final
     function ordenarPorRecogida(lista) {
       return [...lista].sort((a, b) =>
-        a.fechaRecogida.localeCompare(b.fechaRecogida) ||
+        (a.fechaRecogida || '9999').localeCompare(b.fechaRecogida || '9999') ||
         a.fechaCreacion.localeCompare(b.fechaCreacion)
       );
     }
 
-    function pintarEncargo(encargo) {
-      const senal = encargo.senalPagada
+    function pintarEncargo(e) {
+      const nombre = e.nombre
+        ? escaparHtml(e.nombre)
+        : '<span class="sin-dato">Cliente sin nombre</span>';
+      const fecha = e.fechaRecogida
+        ? formatearFecha(e.fechaRecogida)
+        : '<span class="sin-dato">Sin fecha</span>';
+      const productos = e.productos.map((p) =>
+        '<li><strong>' + textoCantidad(p) + '</strong> · ' + escaparHtml(p.producto) + '</li>'
+      ).join('');
+      const telefono = e.telefono ? escaparHtml(e.telefono) : '—';
+      const tienda = e.tienda ? escaparHtml(e.tienda) : '—';
+      const senal = e.senalPagada
         ? '<span class="senal-si">Sí</span>'
         : '<span class="senal-no">No</span>';
-      const telefono = encargo.telefono
-        ? escaparHtml(encargo.telefono)
-        : '—';
-      const kg = encargo.kg.toLocaleString('es-ES', { maximumFractionDigits: 3 });
+      const faltan = datosQueFaltan(e);
 
       return `
         <li class="encargo">
           <label class="fila-seleccion">
-            <input type="checkbox" class="seleccion" data-id="${escaparHtml(encargo.id)}" ${seleccionados.has(encargo.id) ? 'checked' : ''}>
+            <input type="checkbox" class="seleccion" data-id="${escaparHtml(e.id)}" ${seleccionados.has(e.id) ? 'checked' : ''}>
             Seleccionar para borrar
           </label>
           <div class="encargo-cabecera">
-            <strong>${escaparHtml(encargo.nombre)}</strong>
-            <span class="fecha">${formatearFecha(encargo.fechaRecogida)}</span>
+            <strong>${nombre}</strong>
+            <span class="fecha">${fecha}</span>
           </div>
-          <p class="encargo-detalle">${escaparHtml(encargo.producto)} · ${kg} kg</p>
-          <p class="encargo-detalle">Tienda: ${escaparHtml(encargo.tienda)} · Tel: ${telefono}</p>
+          <ul class="productos-encargo">${productos}</ul>
+          <p class="encargo-detalle">Tienda: ${tienda} · Tel: ${telefono}</p>
           <p class="encargo-detalle">Señal pagada: ${senal}</p>
-          <span class="etiqueta-estado">${escaparHtml(encargo.estado)}</span>
+          <div class="etiquetas">
+            <span class="etiqueta-estado">${escaparHtml(e.estado)}</span>
+            ${faltan.length ? '<span class="etiqueta-falta">⚠️ Falta: ' + faltan.join(', ') + '</span>' : ''}
+            ${e.origen === 'voz' ? '<span class="etiqueta-voz">🎤 Dictado</span>' : ''}
+          </div>
         </li>
       `;
     }
 
     function pintarLista() {
-      const ordenados = ordenarPorRecogida(encargos);
-      lista.innerHTML = ordenados.map(pintarEncargo).join('');
+      lista.innerHTML = ordenarPorRecogida(encargos).map(pintarEncargo).join('');
       contador.textContent = encargos.length;
       vacio.hidden = encargos.length > 0;
       actualizarBarra();
@@ -663,7 +853,7 @@
 
     function borrarSeleccionados() {
       const anterior = encargos;
-      encargos = encargos.filter((encargo) => !seleccionados.has(encargo.id));
+      encargos = encargos.filter((e) => !seleccionados.has(e.id));
       if (!guardarEncargos()) {
         encargos = anterior;
         aviso.textContent = 'No se pudo actualizar la lista. Inténtalo de nuevo.';
@@ -671,86 +861,24 @@
       }
       seleccionados.clear();
       confirmacion.hidden = true;
-      aviso.textContent = '';
       pintarLista();
     }
-
-    // ---------- Eventos ----------
-    formulario.addEventListener('submit', (evento) => {
-      evento.preventDefault();
-      aviso.textContent = '';
-
-      CAMPOS_VALIDADOS.forEach(limpiarError);
-      const errores = validarFormulario();
-      const nombresConError = Object.keys(errores);
-
-      if (nombresConError.length > 0) {
-        nombresConError.forEach((campo) => mostrarError(campo, errores[campo]));
-        campos[nombresConError[0]].focus();
-        return;
-      }
-
-      encargos.push(crearEncargo());
-
-      if (!guardarEncargos()) {
-        encargos.pop();
-        aviso.textContent = 'No se pudo guardar el encargo. Revisa el espacio o los permisos del navegador.';
-        return;
-      }
-
-      limpiarFormulario();
-      pintarLista();
-      campos.nombre.focus();
-    });
-
-    // Al escribir de nuevo en un campo, se quita su error
-    CAMPOS_VALIDADOS.forEach((nombre) => {
-      campos[nombre].addEventListener('input', () => limpiarError(nombre));
-      campos[nombre].addEventListener('change', () => limpiarError(nombre));
-    });
 
     lista.addEventListener('change', (evento) => {
       const casilla = evento.target;
       if (!casilla.classList.contains('seleccion')) return;
-      const id = casilla.dataset.id;
-      if (casilla.checked) {
-        seleccionados.add(id);
-      } else {
-        seleccionados.delete(id);
-      }
+      if (casilla.checked) seleccionados.add(casilla.dataset.id);
+      else seleccionados.delete(casilla.dataset.id);
       actualizarBarra();
     });
 
-    btnBorrar.addEventListener('click', () => {
-      confirmacion.hidden = false;
-    });
-
-    btnConfirmarBorrar.addEventListener('click', borrarSeleccionados);
-
-    btnCancelarBorrar.addEventListener('click', () => {
-      confirmacion.hidden = true;
-    });
+    btnBorrar.addEventListener('click', () => { confirmacion.hidden = false; });
+    document.getElementById('btn-confirmar-borrar').addEventListener('click', borrarSeleccionados);
+    document.getElementById('btn-cancelar-borrar').addEventListener('click', () => { confirmacion.hidden = true; });
 
     // =====================================================
     // MODO NAVIDAD
     // =====================================================
-    function aIso(fecha) {
-      const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-      const dia = String(fecha.getDate()).padStart(2, '0');
-      return fecha.getFullYear() + '-' + mes + '-' + dia;
-    }
-
-    function hoyAMedianoche() {
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
-      return hoy;
-    }
-
-    function formatearKg(kg) {
-      return kg.toLocaleString('es-ES', { maximumFractionDigits: 2 });
-    }
-
-    // Busca la próxima fecha señalada (Nochebuena, Nochevieja o Reyes) y cuenta los días
     function textoCuentaAtras(hoy) {
       const anio = hoy.getFullYear();
       const candidatas = [];
@@ -774,30 +902,38 @@
 
       document.getElementById('cuenta-atras').innerHTML = textoCuentaAtras(hoy);
 
-      const totalKg = encargos.reduce((suma, e) => suma + (Number(e.kg) || 0), 0);
+      let totalKg = 0;
+      const porProducto = new Map();
+      encargos.forEach((e) => {
+        e.productos.forEach((p) => {
+          totalKg += Number(p.kg) || 0;
+          const clave = p.producto.trim().toLowerCase();
+          const actual = porProducto.get(clave) || { nombre: p.producto.trim(), kg: 0, unidades: 0 };
+          actual.kg += Number(p.kg) || 0;
+          actual.unidades += Number(p.unidades) || 0;
+          porProducto.set(clave, actual);
+        });
+      });
+
       document.getElementById('n-encargos').textContent = encargos.length;
-      document.getElementById('n-kg').textContent = formatearKg(totalKg);
+      document.getElementById('n-kg').textContent = formatearNumero(Math.round(totalKg * 100) / 100);
       document.getElementById('n-hoy').textContent =
         encargos.filter((e) => e.fechaRecogida === hoyTexto).length;
       document.getElementById('n-senal').textContent =
         encargos.filter((e) => e.senalPagada).length;
 
-      // Los 3 productos con más kg encargados
-      const porProducto = new Map();
-      encargos.forEach((e) => {
-        const clave = e.producto.trim().toLowerCase();
-        const actual = porProducto.get(clave) || { nombre: e.producto.trim(), kg: 0 };
-        actual.kg += Number(e.kg) || 0;
-        porProducto.set(clave, actual);
-      });
-      const top = [...porProducto.values()].sort((a, b) => b.kg - a.kg).slice(0, 3);
+      const top = [...porProducto.values()]
+        .sort((a, b) => b.kg - a.kg || b.unidades - a.unidades)
+        .slice(0, 3);
 
       document.getElementById('top-productos').textContent = top.length
-        ? '🐟 Lo más pedido: ' + top.map((p) => p.nombre + ' (' + formatearKg(p.kg) + ' kg)').join(' · ')
+        ? '🐟 Lo más pedido: ' + top.map((p) =>
+          p.nombre + ' (' + (p.kg ? formatearNumero(p.kg) + ' kg' : formatearNumero(p.unidades) + ' ud') + ')'
+        ).join(' · ')
         : 'Todavía no hay encargos esta temporada.';
     }
 
-    // Copos de nieve en la cabecera (se desactivan si el móvil pide reducir animaciones)
+    // Copos de nieve en la cabecera
     (function nevar() {
       const cabecera = document.getElementById('cabecera');
       for (let i = 0; i < 14; i++) {
@@ -814,28 +950,34 @@
     })();
 
     // =====================================================
-    // DICTADO POR VOZ
+    // DICTADO: INTÉRPRETE DE FRASES
     // =====================================================
+    // Idea: se buscan las partes que se reconocen (cantidades con su producto,
+    // fecha, tienda, teléfono, señal) y se van "tapando". Lo que sobra es el nombre.
 
-    // Productos que reconoce el dictado (sin tildes). Los más largos primero.
+    // Productos conocidos (sin tildes). Sirven sobre todo cuando no se dice cantidad.
     const PRODUCTOS = [
       'gambas rojas', 'gamba roja', 'gambas blancas', 'gamba blanca', 'buey de mar', 'pez espada',
-      'san pedro', 'merluza', 'pescadilla', 'dorada', 'doradas', 'lubina', 'lubinas', 'gamba', 'gambas',
-      'langostino', 'langostinos', 'cigala', 'cigalas', 'carabinero', 'carabineros', 'quisquilla',
-      'quisquillas', 'almeja', 'almejas', 'coquina', 'coquinas', 'berberecho', 'berberechos',
-      'mejillon', 'mejillones', 'navaja', 'navajas', 'ostra', 'ostras', 'vieira', 'vieiras',
-      'zamburina', 'zamburinas', 'pulpo', 'calamar', 'calamares', 'chipiron', 'chipirones', 'sepia',
-      'choco', 'chocos', 'rape', 'bacalao', 'salmon', 'atun', 'bonito', 'emperador', 'boqueron',
-      'boquerones', 'sardina', 'sardinas', 'rodaballo', 'besugo', 'besugos', 'mero', 'lenguado',
-      'lenguados', 'urta', 'pargo', 'corvina', 'trucha', 'truchas', 'bogavante', 'bogavantes',
-      'langosta', 'langostas', 'centollo', 'centollos', 'necora', 'necoras', 'percebe', 'percebes',
-      'salmonete', 'salmonetes', 'jurel', 'caballa', 'rosada', 'huevas', 'angulas', 'gulas',
-      'bacaladilla', 'cazon', 'acedia', 'acedias', 'cabracho', 'gallo'
+      'san pedro', 'merluza', 'merluzas', 'pescadilla', 'pescadillas', 'dorada', 'doradas', 'lubina',
+      'lubinas', 'gamba', 'gambas', 'langostino', 'langostinos', 'cigala', 'cigalas', 'carabinero',
+      'carabineros', 'quisquilla', 'quisquillas', 'almeja', 'almejas', 'coquina', 'coquinas',
+      'berberecho', 'berberechos', 'mejillon', 'mejillones', 'navaja', 'navajas', 'ostra', 'ostras',
+      'vieira', 'vieiras', 'zamburina', 'zamburinas', 'pulpo', 'pulpos', 'calamar', 'calamares',
+      'chipiron', 'chipirones', 'sepia', 'sepias', 'choco', 'chocos', 'rape', 'rapes', 'bacalao',
+      'salmon', 'atun', 'bonito', 'emperador', 'boqueron', 'boquerones', 'sardina', 'sardinas',
+      'rodaballo', 'rodaballos', 'besugo', 'besugos', 'mero', 'lenguado', 'lenguados', 'urta', 'pargo',
+      'corvina', 'trucha', 'truchas', 'bogavante', 'bogavantes', 'langosta', 'langostas', 'centollo',
+      'centollos', 'necora', 'necoras', 'percebe', 'percebes', 'salmonete', 'salmonetes', 'jurel',
+      'caballa', 'caballas', 'rosada', 'huevas', 'angulas', 'gulas', 'bacaladilla', 'bacaladillas',
+      'cazon', 'acedia', 'acedias', 'cabracho', 'gallo', 'gallos'
     ].sort((a, b) => b.length - a.length);
 
+    const PALABRAS_PRODUCTO = new Set(PRODUCTOS.join(' ').split(' '));
+
     const NUMEROS = {
-      un: 1, uno: 1, una: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7,
-      ocho: 8, nueve: 9, diez: 10, once: 11, doce: 12, quince: 15, veinte: 20
+      un: 1, uno: 1, una: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8,
+      nueve: 9, diez: 10, once: 11, doce: 12, trece: 13, catorce: 14, quince: 15, dieciseis: 16,
+      diecisiete: 17, dieciocho: 18, diecinueve: 19, veinte: 20, treinta: 30, media: 0.5, medio: 0.5
     };
 
     const CIENTOS = {
@@ -848,12 +990,33 @@
 
     const DIAS_SEMANA = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
 
-    // Palabras que cortan el nombre o el producto
-    const PALABRAS_CORTE = new Set(['para', 'el', 'la', 'en', 'con', 'y', 'de', 'del', 'a', 'que',
-      'telefono', 'movil', 'numero', 'senal', 'hoy', 'manana', 'pasado', 'dia', 'tienda',
-      'ha', 'pagado', 'sin']);
+    // Palabras que terminan la descripción de un producto
+    const CORTE_PRODUCTO = new Set(['y', 'e', 'para', 'cliente', 'clienta', 'en', 'con', 'el', 'la',
+      'los', 'las', 'telefono', 'movil', 'numero', 'senal', 'que', 'a', 'al', 'nombre', 'se', 'llama',
+      'tambien', 'ademas', 'mas', 'otro', 'otra', 'otros', 'otras', 'por', 'tienda', 'recoger',
+      'recoge', 'ha', 'sin', 'senor', 'senora', 'don', 'dona', 'kilos', 'kilo', 'gramos']);
 
-    // Minúsculas y sin tildes, manteniendo la misma longitud que el texto original
+    // Palabras que nunca forman parte del nombre del cliente
+    const RELLENO = new Set(['para', 'de', 'del', 'el', 'la', 'los', 'las', 'y', 'e', 'en', 'con',
+      'a', 'al', 'cliente', 'clienta', 'nombre', 'se', 'llama', 'encargo', 'pedido', 'pedir', 'pide',
+      'quiere', 'quiero', 'necesita', 'necesito', 'apunta', 'apuntame', 'apuntalo', 'anota',
+      'anotame', 'pon', 'ponme', 'ponle', 'ponlo', 'guarda', 'guardalo', 'hola', 'vale', 'oye',
+      'bueno', 'pues', 'mira', 'eh', 'ok', 'que', 'es', 'son', 'sera', 'va', 'van', 'venir', 'viene',
+      'vendra', 'pasara', 'pasa', 'recoger', 'recoge', 'recogera', 'recogida', 'tienda', 'telefono',
+      'movil', 'numero', 'su', 'sus', 'mi', 'me', 'le', 'lo', 'un', 'una', 'unos', 'unas', 'kilo',
+      'kilos', 'gramos', 'por', 'favor', 'tambien', 'ademas', 'mas', 'otro', 'otra', 'otros', 'otras',
+      'parte', 'senor', 'senora', 'don', 'dona', 'sin', 'ha', 'pagado', 'pagada', 'senal', 'euros',
+      'euro', 'dia', 'dias', 'semana', 'proximo', 'proxima', 'siguiente', 'este', 'esta', 'todo',
+      'gracias', 'ese', 'esa', 'eso', 'cantidad', 'producto', 'productos', 'fecha', 'manana', 'tarde',
+      'noche', 'hoy']);
+
+    // Palabras tras las que suele venir el nombre
+    const PISTAS_NOMBRE = new Set(['para', 'cliente', 'clienta', 'nombre', 'llama', 'parte',
+      'senor', 'senora', 'don', 'dona']);
+
+    const PARTICULAS_NOMBRE = new Set(['de', 'del', 'la', 'las', 'los']);
+
+    // Minúsculas y sin tildes, con la misma longitud que el original
     function normalizar(texto) {
       let resultado = '';
       for (let i = 0; i < texto.length; i++) {
@@ -864,9 +1027,8 @@
       return resultado;
     }
 
-    // Tapa con espacios una parte ya interpretada para no volver a usarla
     function tapar(texto, inicio, fin) {
-      return texto.slice(0, inicio) + ' '.repeat(fin - inicio) + texto.slice(fin);
+      return texto.slice(0, inicio) + ' '.repeat(Math.max(0, fin - inicio)) + texto.slice(fin);
     }
 
     function aNumero(palabra) {
@@ -874,63 +1036,105 @@
       return NUMEROS[palabra];
     }
 
-    // Devuelve { kg, inicio, fin } o null
-    function buscarCantidad(t) {
-      const numPalabra = Object.keys(NUMEROS).join('|');
+    function esNumero(palabra) {
+      return /^\d/.test(palabra) || palabra in NUMEROS;
+    }
+
+    function limpiarPalabra(p) {
+      return p.replace(/[.,;:!?¡¿«»"]/g, '');
+    }
+
+    // Todas las palabras del texto con su posición
+    function palabras(t) {
+      const resultado = [];
+      const patron = /\S+/g;
+      let m;
+      while ((m = patron.exec(t))) {
+        resultado.push({ texto: limpiarPalabra(m[0]), bruto: m[0], inicio: m.index, fin: m.index + m[0].length });
+      }
+      return resultado;
+    }
+
+    // ---------- Cantidades ("tres kilos", "500 gramos", "kilo y medio"...) ----------
+    function buscarCantidades(t) {
+      const num = Object.keys(NUMEROS).filter((n) => n !== 'media' && n !== 'medio').join('|');
       const cientos = Object.keys(CIENTOS).join('|');
+      const extra = (m) => (m === 'medio' ? 0.5 : m === 'cuarto' ? 0.25 : 0);
       const reglas = [
-        [/\bcuarto y mitad\b/, () => 0.375],
-        [/(\d+(?:[.,]\d+)?)\s*(?:kilos?|kilogramos?|kg)\b(\s+y\s+(medio|cuarto))?/,
-          (m) => aNumero(m[1]) + (m[3] === 'medio' ? 0.5 : m[3] === 'cuarto' ? 0.25 : 0)],
-        [/(\d+(?:[.,]\d+)?)\s*(?:gramos?|gr)\b/, (m) => aNumero(m[1]) / 1000],
-        [new RegExp('\\b(' + numPalabra + ')\\s+(?:kilos?|kilogramos?)\\b(\\s+y\\s+(medio|cuarto))?'),
-          (m) => aNumero(m[1]) + (m[3] === 'medio' ? 0.5 : m[3] === 'cuarto' ? 0.25 : 0)],
-        [/\bkilo\s+y\s+medio\b/, () => 1.5],
-        [/\bmedio\s+kilo\b/, () => 0.5],
-        [/\btres\s+cuartos(?:\s+de\s+kilo)?\b/, () => 0.75],
-        [/\bun\s+cuarto(?:\s+de\s+kilo)?\b/, () => 0.25],
-        [new RegExp('\\b(' + cientos + ')\\s+gramos\\b'), (m) => CIENTOS[m[1]] / 1000],
-        [/\bkilo\b/, () => 1]
+        [/\bcuarto\s+y\s+mitad\b/g, () => 0.375],
+        [/(\d+(?:[.,]\d+)?)\s*(?:kilos?|kilogramos?|kgs?)\b(?:\s+y\s+(medio|cuarto))?/g,
+          (m) => aNumero(m[1]) + extra(m[2])],
+        [/(\d+(?:[.,]\d+)?)\s*(?:gramos?|grs?)\b/g, (m) => aNumero(m[1]) / 1000],
+        [new RegExp('\\b(' + num + ')\\s+(?:kilos?|kilogramos?)\\b(?:\\s+y\\s+(medio|cuarto))?', 'g'),
+          (m) => aNumero(m[1]) + extra(m[2])],
+        [/\b(?:un\s+)?kilo\s+y\s+medio\b/g, () => 1.5],
+        [/\bmedio\s+kilo\b/g, () => 0.5],
+        [/\btres\s+cuartos(?:\s+de\s+kilo)?\b/g, () => 0.75],
+        [/\bun\s+cuarto(?:\s+de\s+kilo)?\b/g, () => 0.25],
+        [new RegExp('\\b(' + cientos + ')\\s+gramos\\b', 'g'), (m) => CIENTOS[m[1]] / 1000],
+        [/\bkilo\b/g, () => 1],
+        // "cinco de bacaladilla": en la pescadería, sin unidad se entiende kilos
+        [new RegExp('\\b(\\d+(?:[.,]\\d+)?|' + num.replace(/\bun\|uno\|una\|/, '') + ')(?=\\s+de\\s+(?!(?:' + MESES.join('|') + ')\\b))', 'g'),
+          (m) => aNumero(m[1])]
       ];
+
+      const encontradas = [];
+      const solapa = (ini, fin) => encontradas.some((c) => ini < c.fin && fin > c.inicio);
+
       for (const [regla, calcular] of reglas) {
-        const m = regla.exec(t);
-        if (m) {
+        let m;
+        while ((m = regla.exec(t))) {
+          const inicio = m.index;
+          const fin = m.index + m[0].length;
           const kg = calcular(m);
-          if (kg > 0) return { kg: Math.round(kg * 1000) / 1000, inicio: m.index, fin: m.index + m[0].length };
+          if (kg > 0 && !solapa(inicio, fin)) {
+            encontradas.push({ kg: Math.round(kg * 1000) / 1000, inicio, fin });
+          }
         }
+      }
+      return encontradas.sort((a, b) => a.inicio - b.inicio);
+    }
+
+    // ---------- Teléfono ----------
+    function buscarTelefono(t) {
+      const patron = /\+?\d[\d\s.-]{7,}\d/g;
+      let m;
+      while ((m = patron.exec(t))) {
+        let digitos = m[0].replace(/\D/g, '');
+        if (digitos.length < 9) continue;
+        digitos = digitos.startsWith('34') && digitos.length >= 11 ? digitos.slice(0, 11) : digitos.slice(0, 9);
+        return { telefono: digitos, inicio: m.index, fin: m.index + m[0].length };
       }
       return null;
     }
 
-    // Devuelve { telefono, inicio, fin } o null
-    function buscarTelefono(t) {
-      const m = /(?:\b(?:telefono|movil|numero)\s*)?((?:\d[\s.-]?){8,}\d)/.exec(t);
-      if (!m) return null;
-      let digitos = m[1].replace(/\D/g, '');
-      digitos = digitos.startsWith('34') && digitos.length >= 11 ? digitos.slice(0, 11) : digitos.slice(0, 9);
-      if (digitos.length < 9) return null;
-      return { telefono: digitos, inicio: m.index, fin: m.index + m[0].length };
-    }
-
-    // Fecha futura más cercana para un día y mes
+    // ---------- Fecha ----------
     function fechaFutura(hoy, mes, dia) {
       let fecha = new Date(hoy.getFullYear(), mes - 1, dia);
-      if (fecha.getMonth() !== mes - 1) return null; // día imposible, p. ej. 31 de febrero
+      if (fecha.getMonth() !== mes - 1) return null;
       if (fecha < hoy) fecha = new Date(hoy.getFullYear() + 1, mes - 1, dia);
       return fecha;
     }
 
-    function sumarDias(hoy, n) {
-      return new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + n);
+    // Lunes de la semana actual (la semana empieza en lunes)
+    function lunesDeEstaSemana(hoy) {
+      return sumarDias(hoy, -((hoy.getDay() + 6) % 7));
     }
 
-    // Devuelve { fecha (YYYY-MM-DD), inicio, fin } o null
+    function posicionEnSemana(nombreDia) {
+      return (DIAS_SEMANA.indexOf(nombreDia) + 6) % 7; // lunes = 0 ... domingo = 6
+    }
+
     function buscarFecha(t, hoy) {
       const meses = MESES.join('|');
+      const dias = DIAS_SEMANA.join('|');
+      const num = Object.keys(NUMEROS).join('|');
       const reglas = [
         [/\bpasado\s+manana\b/, () => sumarDias(hoy, 2)],
         [/\bmanana\b/, () => sumarDias(hoy, 1)],
-        [/\bhoy\b/, () => sumarDias(hoy, 0)],
+        [/\bhoy\b/, () => hoy],
+        [new RegExp('\\b(?:dentro\\s+de|en)\\s+(\\d+|' + num + ')\\s+dias?\\b'),
+          (m) => sumarDias(hoy, Math.round(aNumero(m[1])))],
         [/\bnochebuena\b/, () => fechaFutura(hoy, 12, 24)],
         [/\b(?:noche|vispera)\s+de\s+reyes\b/, () => fechaFutura(hoy, 1, 5)],
         [/\bnochevieja\b/, () => fechaFutura(hoy, 12, 31)],
@@ -939,8 +1143,8 @@
         [/\breyes\b/, () => fechaFutura(hoy, 1, 6)],
         [new RegExp('\\b(\\d{1,2})\\s+de\\s+(' + meses + ')\\b'),
           (m) => fechaFutura(hoy, MESES.indexOf(m[2]) + 1, parseInt(m[1], 10))],
-        [/\b(?:dia|el)\s+(\d{1,2})\b(?!\s*(?:kilos?|kg|gramos?|gr)\b)/, (m) => {
-          // En esta app, un día suelto del 20 al 31 es de diciembre y del 1 al 6, de enero
+        [/\b(?:dia|el)\s+(\d{1,2})\b(?!\s*(?:kilos?|kgs?|gramos?|grs?)\b)/, (m) => {
+          // Un día suelto del 20 al 31 es de diciembre; del 1 al 6, de enero
           const dia = parseInt(m[1], 10);
           if (dia >= 20 && dia <= 31) return fechaFutura(hoy, 12, dia);
           if (dia >= 1 && dia <= 6) return fechaFutura(hoy, 1, dia);
@@ -948,9 +1152,19 @@
           if (fecha && fecha.getFullYear() > hoy.getFullYear()) fecha = fechaFutura(hoy, hoy.getMonth() + 2, dia);
           return fecha;
         }],
-        [/\b(lunes|martes|miercoles|jueves|viernes|sabado|domingo)\b/, (m) => {
-          const objetivo = DIAS_SEMANA.indexOf(m[1]);
-          let diferencia = (objetivo - hoy.getDay() + 7) % 7;
+        // "el próximo martes", "el martes que viene", "el martes de la semana que viene"
+        [new RegExp('\\b(?:proximo|siguiente)\\s+(' + dias + ')\\b'),
+          (m) => sumarDias(lunesDeEstaSemana(hoy), 7 + posicionEnSemana(m[1]))],
+        [new RegExp('\\b(' + dias + ')\\s+(?:proximo|siguiente|que\\s+viene|de\\s+la\\s+(?:semana\\s+que\\s+viene|proxima\\s+semana|semana\\s+siguiente))\\b'),
+          (m) => sumarDias(lunesDeEstaSemana(hoy), 7 + posicionEnSemana(m[1]))],
+        // "este jueves": el de esta semana (si ya pasó, el de la siguiente)
+        [new RegExp('\\beste\\s+(' + dias + ')\\b'), (m) => {
+          const fecha = sumarDias(lunesDeEstaSemana(hoy), posicionEnSemana(m[1]));
+          return fecha < hoy ? sumarDias(fecha, 7) : fecha;
+        }],
+        // "el jueves" a secas: el próximo jueves después de hoy
+        [new RegExp('\\b(' + dias + ')\\b'), (m) => {
+          let diferencia = (DIAS_SEMANA.indexOf(m[1]) - hoy.getDay() + 7) % 7;
           if (diferencia === 0) diferencia = 7;
           return sumarDias(hoy, diferencia);
         }]
@@ -965,6 +1179,7 @@
       return null;
     }
 
+    // ---------- Tienda y señal ----------
     function buscarTienda(t) {
       const reglas = [
         [/\b(?:dona\s+)?mencia\b/, 'Doña Mencía'],
@@ -980,198 +1195,371 @@
     }
 
     function buscarSenal(t) {
-      let m = /\b(?:sin\s+senal|senal\s+(?:pendiente|sin\s+pagar)|no\s+ha\s+pagado(?:\s+la)?(?:\s+senal)?)\b/.exec(t);
+      let m = /\b(?:sin\s+senal|senal\s+(?:pendiente|sin\s+pagar)|no\s+ha\s+(?:pagado|dejado|dado)(?:\s+la)?(?:\s+senal)?)\b/.exec(t);
       if (m) return { senal: false, inicio: m.index, fin: m.index + m[0].length };
       m = /\b(?:(?:con|ha\s+pagado|ha\s+dejado|ha\s+dado)\s+(?:la\s+)?)?senal(?:\s+(?:pagada|pagado|dada|dejada))?\b/.exec(t);
       if (m) return { senal: true, inicio: m.index, fin: m.index + m[0].length };
       return null;
     }
 
-    function capitalizar(texto) {
-      return texto.charAt(0).toUpperCase() + texto.slice(1);
-    }
-
-    // Lee palabras desde una posición hasta una palabra de corte o una zona ya interpretada
-    function leerPalabras(original, t, desde) {
-      const patron = /\S+/g;
-      patron.lastIndex = desde;
-      const palabras = [];
+    // ---------- Descripción del producto ----------
+    // Lee palabras hacia delante: "boquerones gordos", "merluza de pincho"...
+    function leerDescripcion(t, desde, hasta, maxPalabras) {
+      const lista = palabras(t).filter((p) => p.inicio >= desde && p.inicio < hasta);
+      const tomadas = [];
       let finAnterior = desde;
-      let m;
-      while ((m = patron.exec(t))) {
-        const limpia = m[0].replace(/[.,;:!?]/g, '');
-        if (m.index - finAnterior > 1 && palabras.length > 0) break; // hueco = zona tapada
-        if (!limpia || PALABRAS_CORTE.has(limpia)) break;
-        palabras.push(original.slice(m.index, m.index + m[0].length).replace(/[.,;:!?]/g, ''));
-        finAnterior = m.index + m[0].length;
-        if (/[.,;:]$/.test(m[0])) break;
+
+      for (let i = 0; i < lista.length && tomadas.length < maxPalabras; i++) {
+        const p = lista[i];
+        if (tomadas.length > 0 && p.inicio - finAnterior > 1) break; // zona ya interpretada
+        if (!p.texto || esNumero(p.texto)) break;
+
+        if (p.texto === 'de' || p.texto === 'del') {
+          const siguiente = lista[i + 1];
+          if (tomadas.length === 0 || !siguiente || siguiente.inicio - p.fin > 1 ||
+              CORTE_PRODUCTO.has(siguiente.texto) || esNumero(siguiente.texto) ||
+              MESES.includes(siguiente.texto)) break;
+          tomadas.push(p);
+          finAnterior = p.fin;
+          continue;
+        }
+
+        if (CORTE_PRODUCTO.has(p.texto)) break;
+        tomadas.push(p);
+        finAnterior = p.fin;
+        if (/[.,;:]$/.test(p.bruto)) break;
       }
-      return palabras.join(' ');
+
+      if (!tomadas.length) return null;
+      return { inicio: tomadas[0].inicio, fin: tomadas[tomadas.length - 1].fin };
     }
 
-    // Devuelve { producto, inicio, fin } o null
-    function buscarProducto(original, t) {
-      let mejor = null;
+    // Lee palabras hacia atrás: "merluza, dos kilos"
+    function leerDescripcionAtras(t, hasta, maxPalabras) {
+      const lista = palabras(t).filter((p) => p.fin <= hasta);
+      const tomadas = [];
+      let inicioSiguiente = hasta;
+
+      for (let i = lista.length - 1; i >= 0 && tomadas.length < maxPalabras; i--) {
+        const p = lista[i];
+        if (inicioSiguiente - p.fin > 1 && tomadas.length > 0) break;
+        if (inicioSiguiente - p.fin > 2 && tomadas.length === 0) break;
+        if (!p.texto || esNumero(p.texto) || CORTE_PRODUCTO.has(p.texto) || RELLENO.has(p.texto)) break;
+        if (tomadas.length > 0 && /[.,;:]$/.test(p.bruto)) break; // "Manolo, merluza"
+        tomadas.unshift(p);
+        inicioSiguiente = p.inicio;
+      }
+
+      // Si hay un producto conocido, lo de antes no es producto: "Manolo merluza" -> "merluza"
+      const primeraConocida = tomadas.findIndex((p) => PALABRAS_PRODUCTO.has(p.texto));
+      if (primeraConocida > 0) tomadas.splice(0, primeraConocida);
+
+      if (!tomadas.length) return null;
+      return { inicio: tomadas[0].inicio, fin: tomadas[tomadas.length - 1].fin };
+    }
+
+    function textoProducto(original, inicio, fin) {
+      return capitalizar(limpiarPalabra(original.slice(inicio, fin)).replace(/\s+/g, ' ').trim().toLowerCase());
+    }
+
+    // ---------- Productos ----------
+    function buscarProductos(original, t, cantidades) {
+      const productos = [];
+      let trabajo = t;
+
+      // 1) Cada cantidad con su producto: "tres kilos de boquerones gordos"
+      cantidades.forEach((c, i) => {
+        const siguiente = i + 1 < cantidades.length ? cantidades[i + 1].inicio : t.length;
+        let desde = c.fin;
+        const de = /^\s+(?:de|del)\s+/.exec(trabajo.slice(desde));
+        if (de) desde += de[0].length;
+
+        let tramo = leerDescripcion(trabajo, desde, siguiente, 5);
+        let inicioTapar = c.inicio;
+        let finTapar = tramo ? tramo.fin : c.fin;
+
+        // Sin producto detrás: "merluza, dos kilos"
+        if (!tramo) {
+          tramo = leerDescripcionAtras(trabajo, c.inicio, 4);
+          if (tramo) inicioTapar = tramo.inicio;
+        }
+
+        productos.push({
+          posicion: c.inicio,
+          producto: tramo ? textoProducto(original, tramo.inicio, tramo.fin) : null,
+          kg: c.kg,
+          unidades: null
+        });
+        trabajo = tapar(trabajo, inicioTapar, finTapar);
+      });
+
+      // 2) Productos conocidos sin kilos: "dos doradas", "una merluza grande", "pulpo"
+      const encontrados = [];
       for (const p of PRODUCTOS) {
-        const m = new RegExp('\\b' + p.replace(/ /g, '\\s+') + '\\b').exec(t);
-        if (m && (!mejor || m.index < mejor.inicio)) {
-          mejor = { inicio: m.index, fin: m.index + m[0].length };
+        const patron = new RegExp('\\b' + p.replace(/ /g, '\\s+') + '\\b', 'g');
+        let m;
+        while ((m = patron.exec(trabajo))) {
+          const inicio = m.index;
+          const fin = m.index + m[0].length;
+          if (!encontrados.some((e) => inicio < e.fin && fin > e.inicio)) encontrados.push({ inicio, fin });
         }
       }
-      if (!mejor) return null;
+      encontrados.sort((a, b) => a.inicio - b.inicio);
 
-      let producto = original.slice(mejor.inicio, mejor.fin);
-      // Añade "de Huelva", "de pincho"... si viene detrás
-      const resto = /^\s+de\s+([a-z]+)/.exec(t.slice(mejor.fin));
-      if (resto && !PALABRAS_CORTE.has(resto[1]) && !MESES.includes(resto[1])) {
-        const fin = mejor.fin + resto[0].length;
-        producto += original.slice(mejor.fin, fin);
-        mejor.fin = fin;
-      }
-      return { producto: capitalizar(producto.trim()), inicio: mejor.inicio, fin: mejor.fin };
+      encontrados.forEach((e) => {
+        let inicioTapar = e.inicio;
+        let unidades = null;
+        // Palabras justo antes del producto (pegadas, sin zonas tapadas en medio)
+        const antes = palabras(trabajo.slice(0, e.inicio));
+        const pegadas = [];
+        let limite = e.inicio;
+        for (let i = antes.length - 1; i >= 0 && pegadas.length < 3; i--) {
+          if (limite - antes[i].fin > 1) break;
+          pegadas.unshift(antes[i]);
+          limite = antes[i].inicio;
+        }
+        const textos = pegadas.map((p) => p.texto);
+        const n = textos.length;
+        const docena = (p) => p === 'docena' || p === 'docenas';
+        const cuantasDocenas = (p) => (!p ? 1 : p === 'media' ? 0.5 : (p === 'un' || p === 'una') ? 1 : esNumero(p) ? aNumero(p) : 1);
+
+        if (n >= 2 && textos[n - 1] === 'de' && docena(textos[n - 2])) {
+          // "una docena de ostras", "media docena de almejas"
+          const previa = n >= 3 && esNumero(textos[n - 3]) ? textos[n - 3] : null;
+          unidades = 12 * cuantasDocenas(previa);
+          inicioTapar = previa ? pegadas[n - 3].inicio : pegadas[n - 2].inicio;
+        } else if (n >= 1 && docena(textos[n - 1])) {
+          const previa = n >= 2 && esNumero(textos[n - 2]) ? textos[n - 2] : null;
+          unidades = 12 * cuantasDocenas(previa);
+          inicioTapar = previa ? pegadas[n - 2].inicio : pegadas[n - 1].inicio;
+        } else if (n >= 1 && esNumero(textos[n - 1])) {
+          // "dos lubinas", "una merluza"
+          unidades = aNumero(textos[n - 1]);
+          inicioTapar = pegadas[n - 1].inicio;
+        }
+
+        const detras = leerDescripcion(trabajo, e.fin, t.length, 3);
+        const fin = detras && detras.inicio - e.fin <= 1 ? detras.fin : e.fin;
+
+        productos.push({
+          posicion: inicioTapar,
+          producto: textoProducto(original, e.inicio, fin),
+          kg: null,
+          unidades
+        });
+        trabajo = tapar(trabajo, inicioTapar, fin);
+      });
+
+      productos.sort((a, b) => a.posicion - b.posicion);
+      return {
+        productos: productos
+          .filter((p) => p.producto)
+          .map((p) => ({ producto: p.producto, kg: p.kg, unidades: p.unidades })),
+        trabajo
+      };
     }
 
-    function limpiarNombre(texto) {
-      let nombre = texto.replace(/[.,;:!?¡¿«»"]/g, ' ').replace(/\s+/g, ' ').trim();
-      nombre = nombre.replace(/^(?:(?:para|cliente|nombre|encargo\s+(?:de|para)|a\s+nombre\s+de)\s+)+/i, '');
-      const palabras = nombre.split(' ').filter(Boolean);
-      while (palabras.length && PALABRAS_CORTE.has(normalizar(palabras[palabras.length - 1]))) {
-        palabras.pop();
-      }
-      const particulas = new Set(['de', 'del', 'la', 'las', 'los', 'y']);
-      return palabras.map((p, i) => {
-        const minuscula = p.toLowerCase();
-        return i > 0 && particulas.has(minuscula) ? minuscula : capitalizar(minuscula);
+    // ---------- Nombre: lo que queda sin interpretar ----------
+    function buscarNombre(original, t) {
+      const lista = palabras(t);
+      const grupos = [];
+      let actual = null;
+      let finAnterior = -10;
+      let pistaAnterior = false;
+
+      const cerrar = () => {
+        if (actual) {
+          while (actual.palabras.length && PARTICULAS_NOMBRE.has(actual.palabras[actual.palabras.length - 1].texto)) {
+            actual.palabras.pop();
+          }
+          if (actual.palabras.some((p) => !PARTICULAS_NOMBRE.has(p.texto))) grupos.push(actual);
+        }
+        actual = null;
+      };
+
+      lista.forEach((p, i) => {
+        const pegada = p.inicio - finAnterior <= 1;
+        const esNombre = /^[a-zn]+$/.test(p.texto) && p.texto.length > 1 &&
+          !RELLENO.has(p.texto) && !PALABRAS_PRODUCTO.has(p.texto) && !esNumero(p.texto) &&
+          !MESES.includes(p.texto) && !DIAS_SEMANA.includes(p.texto);
+        const esParticula = PARTICULAS_NOMBRE.has(p.texto);
+        const anteriorConPausa = i > 0 && /[.,;:]$/.test(lista[i - 1].bruto);
+
+        if (esNombre) {
+          if (!actual || !pegada || anteriorConPausa) {
+            cerrar();
+            actual = { palabras: [], conPista: pistaAnterior };
+          }
+          actual.palabras.push(p);
+        } else if (esParticula && actual && pegada && !anteriorConPausa) {
+          actual.palabras.push(p);
+        } else {
+          cerrar();
+        }
+
+        pistaAnterior = PISTAS_NOMBRE.has(p.texto) && pegada !== null;
+        finAnterior = p.fin;
+      });
+      cerrar();
+
+      if (!grupos.length) return null;
+      const elegido = grupos.find((g) => g.conPista) || grupos[0];
+      const trozos = elegido.palabras.slice(0, 4);
+      return trozos.map((p, i) => {
+        const palabra = limpiarPalabra(original.slice(p.inicio, p.fin)).toLowerCase();
+        return i > 0 && PARTICULAS_NOMBRE.has(p.texto) ? palabra : capitalizar(palabra);
       }).join(' ');
     }
 
-    // Convierte una frase dictada en los datos del formulario.
-    // Solo devuelve los campos que ha entendido.
+    // Convierte una frase dictada en un encargo. Solo incluye lo que ha entendido.
     function interpretarDictado(texto, hoy) {
       hoy = hoy || hoyAMedianoche();
       const original = texto.normalize('NFC');
       let t = normalizar(original);
+
+      // "por la mañana / por la tarde" no es una fecha
+      t = t.replace(/\b(?:por|de|a)\s+la\s+(?:manana|tarde|noche)\b/g, (m) => ' '.repeat(m.length));
+
       const datos = {};
-      const marcas = [];
+      const cantidades = buscarCantidades(t);
 
-      const cantidad = buscarCantidad(t);
-      if (cantidad) {
-        datos.kg = cantidad.kg;
-        marcas.push(cantidad.inicio);
-        t = tapar(t, cantidad.inicio, cantidad.fin);
-      }
+      // Teléfono, fecha, tienda y señal se buscan sin las cantidades
+      let sinCantidades = t;
+      cantidades.forEach((c) => { sinCantidades = tapar(sinCantidades, c.inicio, c.fin); });
 
-      const telefono = buscarTelefono(t);
+      const telefono = buscarTelefono(sinCantidades);
       if (telefono) {
         datos.telefono = telefono.telefono;
-        marcas.push(telefono.inicio);
         t = tapar(t, telefono.inicio, telefono.fin);
+        sinCantidades = tapar(sinCantidades, telefono.inicio, telefono.fin);
       }
 
-      const fecha = buscarFecha(t, hoy);
+      const fecha = buscarFecha(sinCantidades, hoy);
       if (fecha) {
         datos.fecha = fecha.fecha;
-        marcas.push(fecha.inicio);
         t = tapar(t, fecha.inicio, fecha.fin);
+        sinCantidades = tapar(sinCantidades, fecha.inicio, fecha.fin);
       }
 
-      const tienda = buscarTienda(t);
+      const tienda = buscarTienda(sinCantidades);
       if (tienda) {
         datos.tienda = tienda.tienda;
-        marcas.push(tienda.inicio);
         t = tapar(t, tienda.inicio, tienda.fin);
+        sinCantidades = tapar(sinCantidades, tienda.inicio, tienda.fin);
       }
 
-      const senal = buscarSenal(t);
+      const senal = buscarSenal(sinCantidades);
       if (senal) {
         datos.senal = senal.senal;
-        marcas.push(senal.inicio);
         t = tapar(t, senal.inicio, senal.fin);
       }
 
-      const producto = buscarProducto(original, t);
-      if (producto) {
-        datos.producto = producto.producto;
-        marcas.push(producto.inicio);
-        t = tapar(t, producto.inicio, producto.fin);
-      } else if (cantidad) {
-        // Producto no conocido: lo que venga tras "dos kilos de ..."
-        const de = /^\s+de\s+/.exec(t.slice(cantidad.fin));
-        if (de) {
-          const desconocido = leerPalabras(original, t, cantidad.fin + de[0].length);
-          if (desconocido) datos.producto = capitalizar(desconocido);
-        }
-      }
+      const { productos, trabajo } = buscarProductos(original, t, cantidades);
+      datos.productos = productos;
 
-      // El nombre es lo que se dice antes de todo lo demás
-      const primeraMarca = marcas.length ? Math.min(...marcas) : original.length;
-      const nombre = limpiarNombre(original.slice(0, primeraMarca));
+      const nombre = buscarNombre(original, trabajo);
       if (nombre) datos.nombre = nombre;
 
       return datos;
     }
 
-    // ---------- Volcar el dictado en el formulario ----------
-    const NOMBRES_CAMPOS = {
-      nombre: 'nombre', telefono: 'teléfono', tienda: 'tienda', producto: 'producto',
-      kg: 'kg', fecha: 'fecha', senal: 'señal'
-    };
-
-    function quitarMarcasDictado() {
-      Object.values(campos).forEach((c) => c.classList.remove('rellenado'));
-    }
-
-    function aplicarDictado(texto) {
+    // =====================================================
+    // DICTADO: GUARDAR DIRECTAMENTE
+    // =====================================================
+    function guardarDesdeDictado(texto) {
       const datos = interpretarDictado(texto);
-      const resultado = document.getElementById('dictado-resultado');
-      quitarMarcasDictado();
+      resultadoDictado.innerHTML = '';
 
-      Object.keys(datos).forEach((clave) => {
-        const campo = campos[clave];
-        if (clave === 'senal') {
-          campo.checked = datos.senal;
-        } else {
-          campo.value = datos[clave];
-        }
-        campo.classList.add('rellenado');
-        if (CAMPOS_VALIDADOS.includes(clave)) limpiarError(clave);
-      });
+      const oido = document.createElement('div');
+      oido.textContent = 'He oído: «' + texto + '»';
+      resultadoDictado.appendChild(oido);
 
-      const entendidos = Object.keys(NOMBRES_CAMPOS).filter((c) => c in datos).map((c) => NOMBRES_CAMPOS[c]);
-      const faltan = CAMPOS_VALIDADOS.filter((c) => !(c in datos)).map((c) => NOMBRES_CAMPOS[c]);
-
-      resultado.textContent = '';
-      const frase = document.createElement('div');
-      frase.textContent = 'He oído: «' + texto + '»';
-      resultado.appendChild(frase);
-
-      const resumen = document.createElement('div');
-      resumen.textContent = entendidos.length
-        ? '✅ Rellenado: ' + entendidos.join(', ') + '.'
-        : 'No he entendido ningún dato. Prueba otra vez o escríbelo.';
-      resultado.appendChild(resumen);
-
-      if (faltan.length && entendidos.length) {
-        const aviso = document.createElement('div');
-        aviso.textContent = '✍️ Falta: ' + faltan.join(', ') + '.';
-        resultado.appendChild(aviso);
+      if (!datos.productos.length) {
+        const mensaje = document.createElement('div');
+        mensaje.textContent = '❌ No he entendido ningún producto, así que no he guardado nada. Prueba otra vez.';
+        resultadoDictado.appendChild(mensaje);
+        return;
       }
 
-      const revisa = document.createElement('div');
-      revisa.textContent = 'Revisa los datos y pulsa «Guardar encargo».';
-      resultado.appendChild(revisa);
+      const encargo = {
+        id: generarId(),
+        nombre: datos.nombre || '',
+        telefono: datos.telefono || '',
+        tienda: datos.tienda || '',
+        productos: datos.productos,
+        fechaRecogida: datos.fecha || '',
+        senalPagada: datos.senal === true,
+        estado: 'Pendiente',
+        fechaCreacion: new Date().toISOString(),
+        origen: 'voz'
+      };
+
+      encargos.push(encargo);
+      if (!guardarEncargos()) {
+        encargos.pop();
+        const mensaje = document.createElement('div');
+        mensaje.textContent = 'No se pudo guardar el encargo. Revisa el espacio del navegador.';
+        resultadoDictado.appendChild(mensaje);
+        return;
+      }
+      pintarLista();
+
+      const resumen = document.createElement('div');
+      resumen.innerHTML = '<strong>✅ Guardado:</strong> ' +
+        (encargo.nombre ? escaparHtml(encargo.nombre) : 'sin nombre') +
+        (encargo.fechaRecogida ? ' · ' + formatearFecha(encargo.fechaRecogida) : '') +
+        (encargo.tienda ? ' · ' + escaparHtml(encargo.tienda) : '') +
+        (encargo.telefono ? ' · Tel. ' + escaparHtml(encargo.telefono) : '') +
+        (encargo.senalPagada ? ' · señal pagada' : '') +
+        '<ul>' + encargo.productos.map((p) =>
+          '<li>' + textoCantidad(p) + ' · ' + escaparHtml(p.producto) + '</li>').join('') + '</ul>';
+      resultadoDictado.appendChild(resumen);
+
+      const faltan = datosQueFaltan(encargo);
+      if (faltan.length) {
+        const aviso = document.createElement('div');
+        aviso.textContent = '⚠️ No has dicho: ' + faltan.join(', ') + '.';
+        resultadoDictado.appendChild(aviso);
+      }
+
+      const deshacer = document.createElement('button');
+      deshacer.type = 'button';
+      deshacer.className = 'boton-secundario boton-deshacer';
+      deshacer.textContent = '↩️ Deshacer este encargo';
+      deshacer.addEventListener('click', () => {
+        encargos = encargos.filter((e) => e.id !== encargo.id);
+        seleccionados.delete(encargo.id);
+        guardarEncargos();
+        pintarLista();
+        resultadoDictado.textContent = 'Encargo deshecho. Puedes dictarlo otra vez.';
+      });
+      resultadoDictado.appendChild(deshacer);
     }
 
-    // ---------- Micrófono ----------
+    // =====================================================
+    // DICTADO: MICRÓFONO
+    // =====================================================
+    // Une los trozos que devuelve el reconocimiento. En algunos Android
+    // cada trozo repite lo anterior, así que se evita duplicar.
+    function unirTrozos(trozos) {
+      let texto = '';
+      trozos.forEach((trozo) => {
+        const limpio = trozo.trim();
+        if (!limpio) return;
+        if (texto && limpio.toLowerCase().startsWith(texto.toLowerCase())) texto = limpio;
+        else if (!texto.toLowerCase().endsWith(limpio.toLowerCase())) texto = (texto + ' ' + limpio).trim();
+      });
+      return texto;
+    }
+
     (function prepararMicrofono() {
       const btnVoz = document.getElementById('btn-voz');
-      const resultado = document.getElementById('dictado-resultado');
       const Reconocimiento = window.SpeechRecognition || window.webkitSpeechRecognition;
 
       if (!Reconocimiento) {
         btnVoz.disabled = true;
         btnVoz.textContent = '🎤 Dictado no disponible aquí';
-        resultado.textContent = 'Este navegador no permite dictar. Puedes usar el micrófono del teclado en cada campo.';
+        resultadoDictado.textContent = 'Este navegador no permite dictar. Usa el formulario y el micrófono del teclado.';
         return;
       }
 
@@ -1186,76 +1574,76 @@
 
       btnVoz.addEventListener('click', () => {
         if (escuchando && reconocedor) {
-          reconocedor.stop();
+          reconocedor.stop(); // al parar, se procesa lo dicho
           return;
         }
 
         reconocedor = new Reconocimiento();
         reconocedor.lang = 'es-ES';
         reconocedor.interimResults = true;
-        reconocedor.continuous = false;
+        reconocedor.continuous = true; // deja hablar con pausas hasta tocar el botón
         reconocedor.maxAlternatives = 1;
 
-        let textoFinal = '';
+        const finales = [];
         let huboError = false;
 
         reconocedor.onstart = () => {
           escuchando = true;
           btnVoz.classList.add('escuchando');
-          btnVoz.textContent = '⏹ Escuchando… toca para parar';
-          resultado.textContent = 'Habla ahora…';
+          btnVoz.textContent = '⏹ Escuchando… toca al terminar';
+          resultadoDictado.textContent = 'Habla ahora. Puedes decir los datos en cualquier orden.';
         };
 
         reconocedor.onresult = (evento) => {
           let parcial = '';
-          textoFinal = '';
           for (let i = 0; i < evento.results.length; i++) {
             const trozo = evento.results[i][0].transcript;
-            if (evento.results[i].isFinal) textoFinal += trozo;
+            if (evento.results[i].isFinal) finales[i] = trozo;
             else parcial += trozo;
           }
-          resultado.textContent = '«' + (textoFinal + parcial).trim() + '»';
+          resultadoDictado.textContent = '«' + (unirTrozos(finales) + ' ' + parcial).trim() + '»';
         };
 
         reconocedor.onerror = (evento) => {
-          huboError = true;
           const mensajes = {
             'not-allowed': 'No hay permiso para el micrófono. Actívalo en los ajustes del navegador.',
             'service-not-allowed': 'No hay permiso para el micrófono. Actívalo en los ajustes del navegador.',
             'no-speech': 'No te he oído. Prueba otra vez, más cerca del móvil.',
             'network': 'El dictado necesita conexión a internet.',
-            'audio-capture': 'No encuentro el micrófono del móvil.',
-            'aborted': ''
+            'audio-capture': 'No encuentro el micrófono del móvil.'
           };
-          const mensaje = evento.error in mensajes ? mensajes[evento.error] : 'Error de dictado (' + evento.error + ').';
-          if (mensaje) resultado.textContent = mensaje;
+          if (evento.error === 'aborted' || evento.error === 'no-speech' && finales.length) return;
+          huboError = true;
+          resultadoDictado.textContent = mensajes[evento.error] || 'Error de dictado (' + evento.error + ').';
         };
 
         reconocedor.onend = () => {
           botonNormal();
-          if (textoFinal.trim()) {
-            aplicarDictado(textoFinal.trim());
-          } else if (!huboError) {
-            resultado.textContent = 'No he oído nada. Toca el botón y habla.';
-          }
+          const texto = unirTrozos(finales);
+          if (texto) guardarDesdeDictado(texto);
+          else if (!huboError) resultadoDictado.textContent = 'No he oído nada. Toca el botón y habla.';
         };
 
         try {
           reconocedor.start();
         } catch (error) {
           botonNormal();
-          resultado.textContent = 'No se pudo activar el micrófono. Inténtalo de nuevo.';
+          resultadoDictado.textContent = 'No se pudo activar el micrófono. Inténtalo de nuevo.';
         }
       });
     })();
 
     // Para pruebas desde la consola del navegador
     window.interpretarDictado = interpretarDictado;
+    window.guardarDesdeDictado = guardarDesdeDictado;
 
-    // ---------- Arranque: pintar los encargos guardados ----------
+    // =====================================================
+    // ARRANQUE
+    // =====================================================
+    reiniciarLineas();
     pintarLista();
 
-    // ---------- Modo sin conexión (solo funciona en https) ----------
+    // Modo sin conexión (solo funciona en https)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
