@@ -2056,7 +2056,6 @@
       const etiquetas = [];
       if (atrasado) etiquetas.push('<span class="etiqueta-atrasado">⏰ Atrasado: era el ' + formatearFechaDia(e.fechaRecogida) + '</span>');
       if (faltan.length) etiquetas.push('<span class="etiqueta-falta">⚠️ Falta: ' + faltan.join(', ') + '</span>');
-      if (estadoActual === 'Recogido') etiquetas.unshift('<span class="etiqueta-entregado">🤝 Entregado</span>');
       if (estadoActual === 'Cancelado') etiquetas.unshift('<span class="etiqueta-cancelado">❌ Cancelado</span>');
       if (e.origen === 'voz') etiquetas.push('<span class="etiqueta-voz">🎤 Dictado</span>');
       const vecesCliente = encargosPorCliente.get(e.id) || 1;
@@ -2071,10 +2070,11 @@
       }
       acciones.push('<button type="button" class="boton-secundario boton-repetir" data-id="' + id + '">🔁 Repetir</button>');
 
-      // En la tarjeta solo Pendiente y Preparado. «Entregado» se marca en el Mostrador.
-      const botonesEstado = ['Pendiente', 'Preparado'].map((s) =>
+      // En la tarjeta: Pendiente, Preparado y Entregado (internamente «Recogido»)
+      const botonesEstado = ['Pendiente', 'Preparado', 'Recogido'].map((s) =>
         '<button type="button" class="e-' + s.toLowerCase() + (s === estadoActual ? ' activo' : '') +
-        '" data-id="' + id + '" data-estado="' + s + '" aria-pressed="' + (s === estadoActual) + '">' + s + '</button>'
+        '" data-id="' + id + '" data-estado="' + s + '" aria-pressed="' + (s === estadoActual) + '">' +
+        (s === 'Recogido' ? 'Entregado' : s) + '</button>'
       ).join('');
 
       return `
@@ -2157,10 +2157,16 @@
         return;
       }
       pintarLista();
-      // Si con los filtros actuales ya no se ve, se dice dónde está
+      // Si con los filtros actuales ya no se ve, se dice dónde está (con Deshacer)
       if (!lista.querySelector('li.encargo[data-id="' + CSS.escape(id) + '"]')) {
         const filtro = OPCIONES_ESTADO.find((o) => o.valor === estado).texto;
-        mostrarToast((e.nombre || 'Encargo') + ': ' + estado.toLowerCase() + '. Lo verás en Estado → ' + filtro + '.');
+        const nombreEstado = estado === 'Recogido' ? 'entregado' : estado.toLowerCase();
+        mostrarToast((e.nombre || 'Encargo') + ': ' + nombreEstado + '. Lo verás en Estado → ' + filtro + '.', () => {
+          e.estado = anterior.estado;
+          e.fechaModificacion = new Date().toISOString();
+          guardarEncargos();
+          pintarLista();
+        });
       }
     }
 
