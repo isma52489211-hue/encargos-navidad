@@ -956,6 +956,173 @@
       text-decoration: none;
     }
 
+    /* Color del pueblo para cualquier elemento */
+    .tienda-baena { --color-tienda: var(--color-baena); }
+    .tienda-luque { --color-tienda: var(--color-luque); }
+    .tienda-zuheros { --color-tienda: var(--color-zuheros); }
+    .tienda-dona-mencia { --color-tienda: var(--color-dona-mencia); }
+    .tienda-sin-tienda { --color-tienda: var(--color-sin-tienda); }
+
+    /* ---------- WhatsApp, repetir y cliente habitual en la tarjeta ---------- */
+    .acciones-cliente {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .acciones-cliente a,
+    .acciones-cliente button {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      width: auto;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .boton-whatsapp { background: #25d366; color: #0b3d1f; }
+    .boton-whatsapp:hover { background: #1fb857; }
+
+    .etiqueta-habitual {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #fff4d6;
+      color: #7a5a00;
+    }
+
+    .pista-cliente {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fff8e1;
+      border: 1px solid #f3dfa0;
+      font-size: 0.9rem;
+    }
+
+    .pista-cliente button {
+      width: auto;
+      margin-top: 8px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      border-radius: 999px;
+    }
+
+    /* ---------- Mostrador de hoy ---------- */
+    .boton-mostrador {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #2e6b3c, var(--verde-navidad));
+      box-shadow: var(--sombra);
+    }
+
+    .boton-mostrador:hover { background: var(--verde-navidad); }
+
+    .boton-mostrador .cuenta {
+      padding: 0 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.25);
+      font-size: 0.9rem;
+    }
+
+    .cabecera-mostrador {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cabecera-mostrador .titulo-pagina { margin: 0; flex: 1; }
+
+    .boton-volver {
+      width: auto;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      border-radius: 999px;
+    }
+
+    .fecha-mostrador { margin: 6px 0 10px; color: var(--gris); font-weight: 600; }
+    .resumen-mostrador { font-size: 1.05rem; font-weight: 700; margin: 8px 0 12px; }
+
+    .tarjeta-mostrador {
+      background: #ffffff;
+      border-radius: var(--radio);
+      box-shadow: var(--sombra);
+      border-left: 10px solid var(--color-tienda, var(--borde));
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .tarjeta-mostrador.atrasado { box-shadow: 0 0 0 3px var(--error), var(--sombra); }
+
+    .mostrador-nombre {
+      font-size: 1.6rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+
+    .mostrador-productos {
+      list-style: none;
+      margin: 10px 0;
+      padding: 0;
+      font-size: 1.25rem;
+    }
+
+    .mostrador-productos li { padding: 5px 0; border-bottom: 1px dashed var(--borde); }
+    .mostrador-productos li:last-child { border-bottom: none; }
+
+    .mostrador-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+
+    .senal-falta { color: var(--error); font-weight: 700; }
+
+    .mostrador-botones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .mostrador-botones button {
+      padding: 16px 8px;
+      font-size: 1.1rem;
+      border-radius: 14px;
+    }
+
+    .btn-preparado { background: #ffffff; color: #1565c0; border: 2px solid #1565c0; }
+    .btn-preparado:hover { background: #e3f0fb; }
+    .btn-preparado.activo { background: #1565c0; color: #ffffff; }
+    .btn-entregado { background: var(--verde); }
+    .btn-entregado:hover { background: #1b5e20; }
+
+    /* Aviso flotante con botón Deshacer */
+    .toast { display: flex; align-items: center; gap: 10px; }
+    .toast .texto-toast { flex: 1; }
+
+    .toast button {
+      width: auto;
+      padding: 6px 10px;
+      background: transparent;
+      color: var(--dorado);
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .toast button:hover { background: rgba(255, 255, 255, 0.1); }
+
     @media (min-width: 480px) {
       .fila-doble {
         display: grid;
@@ -983,6 +1150,8 @@
     <!-- ==================== PESTAÑA: ENCARGOS ==================== -->
     <section class="pagina" id="pagina-encargos" role="tabpanel" aria-labelledby="tab-encargos">
       <h2 class="solo-lectores" id="titulo-lista">Encargos <span id="contador" hidden>0</span></h2>
+
+      <button type="button" class="boton-mostrador" id="btn-mostrador">🏪 Mostrador de hoy <span class="cuenta" id="cuenta-mostrador">0</span></button>
 
       <div class="buscador">
         <input type="search" id="buscar" placeholder="Buscar nombre, teléfono o producto" aria-label="Buscar encargos" autocomplete="off">
@@ -1027,13 +1196,15 @@
 
           <div class="campo">
             <label class="etiqueta" for="nombre">Nombre del cliente *</label>
-            <input type="text" id="nombre" name="nombre" autocomplete="off">
+            <input type="text" id="nombre" name="nombre" autocomplete="off" list="lista-clientes">
+            <datalist id="lista-clientes"></datalist>
             <p class="error" id="error-nombre" aria-live="polite"></p>
           </div>
 
           <div class="campo">
             <label class="etiqueta" for="telefono">Teléfono</label>
             <input type="tel" id="telefono" name="telefono" autocomplete="off">
+            <div class="pista-cliente" id="pista-cliente" hidden></div>
           </div>
 
           <div class="campo">
@@ -1074,6 +1245,19 @@
         </form>
         </div>
       </details>
+    </section>
+
+    <!-- ==================== MOSTRADOR DE HOY ==================== -->
+    <section class="pagina" id="pagina-mostrador" aria-labelledby="titulo-mostrador" hidden>
+      <div class="cabecera-mostrador">
+        <button type="button" class="boton-secundario boton-volver" id="btn-salir-mostrador">← Volver</button>
+        <h2 class="titulo-pagina" id="titulo-mostrador">🏪 Mostrador</h2>
+      </div>
+      <p class="fecha-mostrador" id="fecha-mostrador"></p>
+      <div class="etiqueta-chips">Pueblo de este mostrador</div>
+      <div class="fila-chips" id="mostrador-pueblos" role="group" aria-label="Pueblo del mostrador"></div>
+      <p class="resumen-mostrador" id="resumen-mostrador"></p>
+      <div id="lista-mostrador"></div>
     </section>
 
     <!-- ==================== PESTAÑA: RESUMEN ==================== -->
@@ -1388,6 +1572,8 @@
       CAMPOS_VALIDADOS.forEach(limpiarError);
       errorProductos.textContent = '';
       reiniciarLineas();
+      tiendaElegidaAMano = false;
+      ocultarPistaCliente();
     }
 
     function mostrarAviso(texto, exito) {
@@ -1575,13 +1761,15 @@
     // =====================================================
     // PESTAÑAS
     // =====================================================
-    const PAGINAS = ['encargos', 'nuevo', 'resumen'];
+    // "mostrador" es una página sin pestaña propia (se abre desde Encargos)
+    const PAGINAS = ['encargos', 'nuevo', 'resumen', 'mostrador'];
 
     function mostrarPestana(nombre) {
       if (!PAGINAS.includes(nombre)) return;
       PAGINAS.forEach((p) => {
         document.getElementById('pagina-' + p).hidden = p !== nombre;
-        document.getElementById('tab-' + p).setAttribute('aria-selected', String(p === nombre));
+        const tab = document.getElementById('tab-' + p);
+        if (tab) tab.setAttribute('aria-selected', String(p === nombre));
       });
       window.scrollTo(0, 0);
     }
@@ -1593,12 +1781,27 @@
     // ---------- Aviso flotante (abajo, unos segundos) ----------
     let temporizadorToast = null;
 
-    function mostrarToast(texto) {
+    // "deshacer" (opcional): función que se ejecuta al tocar «Deshacer»
+    function mostrarToast(texto, deshacer) {
       const toast = document.getElementById('toast');
-      toast.textContent = texto;
+      toast.innerHTML = '';
+      const span = document.createElement('span');
+      span.className = 'texto-toast';
+      span.textContent = texto;
+      toast.appendChild(span);
+      if (deshacer) {
+        const boton = document.createElement('button');
+        boton.type = 'button';
+        boton.textContent = 'Deshacer';
+        boton.addEventListener('click', () => {
+          toast.hidden = true;
+          deshacer();
+        });
+        toast.appendChild(boton);
+      }
       toast.hidden = false;
       clearTimeout(temporizadorToast);
-      temporizadorToast = setTimeout(() => { toast.hidden = true; }, 3500);
+      temporizadorToast = setTimeout(() => { toast.hidden = true; }, deshacer ? 6000 : 3500);
     }
 
     // =====================================================
@@ -1807,6 +2010,17 @@
       if (atrasado) etiquetas.push('<span class="etiqueta-atrasado">⏰ Atrasado: era el ' + formatearFechaDia(e.fechaRecogida) + '</span>');
       if (faltan.length) etiquetas.push('<span class="etiqueta-falta">⚠️ Falta: ' + faltan.join(', ') + '</span>');
       if (e.origen === 'voz') etiquetas.push('<span class="etiqueta-voz">🎤 Dictado</span>');
+      const vecesCliente = encargosPorCliente.get(e.id) || 1;
+      if (vecesCliente > 1) etiquetas.push('<span class="etiqueta-habitual">⭐ Habitual (' + vecesCliente + ' encargos)</span>');
+
+      // WhatsApp (si hay teléfono y el encargo sigue activo) y Repetir
+      const acciones = [];
+      const whatsapp = enlaceWhatsApp(e, fechas);
+      if (whatsapp) {
+        acciones.push('<a class="boton-whatsapp" href="' + escaparHtml(whatsapp.url) +
+          '" target="_blank" rel="noopener">💬 ' + whatsapp.texto + '</a>');
+      }
+      acciones.push('<button type="button" class="boton-secundario boton-repetir" data-id="' + id + '">🔁 Repetir</button>');
 
       const botonesEstado = ESTADOS.map((s) =>
         '<button type="button" class="e-' + s.toLowerCase() + (s === estadoActual ? ' activo' : '') +
@@ -1828,6 +2042,7 @@
           <ul class="productos-encargo">${productos}</ul>
           <p class="meta">${telefono}${senal}</p>
           ${etiquetas.length ? '<div class="etiquetas">' + etiquetas.join('') + '</div>' : ''}
+          <div class="acciones-cliente">${acciones.join('')}</div>
           <div class="estados" role="group" aria-label="Estado del encargo">${botonesEstado}</div>
         </li>
       `;
@@ -1835,6 +2050,7 @@
 
     function pintarLista() {
       const fechas = fechasClave();
+      actualizarClientes();
       pintarFiltros(fechas);
 
       const visibles = ordenarPorRecogida(encargos.filter((e) => cumpleFiltros(e, filtros, fechas)));
@@ -1872,6 +2088,7 @@
       insignia.hidden = nAtrasados === 0;
 
       actualizarBarra();
+      pintarMostrador();
       actualizarNavidad();
       actualizarEstadoCopia();
     }
@@ -1900,6 +2117,11 @@
       const editar = evento.target.closest('.boton-editar');
       if (editar) {
         empezarEdicion(editar.dataset.id);
+        return;
+      }
+      const repetir = evento.target.closest('.boton-repetir');
+      if (repetir) {
+        repetirEncargo(repetir.dataset.id);
         return;
       }
       const botonEstado = evento.target.closest('.estados button');
@@ -1958,6 +2180,389 @@
     document.getElementById('btn-quitar-seleccion').addEventListener('click', () => {
       seleccionados.clear();
       pintarLista();
+    });
+
+    // =====================================================
+    // WHATSAPP AL CLIENTE
+    // =====================================================
+    // Número para wa.me: con prefijo de país y sin "+" (España si tiene 9 cifras)
+    function numeroWhatsApp(telefono) {
+      let d = (telefono || '').replace(/\D/g, '');
+      if (d.startsWith('00')) d = d.slice(2);
+      if (d.length === 9) d = '34' + d;
+      return d.length >= 11 ? d : null;
+    }
+
+    function productosParaMensaje(e) {
+      return e.productos.map((p) => {
+        if (p.kg) return formatearNumero(p.kg) + ' kg de ' + p.producto.toLowerCase();
+        if (p.unidades) return formatearNumero(p.unidades) + ' ' + p.producto.toLowerCase();
+        return p.producto.toLowerCase();
+      }).join(', ');
+    }
+
+    function cuandoParaMensaje(fechaIso, fechas) {
+      if (fechaIso === fechas.hoy) return 'hoy';
+      if (fechaIso === fechas.manana) return 'mañana';
+      return 'el ' + formatearFechaDia(fechaIso);
+    }
+
+    // Devuelve { url, texto } o null. El mensaje cambia según el estado.
+    function enlaceWhatsApp(e, fechas) {
+      if (e.estado !== 'Pendiente' && e.estado !== 'Preparado') return null;
+      const numero = numeroWhatsApp(e.telefono);
+      if (!numero) return null;
+
+      const saludo = e.nombre ? 'Hola ' + e.nombre.trim().split(/\s+/)[0] + ', ' : 'Hola, ';
+      const productos = productosParaMensaje(e);
+      const donde = TIENDAS.includes(e.tienda) ? 'nuestra tienda de ' + e.tienda : 'la pescadería';
+      let texto;
+      let mensaje;
+
+      if (esAtrasado(e, fechas.hoy)) {
+        texto = 'Recordar recogida';
+        mensaje = saludo + 'tu encargo (' + productos + ') te está esperando en ' + donde +
+          '. ¿Cuándo te viene bien pasar a recogerlo?';
+      } else if (e.estado === 'Preparado') {
+        texto = 'Avisar: está listo';
+        mensaje = saludo + 'tu encargo (' + productos + ') ya está preparado. Puedes recogerlo en ' + donde +
+          (e.fechaRecogida ? ' ' + cuandoParaMensaje(e.fechaRecogida, fechas) : '') + '. ¡Gracias!';
+      } else {
+        texto = 'Confirmar encargo';
+        mensaje = saludo + 'te confirmamos tu encargo: ' + productos + '. Recogida' +
+          (e.fechaRecogida ? ' ' + cuandoParaMensaje(e.fechaRecogida, fechas) : '') + ' en ' + donde + '. ¡Gracias!';
+      }
+      return { url: 'https://wa.me/' + numero + '?text=' + encodeURIComponent(mensaje), texto };
+    }
+
+    // =====================================================
+    // CLIENTES HABITUALES
+    // =====================================================
+    // Se deducen de los encargos guardados: mismo teléfono = mismo cliente.
+    // Sin teléfono, se agrupan por nombre completo.
+    let clientes = [];
+    let encargosPorCliente = new Map(); // id de encargo -> nº de encargos de su cliente
+
+    function digitosTelefono(telefono) {
+      let d = (telefono || '').replace(/\D/g, '');
+      if (d.startsWith('0034')) d = d.slice(4);
+      else if (d.length === 11 && d.startsWith('34')) d = d.slice(2);
+      return d;
+    }
+
+    function claveNombre(nombre) {
+      return normalizar(nombre || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function actualizarClientes() {
+      const porTelefono = new Map();
+      const porNombre = new Map();
+      const nuevoCliente = () => ({ nombre: '', telefono: '', tienda: '', encargos: [] });
+
+      // 1) Encargos con teléfono
+      encargos.forEach((e) => {
+        const tel = digitosTelefono(e.telefono);
+        if (tel.length < 9) return;
+        if (!porTelefono.has(tel)) porTelefono.set(tel, nuevoCliente());
+        porTelefono.get(tel).encargos.push(e);
+      });
+      porTelefono.forEach((c) => {
+        c.nombre = (c.encargos.find((e) => e.nombre) || {}).nombre || '';
+      });
+
+      // 2) Sin teléfono: se unen a un cliente con teléfono si el nombre coincide con uno solo
+      encargos.forEach((e) => {
+        if (digitosTelefono(e.telefono).length >= 9 || !e.nombre) return;
+        const clave = claveNombre(e.nombre);
+        const conTelefono = [...porTelefono.values()].filter((c) => claveNombre(c.nombre) === clave);
+        if (conTelefono.length === 1) {
+          conTelefono[0].encargos.push(e);
+          return;
+        }
+        if (!porNombre.has(clave)) porNombre.set(clave, nuevoCliente());
+        porNombre.get(clave).encargos.push(e);
+      });
+
+      // Datos más recientes de cada cliente
+      clientes = [...porTelefono.values(), ...porNombre.values()];
+      encargosPorCliente = new Map();
+      clientes.forEach((c) => {
+        c.encargos.sort((a, b) => a.fechaCreacion.localeCompare(b.fechaCreacion));
+        c.encargos.forEach((e) => {
+          if (e.nombre) c.nombre = e.nombre;
+          if (e.telefono) c.telefono = e.telefono;
+          if (TIENDAS.includes(e.tienda)) c.tienda = e.tienda;
+          encargosPorCliente.set(e.id, c.encargos.length);
+        });
+      });
+
+      // Sugerencias de nombres al escribir en el formulario
+      const nombres = [...new Set(clientes.map((c) => c.nombre).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, 'es'));
+      document.getElementById('lista-clientes').innerHTML =
+        nombres.map((n) => '<option value="' + escaparHtml(n) + '">').join('');
+    }
+
+    // Busca un cliente conocido por teléfono o, si no, por nombre completo.
+    // Devuelve { cliente, por }, { ambiguos: n } o null.
+    function buscarCliente(nombre, telefono) {
+      const tel = digitosTelefono(telefono);
+      if (tel.length >= 9) {
+        const c = clientes.find((x) => digitosTelefono(x.telefono) === tel);
+        if (c) return { cliente: c, por: 'telefono' };
+      }
+      const clave = claveNombre(nombre);
+      if (!clave) return null;
+      const iguales = clientes.filter((x) => claveNombre(x.nombre) === clave);
+      if (iguales.length === 1) return { cliente: iguales[0], por: 'nombre' };
+      if (iguales.length > 1) return { ambiguos: iguales.length };
+      return null;
+    }
+
+    function ultimoEncargo(c) {
+      return c.encargos[c.encargos.length - 1];
+    }
+
+    function resumenUltimoEncargo(c) {
+      const u = ultimoEncargo(c);
+      const productos = u.productos.map((p) =>
+        (p.kg || p.unidades ? textoCantidad(p) + ' ' : '') + p.producto).join(', ');
+      return productos + (u.fechaRecogida ? ' (' + formatearFechaDia(u.fechaRecogida) + ')' : '');
+    }
+
+    // ---------- Cliente habitual en el formulario a mano ----------
+    const pistaCliente = document.getElementById('pista-cliente');
+    let tiendaElegidaAMano = false;
+    campos.tienda.addEventListener('change', () => { tiendaElegidaAMano = true; });
+
+    let clienteEnPista = null; // cliente que se está mostrando ahora en la ayuda
+
+    function ocultarPistaCliente() {
+      pistaCliente.hidden = true;
+      pistaCliente.innerHTML = '';
+      clienteEnPista = null;
+    }
+
+    function revisarClienteFormulario() {
+      if (idEditando) {
+        ocultarPistaCliente();
+        return;
+      }
+      const r = buscarCliente(campos.nombre.value, campos.telefono.value);
+      if (!r) {
+        ocultarPistaCliente();
+        return;
+      }
+      if (r.ambiguos) {
+        pistaCliente.textContent = '📇 Hay ' + r.ambiguos + ' clientes con ese nombre. Escribe el teléfono para saber cuál es.';
+        pistaCliente.hidden = false;
+        clienteEnPista = null;
+        return;
+      }
+
+      // Si ya se muestra este cliente, no se vuelve a dibujar
+      // (así no se pierde el toque en «Repetir» al salir del campo)
+      const c = r.cliente;
+      if (c === clienteEnPista && !pistaCliente.hidden) return;
+      clienteEnPista = c;
+      const rellenado = [];
+      if (!campos.nombre.value.trim() && c.nombre) {
+        campos.nombre.value = c.nombre;
+        rellenado.push('nombre');
+      }
+      if (!campos.telefono.value.trim() && c.telefono) {
+        campos.telefono.value = c.telefono;
+        rellenado.push('teléfono');
+      }
+      if (!tiendaElegidaAMano && c.tienda && campos.tienda.value !== c.tienda) {
+        campos.tienda.value = c.tienda;
+        rellenado.push('tienda');
+      }
+
+      pistaCliente.innerHTML = '📇 <strong>Cliente habitual</strong> · ' + c.encargos.length +
+        (c.encargos.length === 1 ? ' encargo' : ' encargos') +
+        (rellenado.length ? '. He rellenado: ' + rellenado.join(', ') + '.' : '.') +
+        '<br>Último: ' + escaparHtml(resumenUltimoEncargo(c)) + '<br>';
+
+      const repetir = document.createElement('button');
+      repetir.type = 'button';
+      repetir.className = 'boton-secundario';
+      repetir.textContent = '🔁 Repetir su último encargo';
+      repetir.addEventListener('click', () => {
+        lineasProductos.innerHTML = '';
+        ultimoEncargo(c).productos.forEach((p) => rellenarLinea(crearLineaProducto(), p));
+        errorProductos.textContent = '';
+        mostrarAviso('🔁 Productos copiados. Elige la fecha y guarda.', true);
+        campos.fecha.focus();
+      });
+      pistaCliente.appendChild(repetir);
+      pistaCliente.hidden = false;
+    }
+
+    campos.nombre.addEventListener('change', revisarClienteFormulario);
+    campos.telefono.addEventListener('change', revisarClienteFormulario);
+
+    // ---------- Repetir un encargo desde su tarjeta ----------
+    // Copia cliente, tienda y productos a un encargo nuevo; falta elegir la fecha.
+    function repetirEncargo(id) {
+      const e = encargos.find((x) => x.id === id);
+      if (!e) return;
+      if (idEditando) salirEdicion();
+      limpiarFormulario();
+
+      campos.nombre.value = e.nombre;
+      campos.telefono.value = e.telefono;
+      campos.tienda.value = TIENDAS.includes(e.tienda) ? e.tienda : '';
+      tiendaElegidaAMano = true;
+      lineasProductos.innerHTML = '';
+      e.productos.forEach((p) => rellenarLinea(crearLineaProducto(), p));
+      if (!e.productos.length) crearLineaProducto();
+
+      mostrarPestana('nuevo');
+      const seccionForm = document.getElementById('seccion-form');
+      seccionForm.open = true;
+      seccionForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      mostrarAviso('🔁 Copiado el encargo de ' + (e.nombre || 'este cliente') + '. Elige la fecha de recogida y guarda.', true);
+    }
+
+    // =====================================================
+    // MOSTRADOR DE HOY
+    // =====================================================
+    // Cada móvil recuerda el pueblo de su mostrador
+    const CLAVE_PUEBLO_MOSTRADOR = 'encargosNavidad.puebloMostrador';
+    let puebloMostrador = 'todos';
+    try {
+      const guardado = localStorage.getItem(CLAVE_PUEBLO_MOSTRADOR);
+      if (guardado === 'todos' || TIENDAS.includes(guardado)) puebloMostrador = guardado;
+    } catch (error) {
+      // sin almacenamiento: se usa "todos"
+    }
+
+    function delPuebloMostrador(e) {
+      return puebloMostrador === 'todos' || e.tienda === puebloMostrador;
+    }
+
+    // Lo que queda por entregar hoy (y los atrasados), por orden alfabético
+    function encargosDelMostrador(fechas) {
+      return encargos
+        .filter((e) =>
+          (e.estado === 'Pendiente' || e.estado === 'Preparado') &&
+          (e.fechaRecogida === fechas.hoy || esAtrasado(e, fechas.hoy)) &&
+          delPuebloMostrador(e))
+        .sort((a, b) =>
+          (esAtrasado(b, fechas.hoy) - esAtrasado(a, fechas.hoy)) ||
+          (a.nombre || '~').localeCompare(b.nombre || '~', 'es'));
+    }
+
+    function pintarMostrador() {
+      const fechas = fechasClave();
+      const pendientes = encargosDelMostrador(fechas);
+      document.getElementById('cuenta-mostrador').textContent = pendientes.length;
+      if (document.getElementById('pagina-mostrador').hidden) return;
+
+      document.getElementById('titulo-mostrador').textContent =
+        '🏪 Mostrador' + (puebloMostrador === 'todos' ? '' : ' · ' + puebloMostrador);
+      document.getElementById('fecha-mostrador').textContent = 'Hoy, ' + formatearFecha(fechas.hoy);
+
+      const opciones = [{ valor: 'todos', texto: 'Todos' }].concat(TIENDAS.map((t) => ({ valor: t, texto: t })));
+      pintarFila('mostrador-pueblos', opciones.map((o) => {
+        const activo = o.valor === puebloMostrador;
+        return '<button type="button" class="chip' + (activo ? ' activo' : '') +
+          (o.valor === 'todos' ? '' : ' ' + claseDeTienda(o.valor)) +
+          '" data-filtro="pueblo" data-valor="' + escaparHtml(o.valor) + '" aria-pressed="' + activo + '">' +
+          (o.valor === 'todos' ? '' : '<span class="punto-color"></span>') + escaparHtml(o.texto) + '</button>';
+      }).join(''));
+
+      const entregados = encargos.filter((e) =>
+        e.estado === 'Recogido' && e.fechaRecogida === fechas.hoy && delPuebloMostrador(e)).length;
+      const preparados = pendientes.filter((e) => e.estado === 'Preparado').length;
+      document.getElementById('resumen-mostrador').textContent = pendientes.length
+        ? (pendientes.length === 1 ? 'Queda 1 por entregar' : 'Quedan ' + pendientes.length + ' por entregar') +
+          ' · ' + preparados + (preparados === 1 ? ' preparado' : ' preparados') +
+          ' · ' + entregados + (entregados === 1 ? ' entregado hoy' : ' entregados hoy')
+        : '';
+
+      const contenedor = document.getElementById('lista-mostrador');
+      if (!pendientes.length) {
+        contenedor.innerHTML = '<div class="vacio"><span class="grande">✅</span>No queda nada por entregar hoy' +
+          (puebloMostrador === 'todos' ? '' : ' en ' + escaparHtml(puebloMostrador)) + '.' +
+          (entregados ? '<br>Entregados hoy: ' + entregados + '.' : '') + '</div>';
+        return;
+      }
+
+      contenedor.innerHTML = pendientes.map((e) => {
+        const atrasado = esAtrasado(e, fechas.hoy);
+        const id = escaparHtml(e.id);
+        const preparado = e.estado === 'Preparado';
+        const productos = e.productos.map((p) =>
+          '<li><strong>' + textoCantidad(p) + '</strong> · ' + escaparHtml(p.producto) + '</li>').join('');
+        return '<article class="tarjeta-mostrador ' + claseDeTienda(e.tienda) + (atrasado ? ' atrasado' : '') + '">' +
+          '<div class="mostrador-nombre">' +
+            (e.nombre ? escaparHtml(e.nombre) : '<span class="sin-dato">Cliente sin nombre</span>') + '</div>' +
+          (puebloMostrador === 'todos'
+            ? '<span class="pueblo">' + (TIENDAS.includes(e.tienda) ? '📍 ' + escaparHtml(e.tienda) : '📍 Sin tienda') + '</span>'
+            : '') +
+          '<ul class="mostrador-productos">' + productos + '</ul>' +
+          '<div class="mostrador-meta">' +
+            (e.senalPagada ? '<span class="senal-si">💶 Señal pagada</span>' : '<span class="senal-falta">💶 Sin señal</span>') +
+            (e.telefono ? '<a href="tel:' + escaparHtml(e.telefono.replace(/[^\d+]/g, '')) + '">📞 ' + escaparHtml(e.telefono) + '</a>' : '') +
+            (atrasado ? '<span class="etiqueta-atrasado">⏰ Era el ' + formatearFechaDia(e.fechaRecogida) + '</span>' : '') +
+          '</div>' +
+          '<div class="mostrador-botones">' +
+            '<button type="button" class="btn-preparado' + (preparado ? ' activo' : '') + '" data-id="' + id +
+              '" data-accion="preparado" aria-pressed="' + preparado + '">' + (preparado ? '✅ Preparado' : '📦 Preparar') + '</button>' +
+            '<button type="button" class="btn-entregado" data-id="' + id + '" data-accion="entregado">🤝 Entregado</button>' +
+          '</div>' +
+        '</article>';
+      }).join('');
+    }
+
+    document.getElementById('btn-mostrador').addEventListener('click', () => {
+      mostrarPestana('mostrador');
+      pintarMostrador();
+    });
+
+    document.getElementById('btn-salir-mostrador').addEventListener('click', () => mostrarPestana('encargos'));
+
+    document.getElementById('mostrador-pueblos').addEventListener('click', (evento) => {
+      const chip = evento.target.closest('.chip');
+      if (!chip) return;
+      puebloMostrador = chip.dataset.valor;
+      try {
+        localStorage.setItem(CLAVE_PUEBLO_MOSTRADOR, puebloMostrador);
+      } catch (error) {
+        // no se recordará, pero funciona igual
+      }
+      pintarMostrador();
+    });
+
+    document.getElementById('lista-mostrador').addEventListener('click', (evento) => {
+      const boton = evento.target.closest('button[data-accion]');
+      if (!boton) return;
+      const e = encargos.find((x) => x.id === boton.dataset.id);
+      if (!e) return;
+
+      const anterior = { estado: e.estado, fechaModificacion: e.fechaModificacion };
+      const nuevo = boton.dataset.accion === 'entregado'
+        ? 'Recogido'
+        : (e.estado === 'Preparado' ? 'Pendiente' : 'Preparado');
+      e.estado = nuevo;
+      e.fechaModificacion = new Date().toISOString();
+      if (!guardarEncargos()) {
+        Object.assign(e, anterior);
+        mostrarToast('No se pudo guardar. Inténtalo de nuevo.');
+        return;
+      }
+      pintarLista();
+
+      if (nuevo === 'Recogido') {
+        mostrarToast('🤝 ' + (e.nombre || 'Encargo') + ': entregado.', () => {
+          e.estado = anterior.estado;
+          e.fechaModificacion = new Date().toISOString();
+          guardarEncargos();
+          pintarLista();
+        });
+      }
     });
 
     // =====================================================
@@ -2602,6 +3207,24 @@
         return;
       }
 
+      // Cliente habitual: completar con su historial lo que no se ha dicho.
+      // Solo es automático si se reconoce por teléfono o por nombre y apellido;
+      // con un nombre suelto ("Pepe") se pregunta, porque puede haber varios.
+      const conocido = buscarCliente(datos.nombre, datos.telefono);
+      const completadoHistorial = [];
+      let clienteSugerido = null;
+      if (conocido && conocido.cliente) {
+        const c = conocido.cliente;
+        const fiable = conocido.por === 'telefono' || claveNombre(datos.nombre).includes(' ');
+        if (fiable) {
+          if (!datos.nombre && c.nombre) { datos.nombre = c.nombre; completadoHistorial.push('nombre'); }
+          if (!datos.telefono && c.telefono) { datos.telefono = c.telefono; completadoHistorial.push('teléfono'); }
+          if (!datos.tienda && c.tienda) { datos.tienda = c.tienda; completadoHistorial.push('tienda'); }
+        } else if ((!datos.telefono && c.telefono) || (!datos.tienda && c.tienda)) {
+          clienteSugerido = c;
+        }
+      }
+
       const encargo = {
         id: generarId(),
         nombre: datos.nombre || '',
@@ -2635,6 +3258,38 @@
         '<ul>' + encargo.productos.map((p) =>
           '<li>' + textoCantidad(p) + ' · ' + escaparHtml(p.producto) + '</li>').join('') + '</ul>';
       resultadoDictado.appendChild(resumen);
+
+      if (completadoHistorial.length) {
+        const historial = document.createElement('div');
+        historial.textContent = '📇 Cliente habitual: he completado ' + completadoHistorial.join(', ') + ' con su historial.';
+        resultadoDictado.appendChild(historial);
+      }
+
+      if (clienteSugerido) {
+        const c = clienteSugerido;
+        const pregunta = document.createElement('div');
+        pregunta.textContent = '📇 Hay un cliente llamado ' + c.nombre + ' (' +
+          [c.tienda, c.telefono].filter(Boolean).join(' · ') + '). ¿Es el mismo?';
+        resultadoDictado.appendChild(pregunta);
+
+        const usar = document.createElement('button');
+        usar.type = 'button';
+        usar.className = 'boton-secundario boton-completar';
+        usar.style.marginRight = '8px';
+        usar.textContent = '📇 Sí, usar sus datos';
+        usar.addEventListener('click', () => {
+          const e = encargos.find((x) => x.id === encargo.id);
+          if (!e) return;
+          if (!e.telefono && c.telefono) e.telefono = c.telefono;
+          if (!e.tienda && c.tienda) e.tienda = c.tienda;
+          e.fechaModificacion = new Date().toISOString();
+          guardarEncargos();
+          pintarLista();
+          pregunta.textContent = '✅ Añadidos los datos de ' + c.nombre + '.';
+          usar.remove();
+        });
+        resultadoDictado.appendChild(usar);
+      }
 
       const faltan = datosQueFaltan(encargo);
       if (faltan.length) {
