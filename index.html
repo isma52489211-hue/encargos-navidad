@@ -378,6 +378,109 @@
       padding: 8px 14px;
     }
 
+    /* ---------- Acciones y estados de cada encargo ---------- */
+    .fila-acciones {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .fila-acciones .fila-seleccion { margin-bottom: 0; }
+
+    .boton-editar {
+      width: auto;
+      font-size: 0.9rem;
+      padding: 6px 12px;
+    }
+
+    .estados {
+      display: flex;
+      gap: 4px;
+      margin-top: 10px;
+    }
+
+    .estados button {
+      flex: 1;
+      width: auto;
+      font-size: 0.8rem;
+      padding: 8px 2px;
+      background: #ffffff;
+      color: var(--gris);
+      border: 1px solid var(--borde);
+      border-radius: 6px;
+    }
+
+    .estados button:hover { background: #f3efe8; }
+    .estados button.activo { color: #ffffff; border-color: transparent; }
+    .estados button.activo.e-pendiente { background: #f9a825; color: #222222; }
+    .estados button.activo.e-preparado { background: #1565c0; }
+    .estados button.activo.e-recogido { background: var(--verde); }
+    .estados button.activo.e-cancelado { background: #757575; }
+
+    li.encargo.estado-recogido,
+    li.encargo.estado-cancelado { opacity: 0.6; }
+    li.encargo.estado-cancelado .encargo-cabecera strong { text-decoration: line-through; }
+
+    li.encargo.resaltado { outline: 3px solid #ffd54f; }
+
+    .aviso.exito { color: var(--verde); }
+
+    #btn-cancelar-edicion { margin-top: 8px; }
+
+    /* ---------- Hoja de compra ---------- */
+    .atajos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .atajos button {
+      flex: 1;
+      width: auto;
+      font-size: 0.9rem;
+      padding: 8px 10px;
+    }
+
+    .tabla-compra {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      margin-top: 8px;
+    }
+
+    .tabla-compra th {
+      text-align: left;
+      font-size: 0.8rem;
+      color: var(--gris);
+      border-bottom: 2px solid var(--borde);
+      padding: 6px 4px;
+    }
+
+    .tabla-compra td {
+      border-bottom: 1px solid var(--borde);
+      padding: 8px 4px;
+      vertical-align: top;
+    }
+
+    .tabla-compra .total {
+      text-align: right;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .desglose {
+      font-size: 0.8rem;
+      color: var(--gris);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .resumen-compra { font-size: 0.95rem; margin: 10px 0 0; }
+    .nota-compra { font-size: 0.85rem; color: var(--gris); margin: 6px 0 0; }
+
     /* ---------- Copia de seguridad ---------- */
     .botones-copia {
       display: grid;
@@ -428,7 +531,7 @@
       <div class="cifras">
         <div class="cifra"><span class="valor" id="n-encargos">0</span><span class="texto">encargos</span></div>
         <div class="cifra"><span class="valor" id="n-kg">0</span><span class="texto">kg encargados</span></div>
-        <div class="cifra"><span class="valor" id="n-hoy">0</span><span class="texto">recogen hoy</span></div>
+        <div class="cifra"><span class="valor" id="n-hoy">0</span><span class="texto">por recoger hoy</span></div>
         <div class="cifra"><span class="valor" id="n-senal">0</span><span class="texto">con señal pagada</span></div>
       </div>
       <p class="top-productos" id="top-productos"></p>
@@ -444,9 +547,9 @@
       </div>
     </section>
 
-    <section class="tarjeta" aria-labelledby="titulo-form">
+    <section class="tarjeta" id="seccion-form" aria-labelledby="titulo-form">
       <h2 id="titulo-form">Nuevo encargo a mano</h2>
-      <p class="ayuda">Los campos marcados con * son obligatorios.</p>
+      <p class="ayuda" id="ayuda-form">Los campos marcados con * son obligatorios.</p>
 
       <form id="formulario" novalidate>
 
@@ -464,11 +567,13 @@
         <div class="campo">
           <label class="etiqueta" for="tienda">Tienda *</label>
           <select id="tienda" name="tienda">
-            <option value="Baena">Baena</option>
+            <option value="">— Sin indicar —</option>
+            <option value="Baena" selected>Baena</option>
             <option value="Luque">Luque</option>
             <option value="Zuheros">Zuheros</option>
             <option value="Doña Mencía">Doña Mencía</option>
           </select>
+          <p class="error" id="error-tienda" aria-live="polite"></p>
         </div>
 
         <div class="campo">
@@ -491,9 +596,41 @@
           </label>
         </div>
 
-        <button type="submit">Guardar encargo</button>
+        <button type="submit" id="btn-guardar">Guardar encargo</button>
+        <button type="button" id="btn-cancelar-edicion" class="boton-secundario" hidden>Cancelar edición</button>
         <p class="aviso" id="aviso" role="status"></p>
       </form>
+    </section>
+
+    <section class="tarjeta" id="hoja-compra" aria-labelledby="titulo-compra">
+      <h2 id="titulo-compra">🛒 Hoja de compra</h2>
+      <p class="ayuda">Suma por producto lo encargado para esas fechas. No cuenta los encargos cancelados.</p>
+      <div class="atajos">
+        <button type="button" class="boton-secundario" data-rango="hoy">Hoy</button>
+        <button type="button" class="boton-secundario" data-rango="manana">Mañana</button>
+        <button type="button" class="boton-secundario" data-rango="semana">Próx. 7 días</button>
+      </div>
+      <div class="fila-doble">
+        <div class="campo">
+          <label class="etiqueta" for="compra-desde">Desde</label>
+          <input type="date" id="compra-desde">
+        </div>
+        <div class="campo">
+          <label class="etiqueta" for="compra-hasta">Hasta</label>
+          <input type="date" id="compra-hasta">
+        </div>
+      </div>
+      <div class="campo">
+        <label class="etiqueta" for="compra-tienda">Tienda</label>
+        <select id="compra-tienda">
+          <option value="">Todas las tiendas</option>
+          <option value="Baena">Baena</option>
+          <option value="Luque">Luque</option>
+          <option value="Zuheros">Zuheros</option>
+          <option value="Doña Mencía">Doña Mencía</option>
+        </select>
+      </div>
+      <div id="resultado-compra" aria-live="polite"></div>
     </section>
 
     <section aria-labelledby="titulo-lista">
@@ -550,7 +687,10 @@
     };
 
     // Campos con mensaje de error propio
-    const CAMPOS_VALIDADOS = ['nombre', 'fecha'];
+    const CAMPOS_VALIDADOS = ['nombre', 'tienda', 'fecha'];
+
+    const TIENDAS = ['Baena', 'Luque', 'Zuheros', 'Doña Mencía'];
+    const ESTADOS = ['Pendiente', 'Preparado', 'Recogido', 'Cancelado'];
 
     const DIAS_SEMANA_TEXTO = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 
@@ -709,7 +849,8 @@
     });
 
     // Lee las líneas de producto. Las líneas vacías se ignoran.
-    function leerLineasProductos() {
+    // Al editar se permite dejar la cantidad vacía ("cantidad sin indicar").
+    function leerLineasProductos(permitirSinCantidad) {
       const productos = [];
       let hayErrores = false;
 
@@ -723,19 +864,22 @@
         if (!producto && !textoCantidadLinea) return;
 
         const cantidad = parseFloat(textoCantidadLinea);
+        const cantidadValida = !isNaN(cantidad) && cantidad > 0;
+        const vaciaPermitida = textoCantidadLinea === '' && permitirSinCantidad;
+
         if (!producto) {
           inputProducto.setAttribute('aria-invalid', 'true');
           hayErrores = true;
         }
-        if (isNaN(cantidad) || cantidad <= 0) {
+        if (!cantidadValida && !vaciaPermitida) {
           inputCantidad.setAttribute('aria-invalid', 'true');
           hayErrores = true;
         }
-        if (producto && cantidad > 0) {
+        if (producto && (cantidadValida || vaciaPermitida)) {
           productos.push({
             producto,
-            kg: unidad === 'kg' ? cantidad : null,
-            unidades: unidad === 'ud' ? cantidad : null
+            kg: cantidadValida && unidad === 'kg' ? cantidad : null,
+            unidades: cantidadValida && unidad === 'ud' ? cantidad : null
           });
         }
       });
@@ -760,31 +904,111 @@
       reiniciarLineas();
     }
 
+    function mostrarAviso(texto, exito) {
+      aviso.textContent = texto || '';
+      aviso.classList.toggle('exito', !!exito);
+    }
+
+    // ---------- Modo edición ----------
+    // El mismo formulario sirve para crear y para editar.
+    let idEditando = null;
+    const tituloForm = document.getElementById('titulo-form');
+    const btnGuardar = document.getElementById('btn-guardar');
+    const btnCancelarEdicion = document.getElementById('btn-cancelar-edicion');
+
+    function rellenarLinea(linea, p) {
+      linea.querySelector('.lp-producto').value = p.producto;
+      if (p.kg) {
+        linea.querySelector('.lp-cantidad').value = p.kg;
+        linea.querySelector('.lp-unidad').value = 'kg';
+      } else if (p.unidades) {
+        linea.querySelector('.lp-cantidad').value = p.unidades;
+        linea.querySelector('.lp-unidad').value = 'ud';
+      }
+    }
+
+    function empezarEdicion(id) {
+      const e = encargos.find((x) => x.id === id);
+      if (!e) return;
+      limpiarFormulario();
+      idEditando = id;
+
+      campos.nombre.value = e.nombre;
+      campos.telefono.value = e.telefono;
+      campos.tienda.value = TIENDAS.includes(e.tienda) ? e.tienda : '';
+      campos.fecha.value = e.fechaRecogida;
+      campos.senal.checked = e.senalPagada;
+
+      lineasProductos.innerHTML = '';
+      e.productos.forEach((p) => rellenarLinea(crearLineaProducto(), p));
+      if (!e.productos.length) crearLineaProducto();
+
+      tituloForm.textContent = '✏️ Editar encargo' + (e.nombre ? ' de ' + e.nombre : '');
+      document.getElementById('ayuda-form').textContent =
+        'Solo hace falta un producto. Lo que dejes en blanco quedará marcado como «Falta».';
+      btnGuardar.textContent = 'Guardar cambios';
+      btnCancelarEdicion.hidden = false;
+      mostrarAviso('');
+      document.getElementById('seccion-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function salirEdicion() {
+      idEditando = null;
+      tituloForm.textContent = 'Nuevo encargo a mano';
+      document.getElementById('ayuda-form').textContent = 'Los campos marcados con * son obligatorios.';
+      btnGuardar.textContent = 'Guardar encargo';
+      btnCancelarEdicion.hidden = true;
+      limpiarFormulario();
+    }
+
+    btnCancelarEdicion.addEventListener('click', () => {
+      salirEdicion();
+      mostrarAviso('');
+    });
+
+    // Marca un momento en amarillo una tarjeta de la lista y la enseña
+    function resaltarEncargo(id) {
+      const tarjeta = lista.querySelector('li.encargo[data-id="' + CSS.escape(id) + '"]');
+      if (!tarjeta) return;
+      tarjeta.classList.add('resaltado');
+      tarjeta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => tarjeta.classList.remove('resaltado'), 2500);
+    }
+
     formulario.addEventListener('submit', (evento) => {
       evento.preventDefault();
-      aviso.textContent = '';
+      mostrarAviso('');
       CAMPOS_VALIDADOS.forEach(limpiarError);
       errorProductos.textContent = '';
 
+      // Al editar solo se exige un producto: lo que falte queda marcado
+      const editando = idEditando !== null;
       let primerError = null;
 
-      if (campos.nombre.value.trim() === '') {
+      if (!editando && campos.nombre.value.trim() === '') {
         mostrarError('nombre', 'Escribe el nombre del cliente.');
         primerError = primerError || campos.nombre;
       }
 
-      const { productos, hayErrores } = leerLineasProductos();
+      if (!editando && campos.tienda.value === '') {
+        mostrarError('tienda', 'Elige la tienda.');
+        primerError = primerError || campos.tienda;
+      }
+
+      const { productos, hayErrores } = leerLineasProductos(editando);
       if (hayErrores) {
-        errorProductos.textContent = 'Cada producto necesita nombre y una cantidad mayor que 0.';
+        errorProductos.textContent = editando
+          ? 'Cada producto necesita nombre. La cantidad, si la pones, debe ser mayor que 0.'
+          : 'Cada producto necesita nombre y una cantidad mayor que 0.';
         primerError = primerError || lineasProductos.querySelector('[aria-invalid="true"]');
       } else if (productos.length === 0) {
-        errorProductos.textContent = 'Añade al menos un producto con su cantidad.';
+        errorProductos.textContent = 'Añade al menos un producto' + (editando ? '.' : ' con su cantidad.');
         const primero = lineasProductos.querySelector('.lp-producto');
         primero.setAttribute('aria-invalid', 'true');
         primerError = primerError || primero;
       }
 
-      if (campos.fecha.value === '') {
+      if (!editando && campos.fecha.value === '') {
         mostrarError('fecha', 'Elige la fecha de recogida.');
         primerError = primerError || campos.fecha;
       }
@@ -794,28 +1018,57 @@
         return;
       }
 
-      const encargo = {
-        id: generarId(),
+      const datosFormulario = {
         nombre: campos.nombre.value.trim(),
         telefono: campos.telefono.value.trim(),
         tienda: campos.tienda.value,
         productos,
         fechaRecogida: campos.fecha.value,
-        senalPagada: campos.senal.checked,
+        senalPagada: campos.senal.checked
+      };
+
+      // ----- Guardar cambios de un encargo existente -----
+      if (editando) {
+        const indice = encargos.findIndex((e) => e.id === idEditando);
+        if (indice === -1) {
+          salirEdicion();
+          mostrarAviso('Ese encargo ya no existe (quizá se borró).');
+          return;
+        }
+        const anterior = encargos[indice];
+        encargos[indice] = Object.assign({}, anterior, datosFormulario, {
+          fechaModificacion: new Date().toISOString()
+        });
+        if (!guardarEncargos()) {
+          encargos[indice] = anterior;
+          mostrarAviso('No se pudieron guardar los cambios. Revisa el espacio del navegador.');
+          return;
+        }
+        const id = idEditando;
+        salirEdicion();
+        pintarLista();
+        mostrarAviso('✅ Cambios guardados.', true);
+        resaltarEncargo(id);
+        return;
+      }
+
+      // ----- Encargo nuevo -----
+      const encargo = Object.assign({ id: generarId() }, datosFormulario, {
         estado: 'Pendiente',
         fechaCreacion: new Date().toISOString(),
         origen: 'manual'
-      };
+      });
 
       encargos.push(encargo);
       if (!guardarEncargos()) {
         encargos.pop();
-        aviso.textContent = 'No se pudo guardar el encargo. Revisa el espacio o los permisos del navegador.';
+        mostrarAviso('No se pudo guardar el encargo. Revisa el espacio o los permisos del navegador.');
         return;
       }
 
       limpiarFormulario();
       pintarLista();
+      mostrarAviso('✅ Encargo guardado.', true);
       campos.nombre.focus();
     });
 
@@ -851,13 +1104,27 @@
         ? '<span class="senal-si">Sí</span>'
         : '<span class="senal-no">No</span>';
       const faltan = datosQueFaltan(e);
+      const id = escaparHtml(e.id);
+      const estadoActual = ESTADOS.includes(e.estado) ? e.estado : 'Pendiente';
+
+      const etiquetas = [];
+      if (faltan.length) etiquetas.push('<span class="etiqueta-falta">⚠️ Falta: ' + faltan.join(', ') + '</span>');
+      if (e.origen === 'voz') etiquetas.push('<span class="etiqueta-voz">🎤 Dictado</span>');
+
+      const botonesEstado = ESTADOS.map((s) =>
+        '<button type="button" class="e-' + s.toLowerCase() + (s === estadoActual ? ' activo' : '') +
+        '" data-id="' + id + '" data-estado="' + s + '" aria-pressed="' + (s === estadoActual) + '">' + s + '</button>'
+      ).join('');
 
       return `
-        <li class="encargo">
-          <label class="fila-seleccion">
-            <input type="checkbox" class="seleccion" data-id="${escaparHtml(e.id)}" ${seleccionados.has(e.id) ? 'checked' : ''}>
-            Seleccionar para borrar
-          </label>
+        <li class="encargo estado-${estadoActual.toLowerCase()}" data-id="${id}">
+          <div class="fila-acciones">
+            <label class="fila-seleccion">
+              <input type="checkbox" class="seleccion" data-id="${id}" ${seleccionados.has(e.id) ? 'checked' : ''}>
+              Seleccionar para borrar
+            </label>
+            <button type="button" class="boton-secundario boton-editar" data-id="${id}">✏️ Editar</button>
+          </div>
           <div class="encargo-cabecera">
             <strong>${nombre}</strong>
             <span class="fecha">${fecha}</span>
@@ -865,11 +1132,8 @@
           <ul class="productos-encargo">${productos}</ul>
           <p class="encargo-detalle">Tienda: ${tienda} · Tel: ${telefono}</p>
           <p class="encargo-detalle">Señal pagada: ${senal}</p>
-          <div class="etiquetas">
-            <span class="etiqueta-estado">${escaparHtml(e.estado)}</span>
-            ${faltan.length ? '<span class="etiqueta-falta">⚠️ Falta: ' + faltan.join(', ') + '</span>' : ''}
-            ${e.origen === 'voz' ? '<span class="etiqueta-voz">🎤 Dictado</span>' : ''}
-          </div>
+          ${etiquetas.length ? '<div class="etiquetas">' + etiquetas.join('') + '</div>' : ''}
+          <div class="estados" role="group" aria-label="Estado del encargo">${botonesEstado}</div>
         </li>
       `;
     }
@@ -880,8 +1144,34 @@
       vacio.hidden = encargos.length > 0;
       actualizarBarra();
       actualizarNavidad();
+      pintarHojaCompra();
       actualizarEstadoCopia();
     }
+
+    // ---------- Estados ----------
+    function cambiarEstado(id, estado) {
+      const e = encargos.find((x) => x.id === id);
+      if (!e || e.estado === estado || !ESTADOS.includes(estado)) return;
+      const anterior = { estado: e.estado, fechaModificacion: e.fechaModificacion };
+      e.estado = estado;
+      e.fechaModificacion = new Date().toISOString();
+      if (!guardarEncargos()) {
+        Object.assign(e, anterior);
+        mostrarAviso('No se pudo cambiar el estado. Inténtalo de nuevo.');
+        return;
+      }
+      pintarLista();
+    }
+
+    lista.addEventListener('click', (evento) => {
+      const editar = evento.target.closest('.boton-editar');
+      if (editar) {
+        empezarEdicion(editar.dataset.id);
+        return;
+      }
+      const botonEstado = evento.target.closest('.estados button');
+      if (botonEstado) cambiarEstado(botonEstado.dataset.id, botonEstado.dataset.estado);
+    });
 
     // ---------- Selección y borrado ----------
     function actualizarBarra() {
@@ -899,6 +1189,7 @@
         aviso.textContent = 'No se pudo actualizar la lista. Inténtalo de nuevo.';
         return;
       }
+      if (idEditando && seleccionados.has(idEditando)) salirEdicion();
       seleccionados.clear();
       confirmacion.hidden = true;
       pintarLista();
@@ -942,9 +1233,12 @@
 
       document.getElementById('cuenta-atras').innerHTML = textoCuentaAtras(hoy);
 
+      // Los cancelados no cuentan
+      const activos = encargos.filter((e) => e.estado !== 'Cancelado');
+
       let totalKg = 0;
       const porProducto = new Map();
-      encargos.forEach((e) => {
+      activos.forEach((e) => {
         e.productos.forEach((p) => {
           totalKg += Number(p.kg) || 0;
           const clave = p.producto.trim().toLowerCase();
@@ -955,12 +1249,12 @@
         });
       });
 
-      document.getElementById('n-encargos').textContent = encargos.length;
+      document.getElementById('n-encargos').textContent = activos.length;
       document.getElementById('n-kg').textContent = formatearNumero(Math.round(totalKg * 100) / 100);
       document.getElementById('n-hoy').textContent =
-        encargos.filter((e) => e.fechaRecogida === hoyTexto).length;
+        activos.filter((e) => e.fechaRecogida === hoyTexto && e.estado !== 'Recogido').length;
       document.getElementById('n-senal').textContent =
-        encargos.filter((e) => e.senalPagada).length;
+        activos.filter((e) => e.senalPagada).length;
 
       const top = [...porProducto.values()]
         .sort((a, b) => b.kg - a.kg || b.unidades - a.unidades)
@@ -971,6 +1265,138 @@
           p.nombre + ' (' + (p.kg ? formatearNumero(p.kg) + ' kg' : formatearNumero(p.unidades) + ' ud') + ')'
         ).join(' · ')
         : 'Todavía no hay encargos esta temporada.';
+    }
+
+    // =====================================================
+    // HOJA DE COMPRA
+    // =====================================================
+    const compraDesde = document.getElementById('compra-desde');
+    const compraHasta = document.getElementById('compra-hasta');
+    const compraTienda = document.getElementById('compra-tienda');
+    const resultadoCompra = document.getElementById('resultado-compra');
+
+    function ponerRangoCompra(rango) {
+      const hoy = hoyAMedianoche();
+      let desde = hoy;
+      let hasta = hoy;
+      if (rango === 'manana') {
+        desde = sumarDias(hoy, 1);
+        hasta = desde;
+      } else if (rango === 'semana') {
+        hasta = sumarDias(hoy, 6);
+      }
+      compraDesde.value = aIso(desde);
+      compraHasta.value = aIso(hasta);
+      pintarHojaCompra();
+    }
+
+    document.querySelectorAll('[data-rango]').forEach((boton) => {
+      boton.addEventListener('click', () => ponerRangoCompra(boton.dataset.rango));
+    });
+    [compraDesde, compraHasta, compraTienda].forEach((c) => c.addEventListener('change', pintarHojaCompra));
+
+    // Por defecto, la compra de hoy
+    compraDesde.value = aIso(hoyAMedianoche());
+    compraHasta.value = compraDesde.value;
+
+    // "Gambas rojas", "gambas  rojas" y "GAMBAS ROJAS" son el mismo producto
+    function claveProducto(nombre) {
+      return normalizar(nombre).replace(/\s+/g, ' ').trim();
+    }
+
+    function textoTotales(kg, unidades) {
+      const partes = [];
+      if (kg) partes.push(formatearNumero(Math.round(kg * 1000) / 1000) + ' kg');
+      if (unidades) partes.push(formatearNumero(unidades) + ' ud');
+      return partes.join(' + ');
+    }
+
+    function sumarProducto(acumulado, p) {
+      acumulado.kg += Number(p.kg) || 0;
+      acumulado.unidades += Number(p.unidades) || 0;
+      if (!p.kg && !p.unidades) acumulado.sinCantidad++;
+    }
+
+    function pintarHojaCompra() {
+      const desde = compraDesde.value;
+      const hasta = compraHasta.value;
+      const tienda = compraTienda.value;
+
+      if (!desde || !hasta) {
+        resultadoCompra.innerHTML = '<p class="nota-compra">Elige las fechas.</p>';
+        return;
+      }
+      if (desde > hasta) {
+        resultadoCompra.innerHTML = '<p class="nota-compra">⚠️ La fecha «Desde» es posterior a «Hasta».</p>';
+        return;
+      }
+
+      const deLaTienda = (e) => !tienda || e.tienda === tienda;
+      const activos = encargos.filter((e) => e.estado !== 'Cancelado' && deLaTienda(e));
+      const delRango = activos.filter((e) => e.fechaRecogida && e.fechaRecogida >= desde && e.fechaRecogida <= hasta);
+      const sinFecha = activos.filter((e) => !e.fechaRecogida).length;
+
+      const textoRango = desde === hasta
+        ? 'para el ' + formatearFecha(desde)
+        : 'del ' + formatearFecha(desde) + ' al ' + formatearFecha(hasta);
+      const textoTienda = tienda ? ' en ' + tienda : ' en todas las tiendas';
+      const notaSinFecha = sinFecha
+        ? '<p class="nota-compra">⚠️ ' + (sinFecha === 1
+          ? '1 encargo sin fecha no está incluido. Edítalo para ponerle fecha.'
+          : sinFecha + ' encargos sin fecha no están incluidos. Edítalos para ponerles fecha.') + '</p>'
+        : '';
+
+      // Agrupar por producto, y dentro de cada producto, por tienda
+      const productos = new Map();
+      const total = { kg: 0, unidades: 0, sinCantidad: 0 };
+      delRango.forEach((e) => {
+        e.productos.forEach((p) => {
+          const clave = claveProducto(p.producto);
+          if (!productos.has(clave)) {
+            productos.set(clave, { nombre: capitalizar(p.producto.trim()), kg: 0, unidades: 0, sinCantidad: 0, tiendas: new Map() });
+          }
+          const fila = productos.get(clave);
+          sumarProducto(fila, p);
+          sumarProducto(total, p);
+          const nombreTienda = e.tienda || 'Sin tienda';
+          if (!fila.tiendas.has(nombreTienda)) fila.tiendas.set(nombreTienda, { kg: 0, unidades: 0, sinCantidad: 0 });
+          sumarProducto(fila.tiendas.get(nombreTienda), p);
+        });
+      });
+
+      if (!productos.size) {
+        resultadoCompra.innerHTML = '<p class="resumen-compra">No hay encargos ' + escaparHtml(textoRango + textoTienda) + '.</p>' + notaSinFecha;
+        return;
+      }
+
+      const ordenTiendas = (nombre) => (TIENDAS.includes(nombre) ? TIENDAS.indexOf(nombre) : TIENDAS.length);
+      const filas = [...productos.values()].sort((a, b) =>
+        b.kg - a.kg || b.unidades - a.unidades || a.nombre.localeCompare(b.nombre, 'es'));
+
+      const filasHtml = filas.map((fila) => {
+        const sinCantidad = fila.sinCantidad
+          ? '<div class="desglose">+ ' + fila.sinCantidad + ' sin cantidad</div>'
+          : '';
+        let desglose = '';
+        if (!tienda) {
+          desglose = '<div class="desglose">' + [...fila.tiendas.entries()]
+            .sort((a, b) => ordenTiendas(a[0]) - ordenTiendas(b[0]))
+            .map(([nombre, t]) => escaparHtml(nombre) + ': ' + (textoTotales(t.kg, t.unidades) || 'sin cantidad'))
+            .join(' · ') + '</div>';
+        }
+        return '<tr><td>' + escaparHtml(fila.nombre) + desglose + '</td>' +
+          '<td class="total">' + (textoTotales(fila.kg, fila.unidades) || '—') + sinCantidad + '</td></tr>';
+      }).join('');
+
+      resultadoCompra.innerHTML =
+        '<p class="resumen-compra"><strong>' + delRango.length + (delRango.length === 1 ? ' encargo' : ' encargos') + '</strong> ' +
+        escaparHtml(textoRango + textoTienda) + '.</p>' +
+        '<table class="tabla-compra"><thead><tr><th>Producto</th><th class="total">Cantidad</th></tr></thead>' +
+        '<tbody>' + filasHtml + '</tbody></table>' +
+        (textoTotales(total.kg, total.unidades)
+          ? '<p class="resumen-compra">Total: <strong>' + textoTotales(total.kg, total.unidades) + '</strong></p>'
+          : '') +
+        notaSinFecha;
     }
 
     // Copos de nieve en la cabecera
@@ -1560,6 +1986,14 @@
         const aviso = document.createElement('div');
         aviso.textContent = '⚠️ No has dicho: ' + faltan.join(', ') + '.';
         resultadoDictado.appendChild(aviso);
+
+        const completar = document.createElement('button');
+        completar.type = 'button';
+        completar.className = 'boton-secundario boton-deshacer';
+        completar.textContent = '✏️ Completar datos';
+        completar.style.marginRight = '8px';
+        completar.addEventListener('click', () => empezarEdicion(encargo.id));
+        resultadoDictado.appendChild(completar);
       }
 
       const deshacer = document.createElement('button');
@@ -1569,6 +2003,7 @@
       deshacer.addEventListener('click', () => {
         encargos = encargos.filter((e) => e.id !== encargo.id);
         seleccionados.delete(encargo.id);
+        if (idEditando === encargo.id) salirEdicion();
         guardarEncargos();
         pintarLista();
         resultadoDictado.textContent = 'Encargo deshecho. Puedes dictarlo otra vez.';
@@ -1702,7 +2137,7 @@
     function encargosSinCopia() {
       const ultima = leerUltimaCopia();
       if (!ultima) return encargos.length;
-      return encargos.filter((e) => e.fechaCreacion > ultima).length;
+      return encargos.filter((e) => (e.fechaModificacion || e.fechaCreacion) > ultima).length;
     }
 
     function actualizarEstadoCopia() {
@@ -1719,7 +2154,7 @@
         const dias = Math.round((hoyAMedianoche() - new Date(new Date(ultima).setHours(0, 0, 0, 0))) / 86400000);
         const cuando = dias === 0 ? 'hoy' : dias === 1 ? 'ayer' : 'hace ' + dias + ' días';
         estado.textContent = 'Última copia: ' + cuando + '.' +
-          (pendientes ? ' Hay ' + pendientes + (pendientes === 1 ? ' encargo nuevo' : ' encargos nuevos') + ' desde entonces.' : ' Está al día.');
+          (pendientes ? ' Hay ' + pendientes + (pendientes === 1 ? ' encargo nuevo o cambiado' : ' encargos nuevos o cambiados') + ' desde entonces.' : ' Está al día.');
       }
 
       if (pendientes > 0) {
@@ -1822,7 +2257,8 @@
         productos,
         fechaRecogida: /^\d{4}-\d{2}-\d{2}$/.test(e.fechaRecogida) ? e.fechaRecogida : '',
         senalPagada: e.senalPagada === true,
-        estado: texto(e.estado) || 'Pendiente',
+        estado: ESTADOS.includes(texto(e.estado)) ? texto(e.estado) : 'Pendiente',
+        fechaModificacion: texto(e.fechaModificacion) || undefined,
         fechaCreacion: texto(e.fechaCreacion) || new Date().toISOString(),
         origen: texto(e.origen) || 'manual'
       };
