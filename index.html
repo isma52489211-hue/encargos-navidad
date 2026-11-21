@@ -429,57 +429,33 @@
 
     #btn-cancelar-edicion { margin-top: 8px; }
 
-    /* ---------- Hoja de compra ---------- */
-    .atajos {
+    /* ---------- Formulario desplegable ---------- */
+    details.desplegable { padding: 0; }
+
+    details.desplegable > summary {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
-
-    .atajos button {
-      flex: 1;
-      width: auto;
-      font-size: 0.9rem;
-      padding: 8px 10px;
-    }
-
-    .tabla-compra {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95rem;
-      margin-top: 8px;
-    }
-
-    .tabla-compra th {
-      text-align: left;
-      font-size: 0.8rem;
-      color: var(--gris);
-      border-bottom: 2px solid var(--borde);
-      padding: 6px 4px;
-    }
-
-    .tabla-compra td {
-      border-bottom: 1px solid var(--borde);
-      padding: 8px 4px;
-      vertical-align: top;
-    }
-
-    .tabla-compra .total {
-      text-align: right;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 16px;
+      font-size: 1.1rem;
       font-weight: 700;
-      white-space: nowrap;
+      color: var(--rojo-oscuro);
+      cursor: pointer;
+      list-style: none;
     }
 
-    .desglose {
-      font-size: 0.8rem;
-      color: var(--gris);
-      font-weight: 400;
-      margin-top: 2px;
+    details.desplegable > summary::-webkit-details-marker { display: none; }
+
+    details.desplegable > summary::after {
+      content: '▾';
+      font-size: 1.3rem;
+      transition: transform 0.2s;
     }
 
-    .resumen-compra { font-size: 0.95rem; margin: 10px 0 0; }
-    .nota-compra { font-size: 0.85rem; color: var(--gris); margin: 6px 0 0; }
+    details.desplegable[open] > summary::after { transform: rotate(180deg); }
+
+    .contenido-desplegable { padding: 0 16px 16px; }
 
     /* ---------- Copia de seguridad ---------- */
     .botones-copia {
@@ -547,8 +523,9 @@
       </div>
     </section>
 
-    <section class="tarjeta" id="seccion-form" aria-labelledby="titulo-form">
-      <h2 id="titulo-form">Nuevo encargo a mano</h2>
+    <details class="tarjeta desplegable" id="seccion-form">
+      <summary><span id="titulo-form">✍️ Nuevo encargo a mano</span></summary>
+      <div class="contenido-desplegable">
       <p class="ayuda" id="ayuda-form">Los campos marcados con * son obligatorios.</p>
 
       <form id="formulario" novalidate>
@@ -600,38 +577,8 @@
         <button type="button" id="btn-cancelar-edicion" class="boton-secundario" hidden>Cancelar edición</button>
         <p class="aviso" id="aviso" role="status"></p>
       </form>
-    </section>
-
-    <section class="tarjeta" id="hoja-compra" aria-labelledby="titulo-compra">
-      <h2 id="titulo-compra">🛒 Hoja de compra</h2>
-      <p class="ayuda">Suma por producto lo encargado para esas fechas. No cuenta los encargos cancelados.</p>
-      <div class="atajos">
-        <button type="button" class="boton-secundario" data-rango="hoy">Hoy</button>
-        <button type="button" class="boton-secundario" data-rango="manana">Mañana</button>
-        <button type="button" class="boton-secundario" data-rango="semana">Próx. 7 días</button>
       </div>
-      <div class="fila-doble">
-        <div class="campo">
-          <label class="etiqueta" for="compra-desde">Desde</label>
-          <input type="date" id="compra-desde">
-        </div>
-        <div class="campo">
-          <label class="etiqueta" for="compra-hasta">Hasta</label>
-          <input type="date" id="compra-hasta">
-        </div>
-      </div>
-      <div class="campo">
-        <label class="etiqueta" for="compra-tienda">Tienda</label>
-        <select id="compra-tienda">
-          <option value="">Todas las tiendas</option>
-          <option value="Baena">Baena</option>
-          <option value="Luque">Luque</option>
-          <option value="Zuheros">Zuheros</option>
-          <option value="Doña Mencía">Doña Mencía</option>
-        </select>
-      </div>
-      <div id="resultado-compra" aria-live="polite"></div>
-    </section>
+    </details>
 
     <section aria-labelledby="titulo-lista">
       <h2 id="titulo-lista">Encargos (<span id="contador">0</span>)</h2>
@@ -949,12 +896,15 @@
       btnGuardar.textContent = 'Guardar cambios';
       btnCancelarEdicion.hidden = false;
       mostrarAviso('');
-      document.getElementById('seccion-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const seccionForm = document.getElementById('seccion-form');
+      seccionForm.open = true; // abre el desplegable para editar
+      seccionForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function salirEdicion() {
       idEditando = null;
-      tituloForm.textContent = 'Nuevo encargo a mano';
+      tituloForm.textContent = '✍️ Nuevo encargo a mano';
+      document.getElementById('seccion-form').open = false; // al terminar de editar se recoge
       document.getElementById('ayuda-form').textContent = 'Los campos marcados con * son obligatorios.';
       btnGuardar.textContent = 'Guardar encargo';
       btnCancelarEdicion.hidden = true;
@@ -1144,7 +1094,6 @@
       vacio.hidden = encargos.length > 0;
       actualizarBarra();
       actualizarNavidad();
-      pintarHojaCompra();
       actualizarEstadoCopia();
     }
 
@@ -1265,138 +1214,6 @@
           p.nombre + ' (' + (p.kg ? formatearNumero(p.kg) + ' kg' : formatearNumero(p.unidades) + ' ud') + ')'
         ).join(' · ')
         : 'Todavía no hay encargos esta temporada.';
-    }
-
-    // =====================================================
-    // HOJA DE COMPRA
-    // =====================================================
-    const compraDesde = document.getElementById('compra-desde');
-    const compraHasta = document.getElementById('compra-hasta');
-    const compraTienda = document.getElementById('compra-tienda');
-    const resultadoCompra = document.getElementById('resultado-compra');
-
-    function ponerRangoCompra(rango) {
-      const hoy = hoyAMedianoche();
-      let desde = hoy;
-      let hasta = hoy;
-      if (rango === 'manana') {
-        desde = sumarDias(hoy, 1);
-        hasta = desde;
-      } else if (rango === 'semana') {
-        hasta = sumarDias(hoy, 6);
-      }
-      compraDesde.value = aIso(desde);
-      compraHasta.value = aIso(hasta);
-      pintarHojaCompra();
-    }
-
-    document.querySelectorAll('[data-rango]').forEach((boton) => {
-      boton.addEventListener('click', () => ponerRangoCompra(boton.dataset.rango));
-    });
-    [compraDesde, compraHasta, compraTienda].forEach((c) => c.addEventListener('change', pintarHojaCompra));
-
-    // Por defecto, la compra de hoy
-    compraDesde.value = aIso(hoyAMedianoche());
-    compraHasta.value = compraDesde.value;
-
-    // "Gambas rojas", "gambas  rojas" y "GAMBAS ROJAS" son el mismo producto
-    function claveProducto(nombre) {
-      return normalizar(nombre).replace(/\s+/g, ' ').trim();
-    }
-
-    function textoTotales(kg, unidades) {
-      const partes = [];
-      if (kg) partes.push(formatearNumero(Math.round(kg * 1000) / 1000) + ' kg');
-      if (unidades) partes.push(formatearNumero(unidades) + ' ud');
-      return partes.join(' + ');
-    }
-
-    function sumarProducto(acumulado, p) {
-      acumulado.kg += Number(p.kg) || 0;
-      acumulado.unidades += Number(p.unidades) || 0;
-      if (!p.kg && !p.unidades) acumulado.sinCantidad++;
-    }
-
-    function pintarHojaCompra() {
-      const desde = compraDesde.value;
-      const hasta = compraHasta.value;
-      const tienda = compraTienda.value;
-
-      if (!desde || !hasta) {
-        resultadoCompra.innerHTML = '<p class="nota-compra">Elige las fechas.</p>';
-        return;
-      }
-      if (desde > hasta) {
-        resultadoCompra.innerHTML = '<p class="nota-compra">⚠️ La fecha «Desde» es posterior a «Hasta».</p>';
-        return;
-      }
-
-      const deLaTienda = (e) => !tienda || e.tienda === tienda;
-      const activos = encargos.filter((e) => e.estado !== 'Cancelado' && deLaTienda(e));
-      const delRango = activos.filter((e) => e.fechaRecogida && e.fechaRecogida >= desde && e.fechaRecogida <= hasta);
-      const sinFecha = activos.filter((e) => !e.fechaRecogida).length;
-
-      const textoRango = desde === hasta
-        ? 'para el ' + formatearFecha(desde)
-        : 'del ' + formatearFecha(desde) + ' al ' + formatearFecha(hasta);
-      const textoTienda = tienda ? ' en ' + tienda : ' en todas las tiendas';
-      const notaSinFecha = sinFecha
-        ? '<p class="nota-compra">⚠️ ' + (sinFecha === 1
-          ? '1 encargo sin fecha no está incluido. Edítalo para ponerle fecha.'
-          : sinFecha + ' encargos sin fecha no están incluidos. Edítalos para ponerles fecha.') + '</p>'
-        : '';
-
-      // Agrupar por producto, y dentro de cada producto, por tienda
-      const productos = new Map();
-      const total = { kg: 0, unidades: 0, sinCantidad: 0 };
-      delRango.forEach((e) => {
-        e.productos.forEach((p) => {
-          const clave = claveProducto(p.producto);
-          if (!productos.has(clave)) {
-            productos.set(clave, { nombre: capitalizar(p.producto.trim()), kg: 0, unidades: 0, sinCantidad: 0, tiendas: new Map() });
-          }
-          const fila = productos.get(clave);
-          sumarProducto(fila, p);
-          sumarProducto(total, p);
-          const nombreTienda = e.tienda || 'Sin tienda';
-          if (!fila.tiendas.has(nombreTienda)) fila.tiendas.set(nombreTienda, { kg: 0, unidades: 0, sinCantidad: 0 });
-          sumarProducto(fila.tiendas.get(nombreTienda), p);
-        });
-      });
-
-      if (!productos.size) {
-        resultadoCompra.innerHTML = '<p class="resumen-compra">No hay encargos ' + escaparHtml(textoRango + textoTienda) + '.</p>' + notaSinFecha;
-        return;
-      }
-
-      const ordenTiendas = (nombre) => (TIENDAS.includes(nombre) ? TIENDAS.indexOf(nombre) : TIENDAS.length);
-      const filas = [...productos.values()].sort((a, b) =>
-        b.kg - a.kg || b.unidades - a.unidades || a.nombre.localeCompare(b.nombre, 'es'));
-
-      const filasHtml = filas.map((fila) => {
-        const sinCantidad = fila.sinCantidad
-          ? '<div class="desglose">+ ' + fila.sinCantidad + ' sin cantidad</div>'
-          : '';
-        let desglose = '';
-        if (!tienda) {
-          desglose = '<div class="desglose">' + [...fila.tiendas.entries()]
-            .sort((a, b) => ordenTiendas(a[0]) - ordenTiendas(b[0]))
-            .map(([nombre, t]) => escaparHtml(nombre) + ': ' + (textoTotales(t.kg, t.unidades) || 'sin cantidad'))
-            .join(' · ') + '</div>';
-        }
-        return '<tr><td>' + escaparHtml(fila.nombre) + desglose + '</td>' +
-          '<td class="total">' + (textoTotales(fila.kg, fila.unidades) || '—') + sinCantidad + '</td></tr>';
-      }).join('');
-
-      resultadoCompra.innerHTML =
-        '<p class="resumen-compra"><strong>' + delRango.length + (delRango.length === 1 ? ' encargo' : ' encargos') + '</strong> ' +
-        escaparHtml(textoRango + textoTienda) + '.</p>' +
-        '<table class="tabla-compra"><thead><tr><th>Producto</th><th class="total">Cantidad</th></tr></thead>' +
-        '<tbody>' + filasHtml + '</tbody></table>' +
-        (textoTotales(total.kg, total.unidades)
-          ? '<p class="resumen-compra">Total: <strong>' + textoTotales(total.kg, total.unidades) + '</strong></p>'
-          : '') +
-        notaSinFecha;
     }
 
     // Copos de nieve en la cabecera
