@@ -1,7 +1,7 @@
 // Service worker: guarda la app en el móvil para que se abra aunque no haya conexión.
 // Estrategia: primero red; si no hay red, la copia guardada.
 // Si cambias index.html, sube el número de versión para forzar la actualización.
-const VERSION = 'encargos-v3';
+const VERSION = 'encargos-v4';
 
 const ARCHIVOS = [
   './',
