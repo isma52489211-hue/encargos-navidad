@@ -378,6 +378,32 @@
       padding: 8px 14px;
     }
 
+    /* ---------- Copia de seguridad ---------- */
+    .botones-copia {
+      display: grid;
+      gap: 8px;
+    }
+
+    .resultado-copia {
+      font-size: 0.95rem;
+      margin: 10px 0 0;
+    }
+
+    .resultado-copia:empty { display: none; }
+
+    .recordatorio-copia {
+      display: block;
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #ffd54f;
+      color: #3b2f00;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .recordatorio-copia[hidden] { display: none; }
+
     @media (min-width: 480px) {
       .fila-doble {
         display: grid;
@@ -406,6 +432,7 @@
         <div class="cifra"><span class="valor" id="n-senal">0</span><span class="texto">con señal pagada</span></div>
       </div>
       <p class="top-productos" id="top-productos"></p>
+      <a class="recordatorio-copia" id="recordatorio-copia" href="#copia" hidden></a>
     </section>
 
     <section class="tarjeta" aria-labelledby="titulo-dictado">
@@ -481,6 +508,18 @@
         </span>
       </div>
       <ul class="lista" id="lista"></ul>
+    </section>
+
+    <section class="tarjeta" id="copia" aria-labelledby="titulo-copia">
+      <h2 id="titulo-copia">💾 Copia de seguridad</h2>
+      <p class="ayuda" id="estado-copia"></p>
+      <div class="botones-copia">
+        <button type="button" id="btn-enviar-copia" hidden>📤 Enviar copia (WhatsApp, correo, Drive…)</button>
+        <button type="button" id="btn-descargar-copia" class="boton-secundario">⬇️ Descargar archivo de copia</button>
+        <button type="button" id="btn-restaurar-copia" class="boton-secundario">⬆️ Restaurar desde una copia</button>
+        <input type="file" id="archivo-copia" accept=".json,application/json,text/plain" hidden>
+      </div>
+      <p class="resultado-copia" id="resultado-copia" role="status"></p>
     </section>
 
   </main>
@@ -841,6 +880,7 @@
       vacio.hidden = encargos.length > 0;
       actualizarBarra();
       actualizarNavidad();
+      actualizarEstadoCopia();
     }
 
     // ---------- Selección y borrado ----------
@@ -1633,7 +1673,216 @@
       });
     })();
 
+    // =====================================================
+    // COPIA DE SEGURIDAD
+    // =====================================================
+    const CLAVE_ULTIMA_COPIA = 'encargosNavidad.ultimaCopia';
+    const resultadoCopia = document.getElementById('resultado-copia');
+    const btnEnviarCopia = document.getElementById('btn-enviar-copia');
+    const archivoCopia = document.getElementById('archivo-copia');
+
+    function leerUltimaCopia() {
+      try {
+        return localStorage.getItem(CLAVE_ULTIMA_COPIA);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function marcarCopiaHecha() {
+      try {
+        localStorage.setItem(CLAVE_ULTIMA_COPIA, new Date().toISOString());
+      } catch (error) {
+        console.error('No se pudo anotar la fecha de la copia:', error);
+      }
+      actualizarEstadoCopia();
+    }
+
+    // Encargos creados después de la última copia
+    function encargosSinCopia() {
+      const ultima = leerUltimaCopia();
+      if (!ultima) return encargos.length;
+      return encargos.filter((e) => e.fechaCreacion > ultima).length;
+    }
+
+    function actualizarEstadoCopia() {
+      const estado = document.getElementById('estado-copia');
+      const recordatorio = document.getElementById('recordatorio-copia');
+      const ultima = leerUltimaCopia();
+      const pendientes = encargosSinCopia();
+
+      if (!ultima) {
+        estado.textContent = encargos.length
+          ? '⚠️ Todavía no has hecho ninguna copia.'
+          : 'Cuando tengas encargos, haz copias para no perderlos.';
+      } else {
+        const dias = Math.round((hoyAMedianoche() - new Date(new Date(ultima).setHours(0, 0, 0, 0))) / 86400000);
+        const cuando = dias === 0 ? 'hoy' : dias === 1 ? 'ayer' : 'hace ' + dias + ' días';
+        estado.textContent = 'Última copia: ' + cuando + '.' +
+          (pendientes ? ' Hay ' + pendientes + (pendientes === 1 ? ' encargo nuevo' : ' encargos nuevos') + ' desde entonces.' : ' Está al día.');
+      }
+
+      if (pendientes > 0) {
+        recordatorio.textContent = '💾 ' + pendientes + (pendientes === 1 ? ' encargo sin copia' : ' encargos sin copia') + '. Toca aquí para hacerla.';
+        recordatorio.hidden = false;
+      } else {
+        recordatorio.hidden = true;
+      }
+    }
+
+    function contenidoCopia() {
+      return JSON.stringify({
+        app: 'encargos-navidad',
+        version: 2,
+        creada: new Date().toISOString(),
+        total: encargos.length,
+        encargos
+      }, null, 2);
+    }
+
+    function nombreArchivoCopia() {
+      return 'encargos-navidad-' + aIso(new Date()) + '.json';
+    }
+
+    // ¿Puede el móvil compartir archivos? (WhatsApp, correo, Drive...)
+    function archivoParaCompartir(tipo) {
+      return new File([contenidoCopia()], nombreArchivoCopia(), { type: tipo });
+    }
+
+    let tipoCompartir = null;
+    if (navigator.canShare) {
+      for (const tipo of ['application/json', 'text/plain']) {
+        try {
+          if (navigator.canShare({ files: [new File(['{}'], 'prueba.json', { type: tipo })] })) {
+            tipoCompartir = tipo;
+            break;
+          }
+        } catch (error) {
+          // este tipo no se puede compartir; se prueba el siguiente
+        }
+      }
+    }
+    btnEnviarCopia.hidden = !tipoCompartir;
+
+    btnEnviarCopia.addEventListener('click', async () => {
+      if (!encargos.length) {
+        resultadoCopia.textContent = 'No hay encargos que copiar todavía.';
+        return;
+      }
+      try {
+        await navigator.share({
+          files: [archivoParaCompartir(tipoCompartir)],
+          title: 'Copia de Encargos de Navidad'
+        });
+        marcarCopiaHecha();
+        resultadoCopia.textContent = '✅ Copia enviada con ' + encargos.length + ' encargos.';
+      } catch (error) {
+        resultadoCopia.textContent = error.name === 'AbortError'
+          ? 'Envío cancelado. No se ha hecho la copia.'
+          : 'No se pudo enviar. Usa «Descargar archivo de copia».';
+      }
+    });
+
+    document.getElementById('btn-descargar-copia').addEventListener('click', () => {
+      if (!encargos.length) {
+        resultadoCopia.textContent = 'No hay encargos que copiar todavía.';
+        return;
+      }
+      const blob = new Blob([contenidoCopia()], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const enlace = document.createElement('a');
+      enlace.href = url;
+      enlace.download = nombreArchivoCopia();
+      document.body.appendChild(enlace);
+      enlace.click();
+      enlace.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      marcarCopiaHecha();
+      resultadoCopia.textContent = '✅ Descargada «' + nombreArchivoCopia() + '» con ' + encargos.length +
+        ' encargos. Guárdala también fuera del móvil (Drive, correo…).';
+    });
+
+    // ---------- Restaurar ----------
+    function sanearEncargo(e) {
+      if (!e || typeof e !== 'object' || typeof e.id !== 'string' || !e.id) return null;
+      migrarEncargo(e);
+      const texto = (x) => (typeof x === 'string' ? x.trim() : '');
+      const numero = (x) => (typeof x === 'number' && x > 0 ? x : null);
+      const productos = Array.isArray(e.productos)
+        ? e.productos
+          .filter((p) => p && typeof p.producto === 'string' && p.producto.trim())
+          .map((p) => ({ producto: p.producto.trim(), kg: numero(p.kg), unidades: numero(p.unidades) }))
+        : [];
+      if (!productos.length) return null;
+      return {
+        id: e.id,
+        nombre: texto(e.nombre),
+        telefono: texto(e.telefono),
+        tienda: texto(e.tienda),
+        productos,
+        fechaRecogida: /^\d{4}-\d{2}-\d{2}$/.test(e.fechaRecogida) ? e.fechaRecogida : '',
+        senalPagada: e.senalPagada === true,
+        estado: texto(e.estado) || 'Pendiente',
+        fechaCreacion: texto(e.fechaCreacion) || new Date().toISOString(),
+        origen: texto(e.origen) || 'manual'
+      };
+    }
+
+    // Añade los encargos de la copia que no estén ya. Nunca borra nada.
+    function restaurarCopia(textoArchivo) {
+      let datos;
+      try {
+        datos = JSON.parse(textoArchivo);
+      } catch (error) {
+        return { error: 'Este archivo no es una copia válida de Encargos de Navidad.' };
+      }
+      const recibidos = Array.isArray(datos) ? datos : (datos && Array.isArray(datos.encargos) ? datos.encargos : null);
+      if (!recibidos) return { error: 'Este archivo no es una copia válida de Encargos de Navidad.' };
+
+      const validos = recibidos.map(sanearEncargo).filter(Boolean);
+      const existentes = new Set(encargos.map((e) => e.id));
+      const nuevos = validos.filter((e) => !existentes.has(e.id));
+
+      if (nuevos.length) {
+        const anterior = encargos;
+        encargos = encargos.concat(nuevos);
+        if (!guardarEncargos()) {
+          encargos = anterior;
+          return { error: 'No se pudo guardar. Revisa el espacio del navegador.' };
+        }
+        pintarLista();
+      }
+
+      return {
+        nuevos: nuevos.length,
+        repetidos: validos.length - nuevos.length,
+        invalidos: recibidos.length - validos.length
+      };
+    }
+
+    document.getElementById('btn-restaurar-copia').addEventListener('click', () => {
+      archivoCopia.value = '';
+      archivoCopia.click();
+    });
+
+    archivoCopia.addEventListener('change', async () => {
+      const archivo = archivoCopia.files[0];
+      if (!archivo) return;
+      const r = restaurarCopia(await archivo.text());
+      if (r.error) {
+        resultadoCopia.textContent = '❌ ' + r.error;
+        return;
+      }
+      let mensaje = r.nuevos
+        ? '✅ Restaurados ' + r.nuevos + (r.nuevos === 1 ? ' encargo.' : ' encargos.')
+        : 'No había encargos nuevos en esta copia: ya los tenías todos.';
+      if (r.repetidos && r.nuevos) mensaje += ' ' + r.repetidos + ' ya estaban y no se han duplicado.';
+      if (r.invalidos) mensaje += ' ' + r.invalidos + ' no se pudieron leer.';
+      resultadoCopia.textContent = mensaje;
+    });
+
     // Para pruebas desde la consola del navegador
+    window.restaurarCopia = restaurarCopia;
     window.interpretarDictado = interpretarDictado;
     window.guardarDesdeDictado = guardarDesdeDictado;
 
