@@ -1050,6 +1050,66 @@
     }
 
     /* ---------- Mostrador de hoy ---------- */
+    .botones-dia {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .botones-dia .boton-mostrador {
+      margin-bottom: 0;
+      padding: 12px 6px;
+      font-size: 0.95rem;
+    }
+
+    .boton-avisos { background: linear-gradient(135deg, #1fa855, #128c4a); }
+    .boton-avisos:hover { background: #128c4a; }
+
+    .tarjeta-aviso {
+      background: #ffffff;
+      border-radius: var(--radio);
+      box-shadow: var(--sombra);
+      border-left: 8px solid var(--color-tienda, var(--borde));
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .tarjeta-aviso.avisado { opacity: 0.6; }
+
+    .aviso-cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .aviso-cabecera strong { font-size: 1.15rem; }
+    .aviso-productos { margin: 0 0 10px; color: var(--gris); }
+
+    .boton-aviso,
+    .boton-anadir-tel {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .etiqueta-avisado {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #e3f6ea;
+      color: #0f6b38;
+    }
+
     .boton-mostrador {
       display: flex;
       align-items: center;
@@ -1186,7 +1246,10 @@
     <section class="pagina" id="pagina-encargos" role="tabpanel" aria-labelledby="tab-encargos">
       <h2 class="solo-lectores" id="titulo-lista">Encargos <span id="contador" hidden>0</span></h2>
 
-      <button type="button" class="boton-mostrador" id="btn-mostrador">🏪 Mostrador de hoy <span class="cuenta" id="cuenta-mostrador">0</span></button>
+      <div class="botones-dia">
+        <button type="button" class="boton-mostrador" id="btn-mostrador">🏪 Mostrador hoy <span class="cuenta" id="cuenta-mostrador">0</span></button>
+        <button type="button" class="boton-mostrador boton-avisos" id="btn-avisos">📲 Avisar mañana <span class="cuenta" id="cuenta-avisos">0</span></button>
+      </div>
 
       <div class="buscador">
         <input type="search" id="buscar" placeholder="Buscar nombre, teléfono o producto" aria-label="Buscar encargos" autocomplete="off">
@@ -1217,7 +1280,7 @@
         <div class="dictado">
           <button type="button" class="boton-voz" id="btn-voz" aria-label="Empezar a dictar">🎤</button>
           <p class="estado-voz" id="estado-voz">Toca para dictar</p>
-          <p class="dictado-ejemplo">Di los datos en el orden que quieras y vuelve a tocar al terminar. Ejemplo: «Tres kilos de boquerones gordos y cinco de bacaladilla para Juan Pérez este jueves en Luque, señal pagada»</p>
+          <p class="dictado-ejemplo">Di los datos en el orden que quieras y vuelve a tocar al terminar. Ejemplo: «Tres kilos de boquerones gordos y cinco de bacaladilla para Juan Pérez este jueves en Luque, señal pagada»<br>Para corregir uno ya guardado, empieza por «cambia», «añade», «quita» o «marca»: «cambia la fecha de Juan al viernes».</p>
           <div class="dictado-resultado" id="dictado-resultado" aria-live="polite"></div>
         </div>
       </section>
@@ -1296,6 +1359,19 @@
       <div class="fila-chips" id="mostrador-pueblos" role="group" aria-label="Pueblo del mostrador"></div>
       <p class="resumen-mostrador" id="resumen-mostrador"></p>
       <div id="lista-mostrador"></div>
+    </section>
+
+    <!-- ==================== AVISOS DE MAÑANA ==================== -->
+    <section class="pagina" id="pagina-avisos" aria-labelledby="titulo-avisos" hidden>
+      <div class="cabecera-mostrador">
+        <button type="button" class="boton-secundario boton-volver" id="btn-salir-avisos">← Volver</button>
+        <h2 class="titulo-pagina" id="titulo-avisos">📲 Avisos de mañana</h2>
+      </div>
+      <p class="fecha-mostrador" id="fecha-avisos"></p>
+      <div class="etiqueta-chips">Pueblo de este móvil</div>
+      <div class="fila-chips" id="avisos-pueblos" role="group" aria-label="Pueblo"></div>
+      <p class="resumen-mostrador" id="resumen-avisos"></p>
+      <div id="lista-avisos"></div>
     </section>
 
     <!-- ==================== PESTAÑA: RESUMEN ==================== -->
@@ -1806,7 +1882,7 @@
     // PESTAÑAS
     // =====================================================
     // "mostrador" es una página sin pestaña propia (se abre desde Encargos)
-    const PAGINAS = ['encargos', 'nuevo', 'resumen', 'mostrador'];
+    const PAGINAS = ['encargos', 'nuevo', 'resumen', 'mostrador', 'avisos'];
 
     function mostrarPestana(nombre) {
       if (!PAGINAS.includes(nombre)) return;
@@ -2059,6 +2135,7 @@
       if (estadoActual === 'Cancelado') etiquetas.unshift('<span class="etiqueta-cancelado">❌ Cancelado</span>');
       if (e.origen === 'voz') etiquetas.push('<span class="etiqueta-voz">🎤 Dictado</span>');
       const vecesCliente = encargosPorCliente.get(e.id) || 1;
+      if (estaAvisado(e)) etiquetas.push('<span class="etiqueta-avisado">📲 Avisado</span>');
       if (vecesCliente > 1) etiquetas.push('<span class="etiqueta-habitual">⭐ Habitual (' + vecesCliente + ' encargos)</span>');
 
       // WhatsApp (si hay teléfono y el encargo sigue activo) y Repetir
@@ -2140,6 +2217,7 @@
 
       actualizarBarra();
       pintarMostrador();
+      pintarAvisos();
       actualizarNavidad();
       actualizarEstadoCopia();
     }
@@ -2665,6 +2743,133 @@
     });
 
     // =====================================================
+    // AVISOS DE MAÑANA POR WHATSAPP
+    // =====================================================
+    // "Avisado" significa que se abrió el mensaje en WhatsApp desde aquí:
+    // la app no puede saber si luego se pulsó «enviar».
+    function estaAvisado(e) {
+      return !!e.avisadoPara && e.avisadoPara === e.fechaRecogida;
+    }
+
+    function mensajeRecordatorio(e) {
+      const saludo = e.nombre ? 'Hola ' + e.nombre.trim().split(/\s+/)[0] + ', ' : 'Hola, ';
+      const donde = TIENDAS.includes(e.tienda) ? 'nuestra tienda de ' + e.tienda : 'la pescadería';
+      return saludo + 'te recordamos que mañana, ' + formatearFechaDia(e.fechaRecogida) +
+        ', puedes recoger tu encargo (' + productosParaMensaje(e) + ') en ' + donde + '. ¡Te esperamos!';
+    }
+
+    // Orden: primero los que se pueden avisar, luego los que no tienen teléfono
+    // y al final los ya avisados
+    function ordenAviso(e) {
+      if (estaAvisado(e)) return 2;
+      return numeroWhatsApp(e.telefono) ? 0 : 1;
+    }
+
+    // Encargos activos que se recogen mañana
+    function encargosParaAvisar(fechas) {
+      return encargos
+        .filter((e) =>
+          (e.estado === 'Pendiente' || e.estado === 'Preparado') &&
+          e.fechaRecogida === fechas.manana &&
+          delPuebloMostrador(e))
+        .sort((a, b) => ordenAviso(a) - ordenAviso(b) ||
+          (a.nombre || '~').localeCompare(b.nombre || '~', 'es'));
+    }
+
+    function pintarAvisos() {
+      const fechas = fechasClave();
+      const lista = encargosParaAvisar(fechas);
+      const porAvisar = lista.filter((e) => !estaAvisado(e) && numeroWhatsApp(e.telefono)).length;
+      document.getElementById('cuenta-avisos').textContent = porAvisar;
+      if (document.getElementById('pagina-avisos').hidden) return;
+
+      document.getElementById('titulo-avisos').textContent =
+        '📲 Avisos de mañana' + (puebloMostrador === 'todos' ? '' : ' · ' + puebloMostrador);
+      document.getElementById('fecha-avisos').textContent = 'Recogen mañana, ' + formatearFecha(fechas.manana);
+
+      const opciones = [{ valor: 'todos', texto: 'Todos' }].concat(TIENDAS.map((t) => ({ valor: t, texto: t })));
+      pintarFila('avisos-pueblos', opciones.map((o) => {
+        const activo = o.valor === puebloMostrador;
+        return '<button type="button" class="chip' + (activo ? ' activo' : '') +
+          (o.valor === 'todos' ? '' : ' ' + claseDeTienda(o.valor)) +
+          '" data-filtro="pueblo" data-valor="' + escaparHtml(o.valor) + '" aria-pressed="' + activo + '">' +
+          (o.valor === 'todos' ? '' : '<span class="punto-color"></span>') + escaparHtml(o.texto) + '</button>';
+      }).join(''));
+
+      const avisados = lista.filter(estaAvisado).length;
+      const sinTelefono = lista.filter((e) => !numeroWhatsApp(e.telefono)).length;
+      document.getElementById('resumen-avisos').textContent = lista.length
+        ? 'Avisados ' + avisados + ' de ' + lista.length +
+          (sinTelefono ? ' · ' + sinTelefono + ' sin teléfono' : '')
+        : '';
+
+      const contenedor = document.getElementById('lista-avisos');
+      if (!lista.length) {
+        contenedor.innerHTML = '<div class="vacio"><span class="grande">📭</span>No hay encargos para mañana' +
+          (puebloMostrador === 'todos' ? '' : ' en ' + escaparHtml(puebloMostrador)) + '.</div>';
+        return;
+      }
+
+      contenedor.innerHTML = lista.map((e) => {
+        const id = escaparHtml(e.id);
+        const avisado = estaAvisado(e);
+        const numero = numeroWhatsApp(e.telefono);
+        const productos = e.productos.map((p) => textoCantidad(p) + ' ' + p.producto).join(' · ');
+        const boton = numero
+          ? '<a class="boton-whatsapp boton-aviso" data-id="' + id + '" href="' +
+            escaparHtml('https://wa.me/' + numero + '?text=' + encodeURIComponent(mensajeRecordatorio(e))) +
+            '" target="_blank" rel="noopener">' + (avisado ? '✅ Avisado · enviar otra vez' : '💬 Enviar recordatorio') + '</a>'
+          : '<button type="button" class="boton-secundario boton-anadir-tel" data-id="' + id + '">📞 Sin teléfono: añadirlo</button>';
+        return '<article class="tarjeta-aviso ' + claseDeTienda(e.tienda) + (avisado ? ' avisado' : '') + '">' +
+          '<div class="aviso-cabecera"><strong>' +
+            (e.nombre ? escaparHtml(e.nombre) : '<span class="sin-dato">Cliente sin nombre</span>') + '</strong>' +
+            (puebloMostrador === 'todos'
+              ? '<span class="pueblo">' + (TIENDAS.includes(e.tienda) ? '📍 ' + escaparHtml(e.tienda) : '📍 Sin tienda') + '</span>'
+              : '') +
+          '</div>' +
+          '<p class="aviso-productos">' + escaparHtml(productos) + '</p>' +
+          boton +
+        '</article>';
+      }).join('');
+    }
+
+    document.getElementById('btn-avisos').addEventListener('click', () => {
+      mostrarPestana('avisos');
+      pintarAvisos();
+    });
+
+    document.getElementById('btn-salir-avisos').addEventListener('click', () => mostrarPestana('encargos'));
+
+    document.getElementById('avisos-pueblos').addEventListener('click', (evento) => {
+      const chip = evento.target.closest('.chip');
+      if (!chip) return;
+      puebloMostrador = chip.dataset.valor;
+      try {
+        localStorage.setItem(CLAVE_PUEBLO_MOSTRADOR, puebloMostrador);
+      } catch (error) {
+        // no se recordará, pero funciona igual
+      }
+      pintarAvisos();
+    });
+
+    document.getElementById('lista-avisos').addEventListener('click', (evento) => {
+      const enlace = evento.target.closest('a.boton-aviso');
+      if (enlace) {
+        // Se deja que se abra WhatsApp y se marca como avisado
+        const e = encargos.find((x) => x.id === enlace.dataset.id);
+        if (e) {
+          e.avisadoPara = e.fechaRecogida;
+          e.avisadoEl = new Date().toISOString();
+          guardarEncargos();
+          setTimeout(pintarLista, 300);
+        }
+        return;
+      }
+      const anadirTelefono = evento.target.closest('.boton-anadir-tel');
+      if (anadirTelefono) empezarEdicion(anadirTelefono.dataset.id);
+    });
+
+    // =====================================================
     // RESUMEN: MODO NAVIDAD
     // =====================================================
     // Próxima fecha señalada: Nochebuena, Nochevieja o Reyes
@@ -2823,7 +3028,7 @@
       'recoge', 'ha', 'sin', 'senor', 'senora', 'don', 'dona', 'kilos', 'kilo', 'gramos']);
 
     // Palabras que nunca forman parte del nombre del cliente
-    const RELLENO = new Set(['caja', 'cajas', 'para', 'de', 'del', 'el', 'la', 'los', 'las', 'y', 'e', 'en', 'con',
+    const RELLENO = new Set(['anade', 'anadir', 'anademe', 'agrega', 'agregar', 'nuevo', 'nueva', 'caja', 'cajas', 'para', 'de', 'del', 'el', 'la', 'los', 'las', 'y', 'e', 'en', 'con',
       'a', 'al', 'cliente', 'clienta', 'nombre', 'se', 'llama', 'encargo', 'pedido', 'pedir', 'pide',
       'quiere', 'quiero', 'necesita', 'necesito', 'apunta', 'apuntame', 'apuntalo', 'anota',
       'anotame', 'pon', 'ponme', 'ponle', 'ponlo', 'guarda', 'guardalo', 'hola', 'vale', 'oye',
@@ -3306,7 +3511,293 @@
     // =====================================================
     // DICTADO: GUARDAR DIRECTAMENTE
     // =====================================================
+    // =====================================================
+    // DICTADO: CORRECCIONES DE ENCARGOS YA GUARDADOS
+    // =====================================================
+    // Una corrección empieza por un verbo: "cambia la fecha de Juan al viernes",
+    // "quita las gambas de Pepe", "marca a Ana como preparado"...
+    const PATRON_CORRECCION = new RegExp(
+      '^\\s*(?:(?:oye|vale|bueno|mira|y)\\s+)*' +
+      '(cambi\\w*|corrig\\w*|corrije|anad\\w*|agreg\\w*|quit\\w*|elimin\\w*|marc\\w*|ponle|ponles|mueve\\w*|mover|' +
+      'el\\s+telefono\\s+de|la\\s+fecha\\s+de|la\\s+tienda\\s+de)\\b');
+
+    // Palabras de la orden que no forman parte del nombre del cliente
+    const PALABRAS_ORDEN = /\b(?:cambi\w*|corrig\w*|corrije|anad\w*|agreg\w*|quit\w*|elimin\w*|marc\w*|pon\w*|mueve\w*|mover|pasa\w*|como|encargo|encargos|pedido|telefono|movil|numero|tienda|fecha|dia|cantidad|ya|es|son|ahora|mejor|que|su|sus|le|les|lo|el|al|del|a|en|y|por|favor|oye|vale|bueno|mira)\b/g;
+
+    function accionCorreccion(verbo) {
+      if (/^(quit|elimin)/.test(verbo)) return 'quitar';
+      if (/^(anad|agreg)/.test(verbo)) return 'anadir';
+      if (/^marc/.test(verbo)) return 'marcar';
+      return 'cambiar';
+    }
+
+    function buscarEstadoDicho(t) {
+      const reglas = [
+        [/\b(?:entregad[oa]s?|recogid[oa]s?)\b/, 'Recogido'],
+        [/\b(?:preparad[oa]s?|list[oa]s?)\b/, 'Preparado'],
+        [/\bpendientes?\b/, 'Pendiente']
+      ];
+      for (const [regla, estado] of reglas) {
+        const m = regla.exec(t);
+        if (m) return { estado, inicio: m.index, fin: m.index + m[0].length };
+      }
+      return null;
+    }
+
+    // Devuelve qué hay que cambiar y de quién, o null si no es una corrección
+    function interpretarCorreccion(texto, hoy) {
+      hoy = hoy || hoyAMedianoche();
+      const original = texto.normalize('NFC');
+      let t = normalizar(original);
+      const orden = PATRON_CORRECCION.exec(t);
+      if (!orden) return null;
+
+      const c = { verbo: orden[1], accion: accionCorreccion(orden[1]) };
+      t = t.replace(/\b(?:por|de|a)\s+la\s+(?:manana|tarde|noche)\b/g, (x) => ' '.repeat(x.length));
+      t = tapar(t, orden.index, orden.index + orden[0].length);
+
+      // El cliente se busca entre los nombres de los encargos activos
+      // (nombre completo o, si no, el primer nombre)
+      let mejor = null;
+      encargos.forEach((e) => {
+        if (!e.nombre || (e.estado !== 'Pendiente' && e.estado !== 'Preparado')) return;
+        const clave = claveNombre(e.nombre);
+        for (const opcion of [clave, clave.split(' ')[0]]) {
+          if (opcion.length < 3) continue;
+          const patron = new RegExp('\\b' + opcion.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '\\s+') + '\\b');
+          const m = patron.exec(t);
+          if (m) {
+            if (!mejor || m[0].length > mejor.fin - mejor.inicio) mejor = { inicio: m.index, fin: m.index + m[0].length };
+            break;
+          }
+        }
+      });
+      if (mejor) {
+        c.nombre = limpiarPalabra(original.slice(mejor.inicio, mejor.fin)).trim();
+        t = tapar(t, mejor.inicio, mejor.fin);
+      }
+
+      const cantidades = buscarCantidades(t);
+      c.cantidad = cantidades[0] || null;
+      let sinCantidades = t;
+      cantidades.forEach((q) => { sinCantidades = tapar(sinCantidades, q.inicio, q.fin); });
+
+      const quitarDe = (r) => {
+        t = tapar(t, r.inicio, r.fin);
+        sinCantidades = tapar(sinCantidades, r.inicio, r.fin);
+      };
+
+      const telefono = buscarTelefono(sinCantidades);
+      if (telefono) { c.telefono = telefono.telefono; quitarDe(telefono); }
+      const fecha = buscarFecha(sinCantidades, hoy);
+      if (fecha) { c.fecha = fecha.fecha; quitarDe(fecha); }
+      const tienda = buscarTienda(sinCantidades);
+      if (tienda) { c.tienda = tienda.tienda; quitarDe(tienda); }
+      const senal = buscarSenal(sinCantidades);
+      if (senal) { c.senal = senal.senal; quitarDe(senal); }
+      const estado = buscarEstadoDicho(sinCantidades);
+      if (estado) { c.estado = estado.estado; quitarDe(estado); }
+
+      const { productos, trabajo } = buscarProductos(original, t, cantidades);
+      c.productos = productos;
+
+      const resto = trabajo.replace(PALABRAS_ORDEN, (x) => ' '.repeat(x.length));
+      if (!c.nombre) c.nombre = buscarNombre(original, resto);
+      return c;
+    }
+
+    // Encargos activos cuyo nombre contiene todas las palabras dichas
+    function encargosDeNombre(nombre) {
+      const dichas = claveNombre(nombre).split(' ').filter(Boolean);
+      return encargos.filter((e) =>
+        (e.estado === 'Pendiente' || e.estado === 'Preparado') && e.nombre &&
+        dichas.every((p) => claveNombre(e.nombre).split(' ').includes(p)));
+    }
+
+    // "Gambas" = "gamba", "boquerones" = "boquerón"
+    function raizProducto(nombre) {
+      return claveNombre(nombre).split(' ')[0].replace(/(es|s)$/, '');
+    }
+
+    function asignarCantidad(p, q) {
+      p.kg = q.kg || null;
+      p.cajas = q.cajas || null;
+      p.unidades = q.unidades || null;
+    }
+
+    const tieneCantidad = (p) => !!(p.kg || p.unidades || p.cajas);
+
+    // Aplica la corrección sobre el encargo. Devuelve { cambios } o { error }.
+    function aplicarCorreccion(e, c) {
+      const cambios = [];
+      if (c.fecha && c.fecha !== e.fechaRecogida) {
+        e.fechaRecogida = c.fecha;
+        cambios.push('fecha: ' + formatearFecha(c.fecha));
+      }
+      if (c.tienda && c.tienda !== e.tienda) {
+        e.tienda = c.tienda;
+        cambios.push('tienda: ' + c.tienda);
+      }
+      if (c.telefono && c.telefono !== e.telefono) {
+        e.telefono = c.telefono;
+        cambios.push('teléfono: ' + c.telefono);
+      }
+      if (c.senal !== undefined && c.senal !== e.senalPagada) {
+        e.senalPagada = c.senal;
+        cambios.push(c.senal ? 'señal pagada' : 'sin señal');
+      }
+      if (c.estado && c.estado !== e.estado) {
+        e.estado = c.estado;
+        cambios.push('estado: ' + (c.estado === 'Recogido' ? 'entregado' : c.estado.toLowerCase()));
+      }
+
+      const conCantidad = c.productos.filter(tieneCantidad);
+      const sinCantidad = c.productos.filter((p) => !tieneCantidad(p));
+      const coincide = (p, dicho) => raizProducto(p.producto) === raizProducto(dicho.producto);
+
+      if (c.accion === 'quitar') {
+        c.productos.forEach((dicho) => {
+          const antes = e.productos.length;
+          e.productos = e.productos.filter((p) => !coincide(p, dicho));
+          if (e.productos.length < antes) cambios.push('quitado: ' + dicho.producto.toLowerCase());
+        });
+        if (!e.productos.length) {
+          return { error: 'Si le quito eso, el encargo se queda sin productos. Si ya no lo quiere, bórralo desde la lista.' };
+        }
+      } else if (c.accion === 'anadir') {
+        c.productos.forEach((p) => {
+          e.productos.push(p);
+          cambios.push('añadido: ' + (tieneCantidad(p) ? textoCantidad(p) + ' de ' : '') + p.producto.toLowerCase());
+        });
+      } else {
+        // Cambiar cantidades: "pon a Pepe 3 kilos de gambas"
+        conCantidad.forEach((dicho) => {
+          const existente = e.productos.find((p) => coincide(p, dicho));
+          if (existente) {
+            asignarCantidad(existente, dicho);
+            cambios.push(existente.producto.toLowerCase() + ': ' + textoCantidad(existente));
+          } else {
+            e.productos.push(dicho);
+            cambios.push('añadido: ' + textoCantidad(dicho) + ' de ' + dicho.producto.toLowerCase());
+          }
+        });
+        // "cambia las gambas de Pepe a 3 kilos": producto por un lado y cantidad por otro
+        if (!conCantidad.length && c.cantidad) {
+          let destino = null;
+          if (sinCantidad.length === 1) destino = e.productos.find((p) => coincide(p, sinCantidad[0]));
+          else if (!sinCantidad.length && e.productos.length === 1) destino = e.productos[0];
+          if (destino) {
+            asignarCantidad(destino, c.cantidad);
+            cambios.push(destino.producto.toLowerCase() + ': ' + textoCantidad(destino));
+          }
+        }
+      }
+      return { cambios };
+    }
+
+    function lineaDictado(texto) {
+      const div = document.createElement('div');
+      div.textContent = texto;
+      resultadoDictado.appendChild(div);
+      return div;
+    }
+
+    function resumenCorto(e) {
+      return [e.nombre, e.tienda, e.fechaRecogida ? formatearFechaDia(e.fechaRecogida) : 'sin fecha',
+        e.productos.map((p) => textoCantidad(p) + ' ' + p.producto).join(', ')].filter(Boolean).join(' · ');
+    }
+
+    function ejecutarCorreccion(e, c, texto) {
+      const copia = JSON.parse(JSON.stringify(e));
+      const restaurar = () => {
+        const i = encargos.findIndex((x) => x.id === copia.id);
+        if (i !== -1) encargos[i] = JSON.parse(JSON.stringify(copia));
+      };
+
+      resultadoDictado.innerHTML = '';
+      lineaDictado('He oído: «' + texto + '»');
+
+      const r = aplicarCorreccion(e, c);
+      if (r.error || !r.cambios.length) {
+        restaurar();
+        lineaDictado('❌ ' + (r.error || 'No he entendido qué cambiar en el encargo de ' + e.nombre +
+          '. No he cambiado nada. Prueba, por ejemplo: «cambia la fecha de ' + e.nombre.split(' ')[0] + ' al viernes».'));
+        return;
+      }
+
+      e.fechaModificacion = new Date().toISOString();
+      if (!guardarEncargos()) {
+        restaurar();
+        lineaDictado('No se pudo guardar el cambio. Inténtalo de nuevo.');
+        return;
+      }
+      pintarLista();
+
+      const resumen = document.createElement('div');
+      resumen.innerHTML = '<strong>✏️ Corregido el encargo de ' + escaparHtml(e.nombre) + ':</strong>' +
+        '<ul>' + r.cambios.map((x) => '<li>' + escaparHtml(x) + '</li>').join('') + '</ul>';
+      resultadoDictado.appendChild(resumen);
+
+      const deshacer = document.createElement('button');
+      deshacer.type = 'button';
+      deshacer.className = 'boton-secundario boton-deshacer';
+      deshacer.textContent = '↩️ Deshacer la corrección';
+      deshacer.addEventListener('click', () => {
+        restaurar();
+        guardarEncargos();
+        pintarLista();
+        resultadoDictado.textContent = 'Corrección deshecha. El encargo está como antes.';
+      });
+      resultadoDictado.appendChild(deshacer);
+    }
+
+    // Si el dictado es una corrección, la hace y devuelve true.
+    // Devuelve false si hay que tratarlo como un encargo nuevo.
+    function procesarCorreccion(texto) {
+      const c = interpretarCorreccion(texto);
+      if (!c) return false;
+
+      const candidatos = c.nombre ? encargosDeNombre(c.nombre) : [];
+      // "Añade.../Ponle..." sin un encargo de ese cliente: es un encargo nuevo
+      if ((c.accion === 'anadir' || c.verbo.startsWith('pon')) && !candidatos.length) return false;
+
+      resultadoDictado.innerHTML = '';
+      lineaDictado('He oído: «' + texto + '»');
+
+      if (!c.nombre) {
+        lineaDictado('❌ No sé de qué cliente es la corrección. Di su nombre, por ejemplo: «cambia la fecha de Juan al viernes».');
+        return true;
+      }
+      if (!candidatos.length) {
+        lineaDictado('❌ No encuentro ningún encargo pendiente o preparado de ' + c.nombre + '. No he cambiado nada.');
+        return true;
+      }
+      if (candidatos.length === 1) {
+        ejecutarCorreccion(candidatos[0], c, texto);
+        return true;
+      }
+
+      lineaDictado('📇 Hay ' + candidatos.length + ' encargos de ' + c.nombre + '. ¿Cuál quieres corregir?');
+      candidatos.forEach((e) => {
+        const boton = document.createElement('button');
+        boton.type = 'button';
+        boton.className = 'boton-secundario boton-completar';
+        boton.style.display = 'block';
+        boton.style.textAlign = 'left';
+        boton.textContent = resumenCorto(e);
+        boton.addEventListener('click', () => ejecutarCorreccion(e, c, texto));
+        resultadoDictado.appendChild(boton);
+      });
+      return true;
+    }
+
+    // Para pruebas desde la consola del navegador
+    window.interpretarCorreccion = interpretarCorreccion;
+
     function guardarDesdeDictado(texto) {
+      // ¿Es una corrección de un encargo ya guardado?
+      if (procesarCorreccion(texto)) return;
+
       const datos = interpretarDictado(texto);
       resultadoDictado.innerHTML = '';
 
@@ -3692,7 +4183,9 @@
         estado: ESTADOS.includes(texto(e.estado)) ? texto(e.estado) : 'Pendiente',
         fechaModificacion: texto(e.fechaModificacion) || undefined,
         fechaCreacion: texto(e.fechaCreacion) || new Date().toISOString(),
-        origen: texto(e.origen) || 'manual'
+        origen: texto(e.origen) || 'manual',
+        avisadoPara: /^\d{4}-\d{2}-\d{2}$/.test(e.avisadoPara) ? e.avisadoPara : undefined,
+        avisadoEl: texto(e.avisadoEl) || undefined
       };
     }
 
