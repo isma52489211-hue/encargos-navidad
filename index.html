@@ -191,6 +191,52 @@
     .senal-si { color: var(--verde); font-weight: 600; }
     .senal-no { color: var(--gris); }
 
+    .barra {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .barra button {
+      width: auto;
+      font-size: 0.95rem;
+      padding: 8px 14px;
+    }
+
+    .barra button:disabled {
+      background: #bdb6ab;
+      cursor: not-allowed;
+    }
+
+    .boton-secundario {
+      background: #ffffff !important;
+      color: var(--texto) !important;
+      border: 1px solid var(--borde);
+    }
+
+    .confirmacion-borrado {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--error);
+    }
+
+    .fila-seleccion {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--gris);
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+
+    .fila-seleccion input {
+      width: 20px;
+      height: 20px;
+    }
+
     @media (min-width: 480px) {
       .fila-doble {
         display: grid;
@@ -271,6 +317,14 @@
     <section aria-labelledby="titulo-lista">
       <h2 id="titulo-lista">Encargos (<span id="contador">0</span>)</h2>
       <p class="vacio" id="vacio">Todavía no hay encargos guardados.</p>
+      <div class="barra" id="barra">
+        <button type="button" id="btn-borrar" disabled>Borrar seleccionados (0)</button>
+        <span id="confirmacion" hidden>
+          <span class="confirmacion-borrado">¿Borrar los seleccionados?</span>
+          <button type="button" id="btn-confirmar-borrar">Sí, borrar</button>
+          <button type="button" id="btn-cancelar-borrar" class="boton-secundario">Cancelar</button>
+        </span>
+      </div>
       <ul class="lista" id="lista"></ul>
     </section>
 
@@ -286,6 +340,10 @@
     const vacio = document.getElementById('vacio');
     const contador = document.getElementById('contador');
     const aviso = document.getElementById('aviso');
+    const btnBorrar = document.getElementById('btn-borrar');
+    const confirmacion = document.getElementById('confirmacion');
+    const btnConfirmarBorrar = document.getElementById('btn-confirmar-borrar');
+    const btnCancelarBorrar = document.getElementById('btn-cancelar-borrar');
 
     const campos = {
       nombre: document.getElementById('nombre'),
@@ -302,6 +360,9 @@
 
     // ---------- Estado: array de encargos ----------
     let encargos = cargarEncargos();
+
+    // Ids de los encargos marcados para borrar (solo en memoria, no se guardan)
+    const seleccionados = new Set();
 
     // ---------- Almacenamiento (localStorage) ----------
     function cargarEncargos() {
@@ -429,6 +490,10 @@
 
       return `
         <li class="encargo">
+          <label class="fila-seleccion">
+            <input type="checkbox" class="seleccion" data-id="${escaparHtml(encargo.id)}" ${seleccionados.has(encargo.id) ? 'checked' : ''}>
+            Seleccionar para borrar
+          </label>
           <div class="encargo-cabecera">
             <strong>${escaparHtml(encargo.nombre)}</strong>
             <span class="fecha">${formatearFecha(encargo.fechaRecogida)}</span>
@@ -446,6 +511,29 @@
       lista.innerHTML = ordenados.map(pintarEncargo).join('');
       contador.textContent = encargos.length;
       vacio.hidden = encargos.length > 0;
+      actualizarBarra();
+    }
+
+    // ---------- Selección y borrado ----------
+    function actualizarBarra() {
+      const n = seleccionados.size;
+      btnBorrar.textContent = 'Borrar seleccionados (' + n + ')';
+      btnBorrar.disabled = n === 0;
+      if (n === 0) confirmacion.hidden = true;
+    }
+
+    function borrarSeleccionados() {
+      const anterior = encargos;
+      encargos = encargos.filter((encargo) => !seleccionados.has(encargo.id));
+      if (!guardarEncargos()) {
+        encargos = anterior;
+        aviso.textContent = 'No se pudo actualizar la lista. Inténtalo de nuevo.';
+        return;
+      }
+      seleccionados.clear();
+      confirmacion.hidden = true;
+      aviso.textContent = '';
+      pintarLista();
     }
 
     // ---------- Eventos ----------
@@ -480,6 +568,28 @@
     CAMPOS_VALIDADOS.forEach((nombre) => {
       campos[nombre].addEventListener('input', () => limpiarError(nombre));
       campos[nombre].addEventListener('change', () => limpiarError(nombre));
+    });
+
+    lista.addEventListener('change', (evento) => {
+      const casilla = evento.target;
+      if (!casilla.classList.contains('seleccion')) return;
+      const id = casilla.dataset.id;
+      if (casilla.checked) {
+        seleccionados.add(id);
+      } else {
+        seleccionados.delete(id);
+      }
+      actualizarBarra();
+    });
+
+    btnBorrar.addEventListener('click', () => {
+      confirmacion.hidden = false;
+    });
+
+    btnConfirmarBorrar.addEventListener('click', borrarSeleccionados);
+
+    btnCancelarBorrar.addEventListener('click', () => {
+      confirmacion.hidden = true;
     });
 
     // ---------- Arranque: pintar los encargos guardados ----------
