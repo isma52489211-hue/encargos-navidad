@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Encargos de Navidad</title>
+
+  <!-- Instalable en el móvil -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#9f1d1d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Encargos">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <style>
     :root {
       --rojo: #9f1d1d;
@@ -594,6 +602,14 @@
 
     // ---------- Arranque: pintar los encargos guardados ----------
     pintarLista();
+
+    // ---------- Modo sin conexión (solo funciona en https) ----------
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .catch((error) => console.error('No se pudo activar el modo sin conexión:', error));
+      });
+    }
   </script>
 
 </body>

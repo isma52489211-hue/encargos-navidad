@@ -1,0 +1,16 @@
+{
+  "name": "Encargos de Navidad",
+  "short_name": "Encargos",
+  "description": "Encargos de Navidad de la pescadería, guardados en el móvil.",
+  "lang": "es",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f1ea",
+  "theme_color": "#9f1d1d",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
