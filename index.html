@@ -177,7 +177,7 @@
       bottom: 0;
       z-index: 20;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(5, 1fr);
       align-items: end;
       height: calc(var(--alto-pestanas) + env(safe-area-inset-bottom));
       padding-bottom: env(safe-area-inset-bottom);
@@ -976,6 +976,79 @@
       text-decoration: none;
     }
 
+    /* ---------- Clientes (agenda) ---------- */
+    .cuenta-titulo { font-size: 0.95rem; color: var(--gris); font-weight: 600; }
+
+    .form-contacto h3 { margin: 0 0 12px; color: var(--rojo-oscuro); font-size: 1.05rem; }
+
+    .botones-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .letra-agenda {
+      position: sticky;
+      top: 0;
+      z-index: 4;
+      margin: 10px -16px 6px;
+      padding: 4px 16px;
+      background: var(--fondo);
+      font-weight: 800;
+      color: var(--rojo-oscuro);
+    }
+
+    .contacto {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: var(--sombra);
+      border-left: 6px solid var(--color-tienda, var(--borde));
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+
+    .contacto strong { font-size: 1.05rem; }
+
+    .contacto-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+      margin-top: 2px;
+      font-size: 0.88rem;
+      color: var(--gris);
+    }
+
+    .contacto-nota { margin: 4px 0 0; font-size: 0.85rem; font-style: italic; }
+
+    .contacto-acciones,
+    .confirmar-borrado-contacto {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .confirmar-borrado-contacto { font-weight: 700; color: var(--error); }
+
+    .contacto-acciones a,
+    .contacto-acciones button,
+    .confirmar-borrado-contacto button {
+      display: inline-flex;
+      align-items: center;
+      width: auto;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* 5 pestañas: un poco más estrechas */
+    .pestana { font-size: 0.7rem; }
+    .pestana .icono { width: 46px; font-size: 1.2rem; }
+    .pestana-central .icono { width: 56px; height: 56px; font-size: 1.5rem; }
+
     /* Color del pueblo para cualquier elemento */
     .tienda-baena { --color-tienda: var(--color-baena); }
     .tienda-luque { --color-tienda: var(--color-luque); }
@@ -1348,8 +1421,54 @@
       </details>
     </section>
 
+    <!-- ==================== PESTAÑA: CLIENTES ==================== -->
+    <section class="pagina" id="pagina-clientes" role="tabpanel" aria-labelledby="tab-clientes" hidden>
+      <h2 class="titulo-pagina">📇 Clientes <span class="cuenta-titulo" id="cuenta-agenda"></span></h2>
+      <div class="botones-dia">
+        <button type="button" class="boton-mostrador" id="btn-importar-contactos" hidden>📱 Importar contactos</button>
+        <button type="button" class="boton-mostrador boton-avisos" id="btn-nuevo-contacto">➕ Añadir cliente</button>
+      </div>
+      <p class="resultado-copia" id="resultado-importar" role="status"></p>
+
+      <form class="tarjeta form-contacto" id="form-contacto" novalidate hidden>
+        <h3 id="titulo-form-contacto">➕ Nuevo cliente</h3>
+        <div class="campo">
+          <label class="etiqueta" for="contacto-nombre">Nombre *</label>
+          <input type="text" id="contacto-nombre" autocomplete="off">
+        </div>
+        <div class="campo">
+          <label class="etiqueta" for="contacto-telefono">Teléfono *</label>
+          <input type="tel" id="contacto-telefono" autocomplete="off">
+        </div>
+        <div class="campo">
+          <label class="etiqueta" for="contacto-tienda">Pueblo</label>
+          <select id="contacto-tienda">
+            <option value="">— Sin indicar —</option>
+            <option value="Baena">Baena</option>
+            <option value="Luque">Luque</option>
+            <option value="Zuheros">Zuheros</option>
+            <option value="Doña Mencía">Doña Mencía</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label class="etiqueta" for="contacto-nota">Nota</label>
+          <input type="text" id="contacto-nota" autocomplete="off" placeholder="Ej.: siempre la quiere limpia">
+        </div>
+        <p class="error" id="error-contacto" aria-live="polite"></p>
+        <div class="botones-form">
+          <button type="submit">Guardar</button>
+          <button type="button" class="boton-secundario" id="btn-cancelar-contacto">Cancelar</button>
+        </div>
+      </form>
+
+      <div class="buscador">
+        <input type="search" id="buscar-cliente" placeholder="Buscar nombre, teléfono o nota" aria-label="Buscar clientes" autocomplete="off">
+      </div>
+      <div id="lista-agenda"></div>
+    </section>
+
     <!-- ==================== MOSTRADOR DE HOY ==================== -->
-    <section class="pagina" id="pagina-mostrador" aria-labelledby="titulo-mostrador" hidden>
+    <section class="pagina" id="pagina-mostrador" role="tabpanel" aria-labelledby="titulo-mostrador" hidden>
       <div class="cabecera-mostrador">
         <button type="button" class="boton-secundario boton-volver" id="btn-salir-mostrador">← Volver</button>
         <h2 class="titulo-pagina" id="titulo-mostrador">🏪 Mostrador</h2>
@@ -1435,9 +1554,17 @@
       <span>Encargos</span>
       <span class="insignia" id="insignia-encargos" hidden></span>
     </button>
+    <button type="button" class="pestana" role="tab" id="tab-clientes" data-pagina="clientes" aria-controls="pagina-clientes" aria-selected="false">
+      <span class="icono" aria-hidden="true">📇</span>
+      <span>Clientes</span>
+    </button>
     <button type="button" class="pestana pestana-central" role="tab" id="tab-nuevo" data-pagina="nuevo" aria-controls="pagina-nuevo" aria-selected="false">
       <span class="icono" aria-hidden="true">🎤</span>
       <span>Nuevo</span>
+    </button>
+    <button type="button" class="pestana" role="tab" id="tab-mostrador" data-pagina="mostrador" aria-controls="pagina-mostrador" aria-selected="false">
+      <span class="icono" aria-hidden="true">🏪</span>
+      <span>Hoy</span>
     </button>
     <button type="button" class="pestana" role="tab" id="tab-resumen" data-pagina="resumen" aria-controls="pagina-resumen" aria-selected="false">
       <span class="icono" aria-hidden="true">🎄</span>
@@ -1843,6 +1970,7 @@
           mostrarAviso('No se pudieron guardar los cambios. Revisa el espacio del navegador.');
           return;
         }
+        anotarClienteDeEncargo(encargos[indice]);
         const id = idEditando;
         salirEdicion();
         mostrarPestana('encargos');
@@ -1866,6 +1994,7 @@
         mostrarAviso('No se pudo guardar el encargo. Revisa el espacio o los permisos del navegador.');
         return;
       }
+      anotarClienteDeEncargo(encargo);
 
       limpiarFormulario();
       pintarLista();
@@ -1882,7 +2011,7 @@
     // PESTAÑAS
     // =====================================================
     // "mostrador" es una página sin pestaña propia (se abre desde Encargos)
-    const PAGINAS = ['encargos', 'nuevo', 'resumen', 'mostrador', 'avisos'];
+    const PAGINAS = ['encargos', 'clientes', 'nuevo', 'mostrador', 'resumen', 'avisos'];
 
     function mostrarPestana(nombre) {
       if (!PAGINAS.includes(nombre)) return;
@@ -1895,7 +2024,10 @@
     }
 
     document.querySelectorAll('.pestana').forEach((tab) => {
-      tab.addEventListener('click', () => mostrarPestana(tab.dataset.pagina));
+      tab.addEventListener('click', () => {
+        mostrarPestana(tab.dataset.pagina);
+        if (tab.dataset.pagina === 'mostrador') pintarMostrador();
+      });
     });
 
     // ---------- Aviso flotante (abajo, unos segundos) ----------
@@ -2218,6 +2350,7 @@
       actualizarBarra();
       pintarMostrador();
       pintarAvisos();
+      pintarAgenda();
       actualizarNavidad();
       actualizarEstadoCopia();
     }
@@ -2432,6 +2565,22 @@
         });
       });
 
+      // Clientes de la agenda (los que aún no tienen encargos, o completan a los que sí)
+      agenda.forEach((a) => {
+        const tel = digitosTelefono(a.telefono);
+        let existente = tel.length >= 9 ? clientes.find((c) => digitosTelefono(c.telefono) === tel) : null;
+        if (!existente && a.nombre) {
+          existente = clientes.find((c) => !digitosTelefono(c.telefono) && claveNombre(c.nombre) === claveNombre(a.nombre));
+          if (existente) existente.telefono = a.telefono;
+        }
+        if (existente) {
+          if (a.nombre) existente.nombre = a.nombre; // el nombre de la agenda manda
+          if (!existente.tienda && a.tienda) existente.tienda = a.tienda;
+          return;
+        }
+        clientes.push({ nombre: a.nombre, telefono: a.telefono, tienda: a.tienda, encargos: [] });
+      });
+
       // Sugerencias de nombres al escribir en el formulario
       const nombres = [...new Set(clientes.map((c) => c.nombre).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, 'es'));
@@ -2515,6 +2664,13 @@
         rellenado.push('tienda');
       }
 
+      if (!c.encargos.length) {
+        pistaCliente.innerHTML = '📇 <strong>Está en tus clientes</strong>' +
+          (rellenado.length ? '. He rellenado: ' + rellenado.join(', ') + '.' : '.');
+        pistaCliente.hidden = false;
+        return;
+      }
+
       pistaCliente.innerHTML = '📇 <strong>Cliente habitual</strong> · ' + c.encargos.length +
         (c.encargos.length === 1 ? ' encargo' : ' encargos') +
         (rellenado.length ? '. He rellenado: ' + rellenado.join(', ') + '.' : '.') +
@@ -2576,6 +2732,353 @@
       } catch (error) {
         console.error('No se pudo abrir la agenda:', error);
         mostrarToast('No se pudo abrir la agenda del móvil. Escribe el teléfono a mano.');
+      }
+    });
+
+    // =====================================================
+    // AGENDA DE CLIENTES
+    // =====================================================
+    // Lista propia de clientes (nombre y teléfono) que se puede editar.
+    // Se llena sola con los encargos, a mano o importando contactos del móvil.
+    const CLAVE_AGENDA = 'encargosNavidad.agenda';
+
+    function sanearContacto(c) {
+      if (!c || typeof c !== 'object') return null;
+      const texto = (x) => (typeof x === 'string' ? x.trim() : '');
+      const nombre = texto(c.nombre);
+      const telefono = texto(c.telefono);
+      if (!nombre && !telefono) return null;
+      return {
+        id: texto(c.id) || generarId(),
+        nombre,
+        telefono,
+        tienda: TIENDAS.includes(c.tienda) ? c.tienda : '',
+        nota: texto(c.nota),
+        origen: texto(c.origen) || 'manual',
+        creado: texto(c.creado) || new Date().toISOString(),
+        modificado: texto(c.modificado) || undefined
+      };
+    }
+
+    // Devuelve null si nunca se ha creado la agenda en este móvil
+    function cargarAgenda() {
+      try {
+        const texto = localStorage.getItem(CLAVE_AGENDA);
+        if (!texto) return null;
+        const datos = JSON.parse(texto);
+        return Array.isArray(datos) ? datos.map(sanearContacto).filter(Boolean) : [];
+      } catch (error) {
+        console.error('No se pudo leer la agenda:', error);
+        return [];
+      }
+    }
+
+    function guardarAgenda() {
+      try {
+        localStorage.setItem(CLAVE_AGENDA, JSON.stringify(agenda));
+        return true;
+      } catch (error) {
+        console.error('No se pudo guardar la agenda:', error);
+        return false;
+      }
+    }
+
+    let agenda = cargarAgenda();
+    const agendaEraNueva = agenda === null;
+    if (agendaEraNueva) agenda = [];
+
+    function contactoPorTelefono(telefono, excluirId) {
+      const tel = digitosTelefono(telefono);
+      if (tel.length < 9) return null;
+      return agenda.find((c) => c.id !== excluirId && digitosTelefono(c.telefono) === tel) || null;
+    }
+
+    // Añade un contacto o completa uno que ya existe (mismo teléfono).
+    // Devuelve 'nuevo', 'actualizado' o null si no hace nada.
+    function anotarContacto(datos, origen) {
+      const nombre = (datos.nombre || '').trim();
+      const telefono = (datos.telefono || '').trim();
+      if (!nombre || digitosTelefono(telefono).length < 9) return null;
+
+      const ahora = new Date().toISOString();
+      const existente = contactoPorTelefono(telefono);
+      if (existente) {
+        let cambiado = false;
+        if (!existente.nombre) { existente.nombre = nombre; cambiado = true; }
+        if (!existente.tienda && TIENDAS.includes(datos.tienda)) { existente.tienda = datos.tienda; cambiado = true; }
+        if (cambiado) existente.modificado = ahora;
+        return cambiado ? 'actualizado' : null;
+      }
+      agenda.push({
+        id: generarId(),
+        nombre,
+        telefono,
+        tienda: TIENDAS.includes(datos.tienda) ? datos.tienda : '',
+        nota: '',
+        origen,
+        creado: ahora
+      });
+      return 'nuevo';
+    }
+
+    // Guarda en la agenda el cliente de un encargo (si tiene nombre y teléfono)
+    function anotarClienteDeEncargo(e) {
+      if (e && anotarContacto(e, 'encargo')) guardarAgenda();
+    }
+
+    // La primera vez, la agenda se llena con los clientes de los encargos que ya había
+    if (agendaEraNueva) {
+      encargos.forEach((e) => anotarContacto(e, 'encargo'));
+      guardarAgenda();
+    }
+
+    // ---------- Pantalla de clientes ----------
+    const formContacto = document.getElementById('form-contacto');
+    const inputBuscarCliente = document.getElementById('buscar-cliente');
+    const resultadoImportar = document.getElementById('resultado-importar');
+    let idContactoEditando = null;
+    let idContactoABorrar = null;
+
+    const camposContacto = {
+      nombre: document.getElementById('contacto-nombre'),
+      telefono: document.getElementById('contacto-telefono'),
+      tienda: document.getElementById('contacto-tienda'),
+      nota: document.getElementById('contacto-nota')
+    };
+
+    function abrirFormContacto(c) {
+      idContactoEditando = c ? c.id : null;
+      document.getElementById('titulo-form-contacto').textContent = c ? '✏️ Editar cliente' : '➕ Nuevo cliente';
+      camposContacto.nombre.value = c ? c.nombre : '';
+      camposContacto.telefono.value = c ? c.telefono : '';
+      camposContacto.tienda.value = c ? c.tienda : '';
+      camposContacto.nota.value = c ? c.nota : '';
+      document.getElementById('error-contacto').textContent = '';
+      formContacto.hidden = false;
+      formContacto.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      camposContacto.nombre.focus();
+    }
+
+    function cerrarFormContacto() {
+      idContactoEditando = null;
+      formContacto.hidden = true;
+      formContacto.reset();
+      document.getElementById('error-contacto').textContent = '';
+    }
+
+    formContacto.addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      const error = document.getElementById('error-contacto');
+      const nombre = camposContacto.nombre.value.trim();
+      const telefono = camposContacto.telefono.value.trim();
+
+      if (!nombre) {
+        error.textContent = 'Escribe el nombre.';
+        camposContacto.nombre.focus();
+        return;
+      }
+      if (digitosTelefono(telefono).length < 9) {
+        error.textContent = 'Escribe un teléfono de al menos 9 cifras.';
+        camposContacto.telefono.focus();
+        return;
+      }
+      const repetido = contactoPorTelefono(telefono, idContactoEditando);
+      if (repetido) {
+        error.textContent = 'Ese teléfono ya es de ' + repetido.nombre + '.';
+        camposContacto.telefono.focus();
+        return;
+      }
+
+      const datos = {
+        nombre,
+        telefono,
+        tienda: camposContacto.tienda.value,
+        nota: camposContacto.nota.value.trim()
+      };
+      const ahora = new Date().toISOString();
+      const copia = JSON.parse(JSON.stringify(agenda));
+
+      if (idContactoEditando) {
+        const c = agenda.find((x) => x.id === idContactoEditando);
+        if (c) Object.assign(c, datos, { modificado: ahora });
+      } else {
+        agenda.push(Object.assign({ id: generarId(), origen: 'manual', creado: ahora }, datos));
+      }
+
+      if (!guardarAgenda()) {
+        agenda = copia;
+        error.textContent = 'No se pudo guardar. Revisa el espacio del navegador.';
+        return;
+      }
+      const editado = !!idContactoEditando;
+      cerrarFormContacto();
+      pintarLista();
+      mostrarToast(editado ? '✅ Cliente actualizado.' : '✅ ' + nombre + ' añadido a tus clientes.');
+    });
+
+    document.getElementById('btn-cancelar-contacto').addEventListener('click', cerrarFormContacto);
+    document.getElementById('btn-nuevo-contacto').addEventListener('click', () => abrirFormContacto(null));
+    inputBuscarCliente.addEventListener('input', pintarAgenda);
+
+    // Nº de encargos de cada teléfono
+    function encargosDeTelefono(telefono) {
+      const tel = digitosTelefono(telefono);
+      if (tel.length < 9) return 0;
+      return encargos.filter((e) => digitosTelefono(e.telefono) === tel).length;
+    }
+
+    function pintarAgenda() {
+      document.getElementById('cuenta-agenda').textContent =
+        agenda.length ? '(' + agenda.length + ')' : '';
+
+      const busqueda = inputBuscarCliente.value.trim();
+      const palabrasBuscadas = normalizar(busqueda).split(/\s+/).filter(Boolean);
+      const digitos = busqueda.replace(/\D/g, '');
+      const visibles = agenda
+        .filter((c) => {
+          if (!busqueda) return true;
+          const texto = normalizar(c.nombre + ' ' + c.nota + ' ' + c.tienda);
+          return palabrasBuscadas.every((p) => texto.includes(p)) ||
+            (digitos.length >= 3 && c.telefono.replace(/\D/g, '').includes(digitos));
+        })
+        .sort((a, b) => (a.nombre || '~').localeCompare(b.nombre || '~', 'es'));
+
+      const contenedor = document.getElementById('lista-agenda');
+      if (!agenda.length) {
+        contenedor.innerHTML = '<div class="vacio"><span class="grande">📇</span>Todavía no hay clientes.<br>' +
+          'Se añaden solos al guardar encargos con teléfono, o con <strong>+ Añadir cliente</strong>.</div>';
+        return;
+      }
+      if (!visibles.length) {
+        contenedor.innerHTML = '<div class="vacio"><span class="grande">🔍</span>Ningún cliente coincide con «' +
+          escaparHtml(busqueda) + '».</div>';
+        return;
+      }
+
+      let letraAnterior = '';
+      contenedor.innerHTML = visibles.map((c) => {
+        const letra = (normalizar(c.nombre).charAt(0) || '#').toUpperCase();
+        const cabecera = letra !== letraAnterior ? '<div class="letra-agenda">' + escaparHtml(letra) + '</div>' : '';
+        letraAnterior = letra;
+
+        const id = escaparHtml(c.id);
+        const numero = numeroWhatsApp(c.telefono);
+        const nEncargos = encargosDeTelefono(c.telefono);
+        const confirmando = idContactoABorrar === c.id;
+
+        return cabecera +
+          '<article class="contacto ' + claseDeTienda(c.tienda) + '" data-id="' + id + '">' +
+            '<strong>' + (c.nombre ? escaparHtml(c.nombre) : '<span class="sin-dato">Sin nombre</span>') + '</strong>' +
+            '<div class="contacto-info">' +
+              '<span>📞 ' + escaparHtml(c.telefono || '—') + '</span>' +
+              (c.tienda ? '<span>📍 ' + escaparHtml(c.tienda) + '</span>' : '') +
+              (nEncargos ? '<span>🧾 ' + nEncargos + (nEncargos === 1 ? ' encargo' : ' encargos') + '</span>' : '') +
+            '</div>' +
+            (c.nota ? '<p class="contacto-nota">📝 ' + escaparHtml(c.nota) + '</p>' : '') +
+            (confirmando
+              ? '<div class="confirmar-borrado-contacto">¿Borrar a ' + escaparHtml(c.nombre || 'este cliente') + '?' +
+                  '<button type="button" data-accion="confirmar-borrar" data-id="' + id + '">Sí, borrar</button>' +
+                  '<button type="button" class="boton-secundario" data-accion="cancelar-borrar" data-id="' + id + '">No</button>' +
+                '</div>'
+              : '<div class="contacto-acciones">' +
+                  '<button type="button" data-accion="encargo" data-id="' + id + '">📝 Encargo</button>' +
+                  (numero ? '<a class="boton-whatsapp" href="https://wa.me/' + numero + '" target="_blank" rel="noopener" aria-label="WhatsApp" title="WhatsApp">💬</a>' : '') +
+                  (c.telefono ? '<a class="boton-secundario" href="tel:' + escaparHtml(c.telefono.replace(/[^\d+]/g, '')) + '" aria-label="Llamar" title="Llamar">📞</a>' : '') +
+                  '<button type="button" class="boton-secundario" data-accion="editar" data-id="' + id + '" aria-label="Editar cliente">✏️</button>' +
+                  '<button type="button" class="boton-secundario" data-accion="borrar" data-id="' + id + '" aria-label="Borrar cliente">🗑</button>' +
+                '</div>') +
+          '</article>';
+      }).join('');
+    }
+
+    // Abre el formulario de encargo con los datos del cliente
+    function nuevoEncargoPara(c) {
+      if (idEditando) salirEdicion();
+      limpiarFormulario();
+      campos.nombre.value = c.nombre;
+      campos.telefono.value = c.telefono;
+      if (c.tienda) {
+        campos.tienda.value = c.tienda;
+        tiendaElegidaAMano = true;
+      }
+      mostrarPestana('nuevo');
+      const seccionForm = document.getElementById('seccion-form');
+      seccionForm.open = true;
+      seccionForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      revisarClienteFormulario();
+      mostrarAviso('📝 Encargo para ' + c.nombre + '. Añade los productos y la fecha.', true);
+    }
+
+    document.getElementById('lista-agenda').addEventListener('click', (evento) => {
+      const boton = evento.target.closest('button[data-accion]');
+      if (!boton) return;
+      const c = agenda.find((x) => x.id === boton.dataset.id);
+      if (!c) return;
+      const accion = boton.dataset.accion;
+
+      if (accion === 'encargo') nuevoEncargoPara(c);
+      if (accion === 'editar') abrirFormContacto(c);
+      if (accion === 'borrar') {
+        idContactoABorrar = c.id;
+        pintarAgenda();
+      }
+      if (accion === 'cancelar-borrar') {
+        idContactoABorrar = null;
+        pintarAgenda();
+      }
+      if (accion === 'confirmar-borrar') {
+        const copia = agenda;
+        agenda = agenda.filter((x) => x.id !== c.id);
+        idContactoABorrar = null;
+        if (!guardarAgenda()) {
+          agenda = copia;
+          mostrarToast('No se pudo borrar. Inténtalo de nuevo.');
+          return;
+        }
+        pintarLista();
+        mostrarToast('🗑 ' + (c.nombre || 'Cliente') + ' borrado de tus clientes.', () => {
+          agenda.push(c);
+          guardarAgenda();
+          pintarLista();
+        });
+      }
+    });
+
+    // ---------- Importar varios contactos del móvil de una vez ----------
+    const btnImportar = document.getElementById('btn-importar-contactos');
+    const puedeImportar = 'contacts' in navigator && typeof navigator.contacts.select === 'function';
+    btnImportar.hidden = !puedeImportar;
+    if (!puedeImportar) document.getElementById('btn-nuevo-contacto').style.gridColumn = '1 / -1';
+
+    btnImportar.addEventListener('click', async () => {
+      try {
+        const elegidos = await navigator.contacts.select(['name', 'tel'], { multiple: true });
+        if (!elegidos || !elegidos.length) return; // cancelado
+        let nuevos = 0;
+        let yaEstaban = 0;
+        let sinTelefono = 0;
+        elegidos.forEach((contacto) => {
+          const telefono = elegirTelefono(contacto.tel || []);
+          const nombre = ((contacto.name || []).find((n) => n && n.trim()) || '').trim();
+          if (!telefono) {
+            sinTelefono++;
+            return;
+          }
+          if (contactoPorTelefono(telefono)) {
+            yaEstaban++;
+            return;
+          }
+          if (anotarContacto({ nombre: nombre || telefono, telefono }, 'contactos') === 'nuevo') nuevos++;
+        });
+        guardarAgenda();
+        pintarLista();
+        resultadoImportar.textContent = '✅ ' +
+          (nuevos === 1 ? 'Añadido 1 cliente' : 'Añadidos ' + nuevos + ' clientes') +
+          (yaEstaban ? ' · ' + yaEstaban + ' ya estaban' : '') +
+          (sinTelefono ? ' · ' + sinTelefono + ' sin teléfono' : '') + '.';
+      } catch (error) {
+        console.error('No se pudo abrir la agenda:', error);
+        resultadoImportar.textContent = 'No se pudo abrir la agenda del móvil.';
       }
     });
 
@@ -3731,6 +4234,7 @@
         lineaDictado('No se pudo guardar el cambio. Inténtalo de nuevo.');
         return;
       }
+      anotarClienteDeEncargo(e);
       pintarLista();
 
       const resumen = document.createElement('div');
@@ -3851,6 +4355,7 @@
         resultadoDictado.appendChild(mensaje);
         return;
       }
+      anotarClienteDeEncargo(encargo);
       pintarLista();
 
       const resumen = document.createElement('div');
@@ -3866,7 +4371,7 @@
 
       if (completadoHistorial.length) {
         const historial = document.createElement('div');
-        historial.textContent = '📇 Cliente habitual: he completado ' + completadoHistorial.join(', ') + ' con su historial.';
+        historial.textContent = '📇 Cliente conocido: he completado ' + completadoHistorial.join(', ') + ' con sus datos.';
         resultadoDictado.appendChild(historial);
       }
 
@@ -3889,6 +4394,7 @@
           if (!e.tienda && c.tienda) e.tienda = c.tienda;
           e.fechaModificacion = new Date().toISOString();
           guardarEncargos();
+          anotarClienteDeEncargo(e);
           pintarLista();
           pregunta.textContent = '✅ Añadidos los datos de ' + c.nombre + '.';
           usar.remove();
@@ -4057,7 +4563,8 @@
     function encargosSinCopia() {
       const ultima = leerUltimaCopia();
       if (!ultima) return encargos.length;
-      return encargos.filter((e) => (e.fechaModificacion || e.fechaCreacion) > ultima).length;
+      return encargos.filter((e) => (e.fechaModificacion || e.fechaCreacion) > ultima).length +
+        agenda.filter((c) => (c.modificado || c.creado) > ultima).length;
     }
 
     function actualizarEstadoCopia() {
@@ -4074,11 +4581,11 @@
         const dias = Math.round((hoyAMedianoche() - new Date(new Date(ultima).setHours(0, 0, 0, 0))) / 86400000);
         const cuando = dias === 0 ? 'hoy' : dias === 1 ? 'ayer' : 'hace ' + dias + ' días';
         estado.textContent = 'Última copia: ' + cuando + '.' +
-          (pendientes ? ' Hay ' + pendientes + (pendientes === 1 ? ' encargo nuevo o cambiado' : ' encargos nuevos o cambiados') + ' desde entonces.' : ' Está al día.');
+          (pendientes ? ' Hay ' + pendientes + (pendientes === 1 ? ' cambio' : ' cambios') + ' desde entonces.' : ' Está al día.');
       }
 
       if (pendientes > 0) {
-        recordatorio.textContent = '💾 ' + pendientes + (pendientes === 1 ? ' encargo sin copia' : ' encargos sin copia') + '. Toca aquí para hacerla.';
+        recordatorio.textContent = '💾 ' + pendientes + (pendientes === 1 ? ' cambio sin copia' : ' cambios sin copia') + '. Toca aquí para hacerla.';
         recordatorio.hidden = false;
       } else {
         recordatorio.hidden = true;
@@ -4091,10 +4598,11 @@
     function contenidoCopia() {
       return JSON.stringify({
         app: 'encargos-navidad',
-        version: 2,
+        version: 3,
         creada: new Date().toISOString(),
         total: encargos.length,
-        encargos
+        encargos,
+        agenda
       }, null, 2);
     }
 
@@ -4123,8 +4631,8 @@
     btnEnviarCopia.hidden = !tipoCompartir;
 
     btnEnviarCopia.addEventListener('click', async () => {
-      if (!encargos.length) {
-        resultadoCopia.textContent = 'No hay encargos que copiar todavía.';
+      if (!encargos.length && !agenda.length) {
+        resultadoCopia.textContent = 'No hay nada que copiar todavía.';
         return;
       }
       try {
@@ -4142,8 +4650,8 @@
     });
 
     document.getElementById('btn-descargar-copia').addEventListener('click', () => {
-      if (!encargos.length) {
-        resultadoCopia.textContent = 'No hay encargos que copiar todavía.';
+      if (!encargos.length && !agenda.length) {
+        resultadoCopia.textContent = 'No hay nada que copiar todavía.';
         return;
       }
       const blob = new Blob([contenidoCopia()], { type: 'application/json' });
@@ -4204,7 +4712,18 @@
       const existentes = new Set(encargos.map((e) => e.id));
       const nuevos = validos.filter((e) => !existentes.has(e.id));
 
-      if (nuevos.length) {
+      // Clientes de la agenda: se añaden los que no estén (mismo teléfono = mismo cliente)
+      let clientesNuevos = 0;
+      if (datos && Array.isArray(datos.agenda)) {
+        datos.agenda.map(sanearContacto).filter(Boolean).forEach((c) => {
+          if (agenda.some((x) => x.id === c.id) || contactoPorTelefono(c.telefono)) return;
+          agenda.push(c);
+          clientesNuevos++;
+        });
+        if (clientesNuevos) guardarAgenda();
+      }
+
+      if (nuevos.length || clientesNuevos) {
         const anterior = encargos;
         encargos = encargos.concat(nuevos);
         if (!guardarEncargos()) {
@@ -4217,7 +4736,8 @@
       return {
         nuevos: nuevos.length,
         repetidos: validos.length - nuevos.length,
-        invalidos: recibidos.length - validos.length
+        invalidos: recibidos.length - validos.length,
+        clientesNuevos
       };
     }
 
@@ -4239,6 +4759,7 @@
         : 'No había encargos nuevos en esta copia: ya los tenías todos.';
       if (r.repetidos && r.nuevos) mensaje += ' ' + r.repetidos + ' ya estaban y no se han duplicado.';
       if (r.invalidos) mensaje += ' ' + r.invalidos + ' no se pudieron leer.';
+      if (r.clientesNuevos) mensaje += ' Clientes añadidos: ' + r.clientesNuevos + '.';
       resultadoCopia.textContent = mensaje;
     });
 
